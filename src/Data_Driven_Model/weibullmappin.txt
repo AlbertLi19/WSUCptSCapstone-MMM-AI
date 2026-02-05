@@ -1,0 +1,5 @@
+
+
+fullpath = C:/Users/dougl/Documents/github/-wsum-pythonapps/src/Data_Driven_Model/Impurity_distributions/61620A (ID A)/
+file1,file2 = '61620A_IPStacked_Excel_File_MA_AR','Stacked_file_C&D_61620A_IP'
+[{'weibull_min': {'c': 0.9249750513303246, 'loc': 0.8851075542170044, 'scale': 2.7457952339605596}}, {'weibull_min': {'c': 1.256048774751962, 'loc': 1.0068909283110212, 'scale': 0.875710442548566}}, {'weibull_min': {'c': 2.4446862548263777, 'loc': -114.11851730628192, 'scale': 128.9643860849717}}, {'weibull_min': {'c': 2.128588912258887, 'loc': 1.2815998765840235, 'scale': 4.349766458308746}}]

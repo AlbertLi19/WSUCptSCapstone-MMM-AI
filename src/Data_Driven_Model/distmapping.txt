@@ -1,0 +1,58 @@
+fullpath = 'C:\Users\dougl\Documents\github\-wsum-pythonapps\src\Data_Driven_Model\Impurity_distributions\61620A (ID A)/'
+file1 ,file2= '61620A_IPStacked_Excel_File_MA_AR','Stacked_file_C&D_61620A_IP'
+
+[{'genhyperbolic': {'p': 0.20562262500103362, 'a': 1.8311256047435998, 'b': 1.8036768800451748, 'loc': 1.0604188966392303, 'scale': 0.16301505768533162}}, {'f': {'
+0.16301505768533162}}, {'f': {'dfn': 3.9957117010913237, 'dfd': 17.335588059828986, 'loc': 1.0016579677682327, 'scale': 0.7110753751appa': 0.08565929271406333, 'lo250802}}, {'vonmises_line': {'kappa': 0.08565929271406333, 'loc': 0.11837016144258908, 'scale': 28.668831945133324}}, {'gausshyper':0345449168, 'z': 0.025876213118 {'a': 5.152457605128726, 'b': 48.9290434828933, 'c': -184.7560345449168, 'z': 0.025876213118432228, 'loc': 0.5033289040212159, 'scale': 44.83945908380579}}]
+
+###############################
+
+fullpath = 'C:\Users\dougl\Documents\github\-wsum-pythonapps\src\Data_Driven_Model\Impurity_distributions\61620A (ID A)/'
+file1 ,file2= '61620A_TPStacked_Excel_File_MA_AR','Stacked_file_C&D_61620A_TP'
+
+[{'genhyperbolic': {'p': 0.17307920792893508, 'a': 2.2022696504543435, 'b': 2.161694667888819, 'loc': 1.009258889022276, 'scale': 0.2090094643157297}}, {'genhyperbolic': {'p': 1.4983933230456457, 'a': 0.7923995417014811, 'b': 0.7639033136363989, 'loc': 1.048623973453334, 'scale': 0.022200708486527818}}, {'wrapcauchy': {'c': 0.3974277004558697, 'loc': -89.97789642437601, 'scale': 28.643369497640634}}, {'beta': {'a': 3.421312706074885, 'b': 16.725549091619865, 'loc': 1.156565973433184, 'scale': 18.80071147638874}}]
+
+###############################
+
+fullpath = 'C:\Users\dougl\Documents\github\-wsum-pythonapps\src\Data_Driven_Model\Impurity_distributions\61620B (ID B)/'
+file1 ,file2= '61620B_IPStacked_Excel_File_MA_AR','Stacked_file_C&D_61620B_IP'
+
+[{'alpha': {'a': 1.903681823847368, 'loc': 0.3691968353152224, 'scale': 2.6739923029539803}}, {'johnsonsb': {'a': 3.7793788004173026, 'b': 1.3606103340953932, 'loc': 0.9232496079028849, 'scale': 11.667158959584157}}, {'beta': {'a': 1.035949287949839, 'b': 1.0749595248758395, 'loc': -89.99358381320047, 'scale': 179.93988427272453}}, {'skewnorm': {'a': 6.611625085420867, 'loc': 2.1433135328759803, 'scale': 2.784797204197207}}]
+
+##############################
+
+fullpath = 'C:\Users\dougl\Documents\github\-wsum-pythonapps\src\Data_Driven_Model\Impurity_distributions\61620B (ID B)/'
+file1 ,file2= '61620B_TPStacked_Excel_File_MA_AR','Stacked_file_C&D_61620B_TP'
+
+[{'betaprime': {'a': 19.837443402906572, 'b': 2.2042041154018186, 'loc': 0.7208708762164546, 'scale': 0.13871410959757496}}, {'geninvgauss': {'p': 0.7943646188198545, 'b': 0.7252708054443399, 'loc': 0.9530383717598121, 'scale': 0.511319496809715}}, {'wrapcauchy': 
+{'c': 0.4303249877942849, 'loc': -89.9654081999829, 'scale': 28.62553041685516}}, {'johnsonsb': {'a': 3.031384499461116, 'b': 1.6173115021157347, 'loc': 0.652780201377585, 'scale': 32.86280717801172}}]
+
+##############################
+
+fullpath =
+'C:/Users/dougl/Documents/github/-wsum-pythonapps/src/Data_Driven_Model/Impurity_distributions/63020A (ID C)/'
+file1 ,file2= '63020A_IPStacked_Excel_File_MA_AR_','Stacked_file_C&D_63020A_IP'
+
+[{'foldcauchy': {'c': 1.1028375433760909, 'loc': 1.2966242916580286, 'scale': 1.04357644499748}}, {'gengamma': {'a': 7.463859186732039, 'c': 0.45828507937812424, 'loc': 0.9951900139443501, 'scale': 0.010301428142008994}}, {'beta': {'a': 0.9876850257182921, 'b': 1.0119445592081917, 'loc': -89.85617869525514, 'scale': 179.83775799876815}}, {'weibull_min': {'c': 1.7719482843666494, 'loc': 2.8535393702768523, 'scale': 12.630154088279324}}]
+
+#############################
+
+fullpath
+= 'C:/Users/dougl/Documents/github/-wsum-pythonapps/src/Data_Driven_Model/Impurity_distributions/63020A (ID C)/'
+file1 ,file2= '63020A_TPStacked_Excel_File_MA_AR_','Stacked_file_C&D_63020A_TP'
+
+[{'kappa3': {'a': 1.796829081542536, 'loc': 1.2090470847228598, 'scale': 1.6949582492966122}}, {'powerlognorm': 
+{'c': 5.148949491406792e-05, 's': 0.0045766072773042385, 'loc': 0.21726477922701976, 'scale': 0.7776109477249198}}, {'wrapcauchy': {'c': 0.3613881926337459, 'loc': -89.98069495557259, 'scale': 28.642838282882025}}, {'weibull_min': {'c': 1.6851849608977774, 'loc': 2.041694323299287, 'scale': 9.021062180194704}}]
+
+#############################
+
+fullpath = 'C:/Users/dougl/Documents/github/-wsum-pythonapps/src/Data_Driven_Model/Impurity_distributions/63020B (ID D)/' # Edit this
+file1 ,file2= '63020B_IPStacked_Excel_File_MA_AR_NormAng_New_NormAbs','Stacked_file_C&D_63020B_IP'
+
+[{'jf_skew_t': {'a': 1023.500367388667, 'b': 0.5903109101095811, 'loc': 0.45325529867424064, 'scale': 0.0031749644002199307}}, {'f': {'dfn': 4.656652231972432, 'dfd': 13.241897449728782, 'loc': 0.9887804918952692, 'scale': 0.7934477668324604}}, {'johnsonsb': {'a': 0.009977326792290176, 'b': 0.5011135600693362, 'loc': -90.1943878509113, 'scale': 180.49287385844434}}, {'weibull_min': {'c': 1.8142242129329968, 'loc': 2.1408457971600563, 'scale': 11.858868929407137}}]
+
+#############################
+
+fullpath = 'C:/Users/dougl/Documents/github/-wsum-pythonapps/src/Data_Driven_Model/Impurity_distributions/63020B (ID D)/' # Edit this
+file1 ,file2= '63020B_TPStacked_Excel_File_MA_AR_NormAng_New_NormAbs','Stacked_file_C&D_63020B_TP'
+
+[{'invgauss': {'mu': 1.7863606322420111, 'loc': 0.9178616993458099, 'scale': 4.752433471519708}}, {'burr12': {'c': 1.545384342945702, 'd': 3.5671325710245227, 'loc': 1.0267904591861652, 'scale': 4.356471839210245}}, {'wrapcauchy': {'c': 0.5674476993534592, 'loc': -89.99249722363393, 'scale': 28.64201938689778}}, {'burr12': {'c': 2.0063999927953473, 'd': 38.014989451025, 'loc': 2.3669023161405476, 'scale': 68.47919610915127}}]

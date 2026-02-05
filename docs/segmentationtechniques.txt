@@ -1,0 +1,26 @@
+Mask R-CNN:
+This segmentation technique uses a CNN (Convolutional Neural Network) to identify and classify 
+different components of an image. The CNN architechture consists of a convolutional layer to abstract 
+the input image as a feature map, an ROI Pooling layer to downsample the feature map, and a fully 
+connected layer to connect every neuron and calculate the output of the network. For more complex situations 
+like segmenting pores, Mask R-CNN is used, which is based off of R-CNN. R-CNN is a Region-Based Convolutional 
+Neural Network which is primarily used for computer vision problems. The main difference between R-CNN and CNN 
+is that the former extracts regional information from the image before computing CNN features. Lastly, 
+we have Mask R-CNN, which is based off of R-CNN. This technique not only segments the images efficiently, 
+it also applies masks to the regions that provide more information. This can be used to efficiently differentiate 
+pores and find more accurate measurements than watershed.
+
+Edge-Based Segmentation:
+This segmentation technique is much simpler than Mask R-CNN, and due to the plethora of edges in 
+the pore images this technique could be a very viable solution without a lot of overhead. The problem with 
+watershed segmentation is that it focuses on finding the pores first and then differentating them from one another. 
+Finding edges first with this technique will most likely yield more accurate results since the edges are easier 
+to differentiate at first glance rather than the pores. This technique opperates by first identifying the 
+unique edges in the image. A popular way to detect edges is to look for rapid changes in pixel values. In 
+our pore images, this will work well due to the contrast of the edges. Once the edges are identified, edge 
+linking is performed to create boundaries enclosing the pores.
+
+References:
+https://www.analyticsvidhya.com/blog/2019/04/introduction-image-segmentation-techniques-python/
+https://viso.ai/deep-learning/mask-r-cnn/
+https://cloudinary.com/glossary/edge-based-segmentation

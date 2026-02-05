@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<scheme version="2.0" title="" description="">
+	<nodes>
+		<node id="0" name="Python Script" qualified_name="Orange.widgets.data.owpythonscript.OWPythonScript" project_name="Orange3" version="" title="Python Script" position="(61.0, 189.0)" />
+		<node id="1" name="Data Table" qualified_name="Orange.widgets.data.owtable.OWTable" project_name="Orange3" version="" title="Data Table" position="(228.0, 200.0)" />
+	</nodes>
+	<links>
+		<link id="0" source_node_id="0" sink_node_id="1" source_channel="Data" sink_channel="Data" enabled="true" source_channel_id="data" sink_channel_id="data" />
+	</links>
+	<annotations />
+	<thumbnail />
+	<node_properties>
+		<properties node_id="0" format="literal">{'controlAreaVisible': True, 'currentScriptIndex': 0, 'savedWidgetGeometry': b'\x01\xd9\xd0\xcb\x00\x03\x00\x00\xff\xff\xff\xff\xff\xff\xff\xf9\x00\x00\x05\x00\x00\x00\x02\xa8\x00\x00\x00\xf0\x00\x00\x00d\x00\x00\x04\x0f\x00\x00\x02C\x00\x00\x00\x00\x02\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x17\x00\x00\x04\xff\x00\x00\x02\xa7', 'scriptLibrary': [], 'scriptText': 'import numpy as np\nfrom Orange.data import Table, Domain, ContinuousVariable, DiscreteVariable\n\ndomain = Domain([ContinuousVariable("Impurity Size")])\narr = ss.gibrat.rvs(loc = 1,scale=1, size=15)\narr = arr.reshape(-1,1)\nout_data = Table.from_numpy(domain, arr)\n', 'splitterState': b'\x00\x00\x00\xff\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x01@\x00\x00\x01)\x01\xff\xff\xff\xff\x01\x00\x00\x00\x02\x00', 'vimModeEnabled': False, '__version__': 2}</properties>
+		<properties node_id="1" format="literal">{'auto_commit': True, 'color_by_class': True, 'controlAreaVisible': True, 'savedWidgetGeometry': b'\x01\xd9\xd0\xcb\x00\x03\x00\x00\x00\x00\x00\x1e\x00\x00\x00=\x00\x00\x04\xc4\x00\x00\x02;\x00\x00\x00\x1f\x00\x00\x00[\x00\x00\x04\xc3\x00\x00\x02:\x00\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00\x1f\x00\x00\x00[\x00\x00\x04\xc3\x00\x00\x02:', 'select_rows': True, 'show_attribute_labels': True, 'show_distributions': False, 'stored_selection': {'rows': [5], 'columns': [0]}, 'stored_sort': [], '__version__': 1}</properties>
+	</node_properties>
+	<session_state>
+		<window_groups />
+	</session_state>
+</scheme>

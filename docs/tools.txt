@@ -1,0 +1,23 @@
+OpenCV: This library is made for computer vision and image processing. In this project, OpenCV 
+will be used to handle the reading and modification of images.
+
+scikit-image: This library is made for image segmentation and feature manipulation. We plan on 
+using this library to handle the segmentation and filtering of the images.
+
+pandas: This library is made for efficient data manipulation. This library will be used 
+to store, format, and manipulate data that is gathered from the images.
+
+numpy: This library features a multitude of mathematical functions that will be used for any mathematical 
+processing that should effect the images.
+
+matplotlib: This library is made for the visualization of data. In this project it will work hand in hand with 
+pandas to visualize the data that is collected.
+
+SpallFracture_HoleFinder: This script was developed in 2023 by a colleague of Dr. Zare. We plan 
+on building upon the current functionality of this module to provide even better image processing 
+and data analysis.
+
+Image Segmentation: This is the primary technique that we will be using to analyze the images. Image segmentation 
+operates by categorizing different portions of the image based on color thresholding, clustering, and other 
+machine learning techniques. Right now the SpallFracture_HoleFinder script operated through color thresholding, 
+and we plan on researching and testing the other techniques to see which one yields the best performance.

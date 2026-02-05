@@ -1,0 +1,22 @@
+Watershed is a method of image segmentation that can be used to accurately segment portions of an image that share a border. In our use 
+case, this method can be used to segment images of pores where the pores share borders with multiple other pores. When using color thresholding to 
+segment an image, a lot of the time you will not accurately segment portions that share a border. This is caused by the contrast between the background 
+and the foreground. The algorithm will only see the contrast and segment multiple portions as one. When using watershed, the different portions are 
+segmented from the middle out, which allows the borders to be known. This leads to properly segmented portions, or pores for our use case.
+
+Watershed opperates by selecting the local minima of different portions of the image. These valleys are marked as the center of the various pores. 
+Once all of the centers are found, they are filled with different colors of "water". By filling these portions simultaneously, once the borders are reached 
+we are left with easily distinguishable segments due to the variation in color. This allows us to accurately segment pores even though the majority are 
+sharing borders with one another.
+
+We can accomplish this segmentation using the Python library OpenCV. OpenCV has a multitude of functions available to allow us to efficiently apply the 
+watershed algorithm to our images. The first step is to convert the image to a black and white version to allow for simpler thresholding. Once that is done, 
+thresholding is applied to find approximate locations of the individual pores. Noise is then removed and sure background and sure foreground are calculated. 
+The sure background/foreground means that those regions of the image are known for sure to be either a pore or background. The difference between the sure foreground 
+and sure background are found to highlight the areas that are unsure. These are usually the borders of the pores. From there, the areas with the highest intensity 
+are marked as centers of the pores. Now that the individual pore centers have been approximated, we can start the watershed process. This process is as simple as 
+calling the cv.watershed() function on the image along with the markers. After this process is applied, it can be fine tuned to ensure more accurate results.
+
+References:
+https://www.sciencedirect.com/topics/computer-science/watershed-segmentation#:~:text=Watershed%20segmentation%20is%20a%20region,and%20Electronics%20in%20Agriculture%2C%202023
+https://docs.opencv.org/4.x/d3/db4/tutorial_py_watershed.html
