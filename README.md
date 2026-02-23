@@ -81,7 +81,7 @@ Minor bug fixes required in crater analysis
 ## Additional Documentation
 
 Sprint Reports:  
-https://github.com/WSUCptSCapstone-S24-F24/-wsum-pythonapps/tree/master/reports  
+https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/tree/main/reports
 
 User Links:  
 https://git-scm.com/
