@@ -1,0 +1,8 @@
+capstonevenv/ 
+__pycache__/ 
+*.pyc 
+.vscode/ 
+# Version junk files
+0.*
+*.0.0
+*.0.0.0
