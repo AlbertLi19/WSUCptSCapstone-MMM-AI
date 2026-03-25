@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QRubberBand
 from PyQt5.QtGui import QPixmap, QMouseEvent, QKeyEvent, QPainter, QPen, QColor
 from PyQt5.QtCore import Qt, QRect, pyqtSignal, pyqtSlot, QPoint, QTimer
-from widgets import ScaleDialog
+# from widgets import ScaleDialog
+from .scale_dialog import ScaleDialog, ScaleMethodDialog, ManualScaleDialog
 import math
 
 class ImageWidget(QLabel):
@@ -35,6 +36,8 @@ class ImageWidget(QLabel):
         self._length_in_pixels = None
         self.scale_ended.connect(self._scale_ended)
         self._initUI()
+        #NEW
+        self.setFocusPolicy(Qt.StrongFocus)
 
     def _initUI(self):
         """
@@ -181,10 +184,47 @@ class ImageWidget(QLabel):
     @pyqtSlot()
     def scale(self):
         if not self._pixmap.isNull():
+            '''
+            OLD METHOD
             self._scale_mode = True
             self._scale_point1 = None
             self._scale_point2 = None
             self.scale_started.emit()
+            '''
+            '''
+            # old NEW METHOD
+            dialog = ScaleDialog(self)
+
+            if dialog.exec() == ScaleDialog.Accepted:
+                if dialog.is_manual_mode():
+                    self._unit, self._value, self._length_in_pixels = dialog.get_manual_scale_data()
+                    self._scale_mode = False
+                    self.scale_ended.emit()
+                else:
+                    self._scale_mode = True
+                    self._scale_point1 = None
+                    self._scale_point2 = None
+                    self.scale_started.emit()
+            '''
+            #NEW NEW METHOD
+            method_dialog = ScaleMethodDialog(self)
+
+            if method_dialog.exec() == ScaleMethodDialog.Accepted:
+                method = method_dialog.get_method()
+
+                if method == "Measure on Image":
+                    self._scale_mode = True
+                    self._scale_point1 = None
+                    self._scale_point2 = None
+                    self.setFocus()
+                    self.scale_started.emit()
+
+                elif method == "Enter Manually":
+                    manual_dialog = ManualScaleDialog(self)
+                    if manual_dialog.exec() == ManualScaleDialog.Accepted:
+                        self._unit, self._value, self._length_in_pixels = manual_dialog.get_manual_scale_data()
+                        self._scale_mode = False
+                        self.scale_ended.emit()
 
     @pyqtSlot()
     def _scale_ended(self):
@@ -210,9 +250,22 @@ class ImageWidget(QLabel):
             dy = end_y - origin_y
             self._length_in_pixels = math.sqrt(dx**2 + dy**2)
 
+            
+            # OLD METHOD
             dialog = ScaleDialog(self)
             if dialog.exec() == ScaleDialog.Accepted:
                 self._unit, self._value = dialog.get_scale_data()
+            '''
+            # NEW METHOD
+            dialog = ScaleDialog(self)
+            dialog.mode_combo.setCurrentText("Measure on Image")
+            dialog.mode_combo.setEnabled(False)
+            dialog.pixel_length_label.hide()
+            dialog.pixel_length_spinbox.hide()
+
+            if dialog.exec() == ScaleDialog.Accepted:
+                self._unit, self._value = dialog.get_scale_data()
+            '''
 
     def mouseMoveEvent(self, event:QMouseEvent):
         if self._crop_mode:
@@ -368,11 +421,12 @@ class ImageWidget(QLabel):
                     painter.drawLine(linehair.x(), linehair.y()-5, linehair.x(), linehair.y()+5)
 
     def keyPressEvent(self, event:QKeyEvent) -> None:
-        if self._scale_mode and event.key() == Qt.Key_Return:
+        # changed "== Qt.Key_Return" to "in (Qt.Key_Return, Qt.Key_Enter)" for both scale and crop
+        if self._scale_mode and event.key() in (Qt.Key_Return, Qt.Key_Enter):
             self._scale_mode = False
             self.scale_ended.emit()
 
-        if self._crop_mode and event.key() == Qt.Key_Return:
+        if self._crop_mode and event.key() in (Qt.Key_Return, Qt.Key_Enter):
             self._crop_mode = False
             self.crop_ended.emit()
 

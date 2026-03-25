@@ -403,6 +403,7 @@ class SegmentationView(QWidget):
             #Scale text
             if self._left_image.length_in_pixels is not None and self._left_image.scale_value is not None\
                 and self._left_image.unit is not None:
+                # swapped these scale and pixel legnth around, they were swapped
                 scale = str(self._left_image.scale_value / self._left_image.length_in_pixels).split('.')
                 scale = scale[0] + '.' + scale[1][:3]
                 unit = self._left_image.unit.lower()
@@ -680,7 +681,7 @@ class SegmentationView(QWidget):
                     self._image_settings[idx]._sigma_color = sigma_color
                     self._image_settings[idx]._sigma_space = sigma_space
                 self._blur_type_edit.setText(self._image_settings[idx]._blur_type)
-            #self._tip_label.setText(self.tip_text)
+            self._tip_label.setText(self.tip_text())
             #self._can_run_segmentation()
 
 
@@ -691,7 +692,7 @@ class SegmentationView(QWidget):
             if mpa_dialog.exec() == MinParticleAreaDialog.Accepted:
                 self._image_settings[idx]._min_particle_area = mpa_dialog.get_min_particle_area()
                 self._min_particle_edit.setText(str(self._image_settings[idx]._min_particle_area))
-            #clself._tip_label.setText(self.tip_text)
+            self._tip_label.setText(self.tip_text())
             #self._can_run_segmentation()
 
 
