@@ -403,7 +403,7 @@ class SegmentationView(QWidget):
             #Scale text
             if self._left_image.length_in_pixels is not None and self._left_image.scale_value is not None\
                 and self._left_image.unit is not None:
-                scale = str(self._left_image.length_in_pixels / self._left_image.scale_value).split('.')
+                scale = str(self._left_image.scale_value / self._left_image.length_in_pixels).split('.')
                 scale = scale[0] + '.' + scale[1][:3]
                 unit = self._left_image.unit.lower()
                 if unit[-1] == 's':
