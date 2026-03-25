@@ -23,9 +23,9 @@
 
 ## Work Summary (Developer Facing) 
 
-During this sprint, our team focused on two separate areas: maintaining/improving the prior code, and working on the forward model. In order to create this model, we needed to create a regression model to convert the data of the segmentation masks obtained from the Segment Anything Model into a prediction of the alloy’s strength. Therefore, we worked on  
+During this sprint, our team focused on two separate areas: maintaining/improving the prior code, and working on the forward model. In order to create this model, we needed to create a regression model to convert the data of the segmentation masks obtained from the Segment Anything Model into a prediction of the alloy’s strength. Therefore, we worked on creating such a regression model during this sprint. 
 
-We had some trouble loading dependencies and building the application itself, some of the libraries were out of order in the requirements.txt document and some had been updated since the application was first made. We were eventually able to get it to work and we plan on adding a known working environment description to the project, or updating the code/libraries to their current versions. 
+We had some trouble loading dependencies and building the application itself, some of the libraries were out of order in the requirements.txt document and some had been updated since the application was first made. We were eventually able to get it to work and we plan on adding a known working environment description to the project, or updating the code/libraries to their current versions. Additionally, despite the lack of documentation and commenting in the prior code, we were able to make multiple UI changes that the client had requested. 
 
  
 
