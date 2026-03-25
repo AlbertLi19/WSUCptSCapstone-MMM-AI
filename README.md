@@ -1,4 +1,4 @@
-# WSUM-PythonApps
+# Machine Learning–Driven Materials Design for Additive Manufacturing
 
 ## Project summary
 
@@ -73,10 +73,15 @@ For detailed information about the auto-update system, see:
 
 navigate to the project directory
 run the command python .\src\app\main.py
+**Only works after all requirements are installed, doing this in a virtual enviornment is recommended (see installation steps)**
 
 ## Known Problems
 
 Minor bug fixes required in crater analysis
+
+There is a possibility of errors due to dependency downloads, should this occur attempt downloading each requirement listed in requirements.txt individually. Versions can be ignored if this is required, simply download whichever one you can.
+
+More recent Python version might cause failures as well, currently unknown. Python version 3.9.13 confirmed to work.
 
 ## Additional Documentation
 
