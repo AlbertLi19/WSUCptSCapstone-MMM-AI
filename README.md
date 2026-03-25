@@ -73,6 +73,7 @@ For detailed information about the auto-update system, see:
 
 navigate to the project directory
 run the command python .\src\app\main.py
+
 **Only works after all requirements are installed, doing this in a virtual enviornment is recommended (see installation steps)**
 
 ## Known Problems
