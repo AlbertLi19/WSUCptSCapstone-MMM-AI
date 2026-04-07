@@ -66,7 +66,7 @@ class DownloadHandler(QWidget):
                 if settings is not None:
                     histogram_data = []
                     for setting in settings:
-                        fname = setting.filename.split('.')[0] 
+                        fname = os.path.splitext(os.path.basename(setting.filename))[0]
                         image_histogram_data = {}
                         image_histogram_data['filename'] = fname
                         if setting._impurity_data is not None:
@@ -76,40 +76,43 @@ class DownloadHandler(QWidget):
                             histogram_data.append(image_histogram_data)
                         else:
                             continue
-                        if histogram_data:
-                            for data_item in histogram_data:
-                              
-                                filename = data_item['filename']
-                                for col_name in data_item.keys():
-                                    if col_name == 'filename':
-                                        continue
-                                    fname = data_item['filename']
-                                    y,x = np.histogram(data_item[col_name],bins=10)
-                                    
-                                    filename = (filename).split('.')[0]
-                                    histogram_fname = filename + f'_{col_name}_histogram.png'
-                                    
-                                    # Create an offscreen QGraphicsScene
-                                    scene = pg.GraphicsScene()
-                                    plot_item = pg.PlotItem()
-                                    scene.addItem(plot_item)
-                                    
-                                    # Add histogram data to the plot
-                                    bgi = pg.BarGraphItem(x0=x[:-1], x1=x[1:], height=y, pen='w', brush=(0,0,255,150))
-                                    plot_item.addItem(bgi)
-                                    plot_item.setTitle(f"{col_name} Distribution")
-                                    plot_item.setLabel('left', 'Frequency')
-                                    plot_item.setLabel('bottom', col_name)
-                                    
-                                    # Set the size for the output image
-                                    view = pg.GraphicsView()
-                                    view.setCentralItem(plot_item)
-                                    view.resize(800, 600)
-                                    
-                                    # Export the plot directly without showing it
-                                    export_path = os.path.join(save_directory, os.path.basename(histogram_fname))
-                                    exporter = pg.exporters.ImageExporter(plot_item)
-                                    exporter.export(export_path)
+                    if histogram_data:
+                        for data_item in histogram_data:
+                            filename = data_item['filename']
+                            for col_name in data_item.keys():
+                                if col_name == 'filename':
+                                    continue
+                                y, x = np.histogram(data_item[col_name].dropna(), bins=15)
+                                histogram_fname = filename + f'_{col_name}_histogram.png'
+
+                                # Create an offscreen QGraphicsScene
+                                scene = pg.GraphicsScene()
+                                plot_item = pg.PlotItem()
+                                scene.addItem(plot_item)
+
+                                # Match in-app histogram style.
+                                bgi = pg.BarGraphItem(
+                                    x0=x[:-1],
+                                    x1=x[1:],
+                                    height=y,
+                                    pen=pg.mkPen(color='k', width=0.5),
+                                    brush=pg.mkBrush(30, 110, 216, 180)
+                                )
+                                plot_item.addItem(bgi)
+                                plot_item.setTitle(f"Distribution of {col_name.replace('_', ' ')}")
+                                plot_item.setLabel('left', 'Frequency')
+                                plot_item.setLabel('bottom', col_name.replace('_', ' '))
+                                plot_item.showGrid(x=True, y=True, alpha=0.3)
+
+                                # Set the size for the output image
+                                view = pg.GraphicsView()
+                                view.setCentralItem(plot_item)
+                                view.resize(800, 600)
+
+                                # Export the plot directly without showing it
+                                export_path = os.path.join(save_directory, os.path.basename(histogram_fname))
+                                exporter = exporters.ImageExporter(plot_item)
+                                exporter.export(export_path)
                             
             if dialog.impurityDataBox.isChecked():     # download impurity data csv for each image
                 print("Dowlading individual impurity data")

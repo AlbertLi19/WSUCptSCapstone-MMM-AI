@@ -9,7 +9,6 @@ import pandas as pd
 import math
 from skimage import morphology, measure
 from PyQt5.QtCore import QRect
-from segmentation_scrips.SAM_segmentation import sam_automatic_hardware_optimization
 from scipy.spatial import distance_matrix
 
 IMAGES = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_SEM_Images','61620A_IP_09_53x35')
@@ -105,6 +104,7 @@ def segment_impurity_image(filename:str, um_per_pix:float, width_in_px:int, inte
                 temp_path = os.path.join(SAM_IMAGE, "temp_cropped_input.png")
                 cv2.imwrite(temp_path, I)
 
+                from segmentation_scrips.SAM_segmentation import sam_automatic_hardware_optimization
                 outputs = sam_automatic_hardware_optimization(
                     image_path=temp_path,
                     show_results=False,

@@ -82,10 +82,9 @@ class AnalysisView(QWidget):
     def _init_UI(self):
         self._histogram_analysis_button()
         self._download_button()
-        #self._overlay_button()
-        #self._timeout_textfield()
-        #self._select_deselect_button()
-        #self._scroll_area()
+        # Optional controls enabled to address bulk selection UX.
+        self._select_deselect_button()
+        self._scroll_area()
         self._analysis_label()
         self._analysis_label2()
 
