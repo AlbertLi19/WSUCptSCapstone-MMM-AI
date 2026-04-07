@@ -1,13 +1,11 @@
 '''
 This file contains a script to perform image segmentation using the Segment Anything Model (SAM) from Meta AI.
 '''
-from transformers import pipeline
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 import os
 import cv2  
-import torch
 from skimage.measure import regionprops, label
 from scipy.spatial import distance_matrix
 import pandas as pd
@@ -41,6 +39,16 @@ def sam_automatic_hardware_optimization(image_path, show_results=True, save_mask
         dict: SAM outputs with masks and metadata
     """
     
+    # Import heavy ML dependencies only when SAM is actually used.
+    try:
+        import torch
+        from transformers import pipeline
+    except Exception as exc:
+        raise RuntimeError(
+            "SAM dependencies failed to load. Install compatible torch/transformers "
+            "and verify your Python/driver setup."
+        ) from exc
+
     # Detect available hardware
     has_cuda = torch.cuda.is_available()
     device = 0 if has_cuda else -1

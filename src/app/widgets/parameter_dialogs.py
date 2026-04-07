@@ -10,7 +10,7 @@ class MinParticleAreaDialog(QDialog):
         layout = QVBoxLayout()
 
         # Add label for numerical value selection
-        value_label = QLabel("Enter the minimum particle area:")
+        value_label = QLabel("Enter the minimum particle area (px^2):")
         layout.addWidget(value_label)
 
         # Spin box for selecting the value
@@ -67,7 +67,7 @@ class FootprintTypeDialog(QDialog):
         self._dr_edit = QSpinBox()
         self._dr_edit.setValue(1)
         self._dr_edit.setRange(1,10)
-        self._dr_form.addRow('Disk Radius:', self._dr_edit)
+        self._dr_form.addRow('Disk Radius (px):', self._dr_edit)
         self._stack.addWidget(self._dr_widget)
 
         #Ellipse variables
@@ -76,10 +76,10 @@ class FootprintTypeDialog(QDialog):
         self._ellipse_widget.setLayout(self._ellipse_form)
         self._ew_edit = QSpinBox()
         self._ew_edit.setValue(5)
-        self._ellipse_form.addRow('Ellipse Width:', self._ew_edit)
+        self._ellipse_form.addRow('Ellipse Width (px):', self._ew_edit)
         self._eh_edit = QSpinBox()
         self._eh_edit.setValue(3)
-        self._ellipse_form.addRow('Ellipse Height:', self._eh_edit)
+        self._ellipse_form.addRow('Ellipse Height (px):', self._eh_edit)
         self._stack.addWidget(self._ellipse_widget)
 
         # Add OK and Cancel buttons
@@ -139,7 +139,7 @@ class ThresholdTypeDialog(QDialog):
         self._it_edit = QSpinBox()
         self._it_edit.setRange(0,255)
         self._it_edit.setValue(127)
-        self._global_form.addRow("Intensity Threshold:",self._it_edit)
+        self._global_form.addRow("Intensity Threshold (0-255):",self._it_edit)
         self._stack.addWidget(self._global_widget)
 
         #Adaptive variables
@@ -152,7 +152,7 @@ class ThresholdTypeDialog(QDialog):
         self._c_edit = QSpinBox()
         self._c_edit.setRange(1,100)
         self._c_edit.setValue(2)
-        self._adaptive_form.addRow("Block Size:",self._blocksize_edit)
+        self._adaptive_form.addRow("Block Size (px):",self._blocksize_edit)
         self._adaptive_form.addRow("C",self._c_edit)
         self._stack.addWidget(self._adaptive_widget)
 
@@ -221,7 +221,7 @@ class BlurTypeDialog(QDialog):
         self._sk_edit.setSingleStep(2)
         self._sk_edit.setRange(1,99)
         self._sk_edit.setValue(5)
-        self._sk_form.addRow('Smooth Kernel Size:', self._sk_edit)
+        self._sk_form.addRow('Smooth Kernel Size (px):', self._sk_edit)
         self._stack.addWidget(self._sk_widget)
 
         # Bilateral filtering variables
@@ -233,7 +233,7 @@ class BlurTypeDialog(QDialog):
         self._bf_form.addRow('d:', self._d_edit)
         self._sc_edit = QSpinBox()
         self._sc_edit.setValue(75)
-        self._bf_form.addRow('Sigma Colo:', self._sc_edit)
+        self._bf_form.addRow('Sigma Color:', self._sc_edit)
         self._ss_edit = QSpinBox()
         self._ss_edit.setValue(75)
         self._bf_form.addRow('Sigma Space', self._ss_edit)
