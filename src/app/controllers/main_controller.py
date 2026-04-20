@@ -9,7 +9,6 @@ import pandas as pd
 research_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Research')
 sys.path.append(research_path)
 from PyQt5 import QtWidgets
-from segmentation_scrips.SAM_segmentation import sam_segmentation, analyze_sam_regions
 import numpy as np
 from math import sqrt
 
@@ -38,6 +37,19 @@ class SegmentationWorker(QObject):
 
     def __init__(self, parent:QObject = None):
         super().__init__(parent=parent)
+
+    def _clear_previous_segmentation_outputs(self):
+        """Clear generated outputs so each segmentation run starts clean."""
+        for directory in (SEGMENTED_FOLDER, IMPURITY_DATA_FOLDER, COMBINED_IMPURITY_DATA):
+            if not os.path.exists(directory):
+                continue
+            for filename in os.listdir(directory):
+                file_path = os.path.join(directory, filename)
+                try:
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+                except Exception as exc:
+                    print(f"Warning: failed to remove {file_path}: {exc}")
         
     @pyqtSlot(list)
     def run_segmentation(self, settings):
@@ -45,6 +57,7 @@ class SegmentationWorker(QObject):
         count = 0
         unsegmented_images = []
         print("Segmentation started")
+        self._clear_previous_segmentation_outputs()
         self.segmentation_started.emit(len(settings))
         self.processed_images.emit(0, len(settings))
         # returns pandas dataframe with impurity data
@@ -183,6 +196,7 @@ class SegmentationWorker(QObject):
         count = 0
         unsegmented_images = []
         print("SAM Segmentation started")
+        self._clear_previous_segmentation_outputs()
         self.segmentation_started.emit(len(settings))
         self.processed_images.emit(0, len(settings))
         # returns pandas dataframe with impurity data

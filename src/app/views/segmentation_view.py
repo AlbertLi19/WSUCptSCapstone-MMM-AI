@@ -90,7 +90,7 @@ class SegmentationView(QWidget):
         self._threshold_type_edit = QPushButton(self)
         thresh_text = "Edit"
         if self._current_image_index >=0 and self._image_settings[self._current_image_index]._thresh_type is not None:
-            footprint_text = self._image_settings[self._current_image_index]._thresh_type
+            thresh_text = self._image_settings[self._current_image_index]._thresh_type
         self._threshold_type_edit.setText(thresh_text)
         self._threshold_type_edit.setToolTip('Click to edit the thresholding type.')
         self._threshold_type_edit.clicked.connect(self._edit_thresh_type)
@@ -105,7 +105,7 @@ class SegmentationView(QWidget):
         self._blur_type_edit = QPushButton(self)
         blur_text = "Edit"
         if self._current_image_index >=0 and self._image_settings[self._current_image_index]._blur_type is not None:
-            footprint_text = self._image_settings[self._current_image_index]._blur_type
+            blur_text = self._image_settings[self._current_image_index]._blur_type
         self._blur_type_edit.setText(blur_text)
         self._blur_type_edit.setToolTip('Click to edit the blur type.')
         self._blur_type_edit.clicked.connect(self._edit_blur_type)
@@ -115,11 +115,11 @@ class SegmentationView(QWidget):
 
     def _init_min_area(self):
         #Min. particle area input.
-        self._min_particle_label = QLabel('Min. Particle Area:',self)
+        self._min_particle_label = QLabel('Min. Particle Area (px^2):',self)
         self._min_particle_edit = QPushButton(self)
         min_particle_text = "Edit"
         if self._current_image_index >=0 and self._image_settings[self._current_image_index]._min_particle_area is not None:
-            footprint_text = str(self._image_settings[self._current_image_index]._min_particle_area)
+            min_particle_text = str(self._image_settings[self._current_image_index]._min_particle_area)
         self._min_particle_edit.setText(min_particle_text)
         self._min_particle_edit.setToolTip('Click to edit the minimum particle area.')
         self._min_particle_edit.clicked.connect(self._edit_min_particle_area)
@@ -259,11 +259,14 @@ class SegmentationView(QWidget):
         scroll_area.setWidget(self._tip_label)
         scroll_area.setMinimumWidth(250)
         scroll_area.setMaximumWidth(250)
-        scroll_area.setMinimumHeight(60)
-        scroll_area.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        scroll_area.setMinimumHeight(140)
+        scroll_area.setMaximumHeight(220)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_area.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         scroll_area.setFrameShape(QScrollArea.NoFrame)
 
-        self._layout.addWidget(scroll_area, self.row, 4, 2, 2)
+        # Keep this in a fixed box so text updates don't push the rest of the GUI around.
+        self._layout.addWidget(scroll_area, self.row, 4, 2, 1)
 
     def _download_button(self):
          # Add Download button to top right corner
@@ -366,10 +369,10 @@ class SegmentationView(QWidget):
             #Extra footprint type parameters
             if settings._footprint_type is not None:
                 if settings._footprint_num == 0:
-                    text += 'Disk Radius: ' + str(settings._disk_radius) + '\n'
+                    text += 'Disk Radius (px): ' + str(settings._disk_radius) + '\n'
                 else:
-                    text += 'Ellipse Width: ' + str(settings._ellipse_width) + '\n'
-                    text += 'Ellipse Height: ' + str(settings._ellipse_height) + '\n'
+                    text += 'Ellipse Width (px): ' + str(settings._ellipse_width) + '\n'
+                    text += 'Ellipse Height (px): ' + str(settings._ellipse_height) + '\n'
 
             #Threshold type text
             if settings._thresh_type is not None:
@@ -378,9 +381,9 @@ class SegmentationView(QWidget):
             #Extra threshold type parameters
             if settings._thresh_type is not None:
                 if settings._thresh_num == 0:
-                    text += 'Intensity Threshold: ' + str(settings._intensity_threshold) + '\n'
+                    text += 'Intensity Threshold (0-255): ' + str(settings._intensity_threshold) + '\n'
                 elif settings._thresh_num == 1 or settings._thresh_num == 2:
-                    text += 'Block Size: ' + str(settings._blocksize) + '\n'
+                    text += 'Block Size (px): ' + str(settings._blocksize) + '\n'
                     text += 'c: ' + str(settings._c) + '\n'
 
             #BLur type text
@@ -390,7 +393,7 @@ class SegmentationView(QWidget):
             #Extra blur type parameters
             if settings._blur_type is not None:
                 if settings._blur_num >= 0 and settings._blur_num <= 2:
-                    text += 'Smooth Kernel Size: ' + str(settings._smooth_kernel_size) + '\n' # Issue here, NOW FIXED
+                    text += 'Smooth Kernel Size (px): ' + str(settings._smooth_kernel_size) + '\n' # Issue here, NOW FIXED
                 else:
                     text += 'd: ' + str(settings._d) + '\n'
                     text += 'Sigma Color: ' + str(settings._sigma_color) + '\n'
@@ -398,7 +401,7 @@ class SegmentationView(QWidget):
 
             #MPA text
             if settings._min_particle_area is not None:
-                text += 'Min. Particle Area: ' + str(settings._min_particle_area) + '\n'
+                text += 'Min. Particle Area (px^2): ' + str(settings._min_particle_area) + '\n'
             
             #Scale text
             if self._left_image.length_in_pixels is not None and self._left_image.scale_value is not None\
@@ -418,54 +421,42 @@ class SegmentationView(QWidget):
         
     def _update_hist_plot(self):
         # Warning: if you edit this edit the download histogram code in _popup_download_box as well because it is based off this
+        if self._current_image_index < 0:
+            return
         settings = self._image_settings[self._current_image_index]
         if settings is not None:
-            # Clear previous plots
-            for item in self._hist_plot.items:
-                self._hist_plot.removeItem(item)
-            
+            self._hist_plot.clear()
+
             # Get the column name from UI
             col_name = self._desired_output_property_select.currentText()
-            clean_col_name = col_name.replace(' ','_')
-            
+            clean_col_name = col_name.replace(' ', '_')
+
+            # Keep labels stable for better UX, even when data is unavailable.
+            self._hist_plot.setLabel('left', 'Frequency')
+            self._hist_plot.setLabel('bottom', col_name)
+            self._hist_plot.setTitle(f'Distribution of {col_name}')
+            self._hist_plot.showGrid(x=True, y=True, alpha=0.3)
+
             # Get data if available
             if settings._impurity_data is not None and clean_col_name in settings._impurity_data.columns:
-                clean_data = settings._impurity_data[clean_col_name]
-                
-                y, x = np.histogram(clean_data, bins=15)
-                
-                bgi = pg.BarGraphItem(
-                    x0=x[:-1], 
-                    x1=x[1:], 
-                    height=y, 
-                    pen=pg.mkPen(color='k', width=0.5),  
-                    brush=pg.mkBrush(30, 110, 216, 180)  
-                )
-                
-                # Add the histogram to the plot
-                self._hist_plot.addItem(bgi)
-                
-                # Set proper axis labels and title
-                self._hist_plot.setLabel('left', 'Frequency')
-                self._hist_plot.setLabel('bottom', col_name)
-                self._hist_plot.setTitle(f'Distribution of {col_name}')
-                
-                # Improve grid visibility
-                self._hist_plot.showGrid(x=True, y=True, alpha=0.3)
+                clean_data = settings._impurity_data[clean_col_name].dropna()
+                if len(clean_data) > 0:
+                    y, x = np.histogram(clean_data, bins=15)
+                    bgi = pg.BarGraphItem(
+                        x0=x[:-1],
+                        x1=x[1:],
+                        height=y,
+                        pen=pg.mkPen(color='k', width=0.5),
+                        brush=pg.mkBrush(30, 110, 216, 180)
+                    )
+                    self._hist_plot.addItem(bgi)
+                    return
 
-                
-                
-                
-            else:
-                # Display a message when no data is available
-                text = pg.TextItem(text="No data available", color=(200, 0, 0))
-                text.setPos(self._hist_plot.width()/2, self._hist_plot.height()/2)
-                self._hist_plot.addItem(text)
-                
-                # Reset labels
-                self._hist_plot.setLabel('left', '')
-                self._hist_plot.setLabel('bottom', '')
-                self._hist_plot.setTitle('')
+            # Display centered message when no data is available.
+            vr = self._hist_plot.viewRect()
+            msg = pg.TextItem(text="No data available", color=(200, 0, 0), anchor=(0.5, 0.5))
+            msg.setPos(vr.center())
+            self._hist_plot.addItem(msg)
 
                 
     def _change_right_display(self):
@@ -534,6 +525,12 @@ class SegmentationView(QWidget):
         """
         loaded_images = self.main_controller.get_images()
         if not loaded_images:
+            return
+
+        # Avoid duplicate entries when users upload multiple times.
+        loaded_images = [img for img in loaded_images if img not in self._images]
+        if not loaded_images:
+            self._tip_label.setText("No new images were added (all selected images already loaded).")
             return
             
         if not self._images:
@@ -837,10 +834,14 @@ class SegmentationView(QWidget):
         self.setCursor(Qt.ArrowCursor)
         if unsegmented_images:
             #Popup dialog here
-            for idx, image in enumerate(self._images): # _images is a list of file paths. Check if the file paths match in unsegmented images and remove
-                if image in unsegmented_images:
-                    self._images.remove(image)
-                    self._image_settings.pop(idx) # remove corresponding setting for the unsegmented image
+            # Rebuild lists instead of mutating while iterating (prevents index mismatch/skipped entries).
+            kept_pairs = [
+                (img, settings)
+                for img, settings in zip(self._images, self._image_settings)
+                if img not in unsegmented_images
+            ]
+            self._images = [img for img, _ in kept_pairs]
+            self._image_settings = [settings for _, settings in kept_pairs]
 
             dialog = UnsegmentedImageDialog(unsegmented_images)
             dialog.exec()
@@ -909,6 +910,8 @@ class SegmentationView(QWidget):
         self._left_image.clear()
         self._right_image.clear()
         self._pdf_image.clear()
+        self._hist_plot.clear()
+        self._set_right_display.setCurrentIndex(0)
 
         # Reset UI labels to default
         if hasattr(self, '_footprint_type_edit'):
@@ -919,6 +922,8 @@ class SegmentationView(QWidget):
             self._blur_type_edit.setText('Edit')
         if hasattr(self, '_min_particle_edit'):
             self._min_particle_edit.setText('Edit')
+        if hasattr(self, '_run_segmentation_button'):
+            self._run_segmentation_button.setEnabled(True)
 
         self._tip_label.setText('')
         self._images = []
