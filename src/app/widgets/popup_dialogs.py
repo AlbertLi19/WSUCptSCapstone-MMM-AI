@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QCheckBox, QProgressBar, QWidget, QHBoxLayout
 from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
+import time
 import os
 
 """This Class will be used to create a dialog 
@@ -136,12 +137,45 @@ class ProgressBarDialog(QDialog):
 
         layout = QVBoxLayout()
 
+        self._started_at = time.time()
+        self._ticker = QTimer(self)
+        self._ticker.timeout.connect(self._update_elapsed_label)
+
+        self._elapsed_label = QLabel("Elapsed: 00:00")
+        self._elapsed_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self._elapsed_label)
+
         self.progressBar = QProgressBar()
         self.progressBar.setRange(0, totalImages) # n will be the total number of images to process
         layout.addWidget(self.progressBar)
        
     
         self.setLayout(layout)
+
+    def start_timer(self):
+        self._started_at = time.time()
+        self._update_elapsed_label()
+        self._ticker.start(250)
+
+    def finish_timer(self) -> str:
+        self._ticker.stop()
+        elapsed = max(0.0, time.time() - self._started_at)
+        formatted = self._format_elapsed(elapsed)
+        self._elapsed_label.setText(f"Finished in: {formatted}")
+        return formatted
+
+    def _update_elapsed_label(self):
+        elapsed = max(0.0, time.time() - self._started_at)
+        self._elapsed_label.setText(f"Elapsed: {self._format_elapsed(elapsed)}")
+
+    @staticmethod
+    def _format_elapsed(elapsed_seconds: float) -> str:
+        total_seconds = int(round(elapsed_seconds))
+        minutes, seconds = divmod(total_seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        if hours:
+            return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        return f"{minutes:02d}:{seconds:02d}"
 
 
 class NoImagesSelectedDialog(QDialog):

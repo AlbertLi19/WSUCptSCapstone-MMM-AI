@@ -93,7 +93,6 @@ class MainWindow(QMainWindow):
         clear_directory(COMBINED_IMPURITY_DATA)
         clear_directory(CRATER_DATA)
         clear_directory(SAM_DATA)
-        clear_directory(IMAGES)
 
         self.main_view._controller.close()
         event.accept()
@@ -115,7 +114,6 @@ def main():
     clear_directory(DATA)
     clear_directory(COMBINED_IMPURITY_DATA)
     clear_directory(CRATER_DATA)
-    clear_directory(IMAGES)
     clear_directory(SAM_DATA)
 
     # Create necessary directories if they don't exist

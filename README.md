@@ -76,6 +76,26 @@ run the command python .\src\app\main.py
 
 **Only works after all requirements are installed, doing this in a virtual enviornment is recommended (see installation steps)**
 
+## Quick Start on a New Windows Computer
+
+Use the bootstrap script in the project root:
+
+```cmd
+setup_and_run.bat
+```
+
+What it does automatically:
+- creates `.venv` (if missing)
+- upgrades pip tooling
+- installs `requirements.txt`
+- launches `src\app\main.py`
+
+After first setup, you can run the app with:
+
+```cmd
+run_app.bat
+```
+
 ## Known Problems
 
 Minor bug fixes required in crater analysis
