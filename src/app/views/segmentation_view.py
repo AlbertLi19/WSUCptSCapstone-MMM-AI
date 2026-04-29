@@ -439,51 +439,25 @@ class SegmentationView(QWidget):
             self._hist_plot.showGrid(x=True, y=True, alpha=0.3)
 
             # Get data if available
-            clean_data = None
-            if clean_col_name == "Spacing":
-                clean_data = self._get_spacing_data(settings.filename)
-            elif settings._impurity_data is not None and clean_col_name in settings._impurity_data.columns:
+            if settings._impurity_data is not None and clean_col_name in settings._impurity_data.columns:
                 clean_data = settings._impurity_data[clean_col_name].dropna()
-
-            if clean_data is not None and len(clean_data) > 0:
-                y, x = np.histogram(clean_data, bins=15)
-                bgi = pg.BarGraphItem(
-                    x0=x[:-1],
-                    x1=x[1:],
-                    height=y,
-                    pen=pg.mkPen(color='k', width=0.5),
-                    brush=pg.mkBrush(30, 110, 216, 180)
-                )
-                self._hist_plot.addItem(bgi)
-                return
+                if len(clean_data) > 0:
+                    y, x = np.histogram(clean_data, bins=15)
+                    bgi = pg.BarGraphItem(
+                        x0=x[:-1],
+                        x1=x[1:],
+                        height=y,
+                        pen=pg.mkPen(color='k', width=0.5),
+                        brush=pg.mkBrush(30, 110, 216, 180)
+                    )
+                    self._hist_plot.addItem(bgi)
+                    return
 
             # Display centered message when no data is available.
             vr = self._hist_plot.viewRect()
             msg = pg.TextItem(text="No data available", color=(200, 0, 0), anchor=(0.5, 0.5))
             msg.setPos(vr.center())
             self._hist_plot.addItem(msg)
-
-    def _get_spacing_data(self, source_filename):
-        if not source_filename:
-            return None
-        base_name = os.path.splitext(os.path.basename(source_filename))[0]
-        spacing_file = os.path.join(
-            os.path.expanduser('~'),
-            'AppData',
-            'Local',
-            'Segmentation App',
-            'Impurity_Data',
-            f'{base_name}_coord_spacing.csv',
-        )
-        if not os.path.exists(spacing_file):
-            return None
-        try:
-            spacing_df = pd.read_csv(spacing_file)
-        except Exception:
-            return None
-        if "Distance" not in spacing_df.columns:
-            return None
-        return spacing_df["Distance"].dropna()
 
                 
     def _change_right_display(self):
