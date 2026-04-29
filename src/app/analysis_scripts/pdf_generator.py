@@ -200,6 +200,8 @@ def fit_and_plot(impurity_df: pd.DataFrame, spacing_df: pd.DataFrame, name, over
         """Fit all candidate distributions, compute AIC, and return weights (probabilities)."""
         results = []
         n = len(prob_data)
+        if n == 0:
+            return pd.DataFrame(columns=["dist", "aic", "prob"])
         for name, dist in candidate_distributions.items():
             try:
                 params = dist.fit(prob_data)
@@ -212,6 +214,8 @@ def fit_and_plot(impurity_df: pd.DataFrame, spacing_df: pd.DataFrame, name, over
 
         # Convert AIC to model weights (probabilities)
         df = pd.DataFrame(results, columns=["dist", "aic"])
+        if df.empty:
+            return pd.DataFrame(columns=["dist", "aic", "prob"])
         df = df.sort_values("aic")
         min_aic = df["aic"].min()
         delta_aic = df["aic"] - min_aic
@@ -222,6 +226,12 @@ def fit_and_plot(impurity_df: pd.DataFrame, spacing_df: pd.DataFrame, name, over
         return df
 
     def plot_conf(ax, df, title):
+        if df.empty:
+            ax.set_title(title)
+            ax.set_ylabel("Model Probability (%)")
+            ax.text(0.5, 0.5, "No fit available", ha="center", va="center", transform=ax.transAxes)
+            ax.set_ylim(0, 100)
+            return
         ax.bar(df["dist"], df["prob"])
         ax.set_title(title)
         ax.set_ylabel("Model Probability (%)")
@@ -273,10 +283,10 @@ def fit_and_plot(impurity_df: pd.DataFrame, spacing_df: pd.DataFrame, name, over
 
     # Get best fits (highest probability)
     best_models = {
-        "Size": size_df.iloc[0],
-        "Aspect": aspect_df.iloc[0],
-        "Orientation": orientation_df.iloc[0],
-        "Spacing": spacing_df.iloc[0],
+        "Size": size_df.iloc[0] if not size_df.empty else None,
+        "Aspect": aspect_df.iloc[0] if not aspect_df.empty else None,
+        "Orientation": orientation_df.iloc[0] if not orientation_df.empty else None,
+        "Spacing": spacing_df.iloc[0] if not spacing_df.empty else None,
     }
 
     x_points = 1000
@@ -292,6 +302,8 @@ def fit_and_plot(impurity_df: pd.DataFrame, spacing_df: pd.DataFrame, name, over
 
     saved_data = {}
     for var_name, best_row in best_models.items():
+        if best_row is None:
+            continue
         dist_name = best_row["dist"]
         dist = candidate_distributions[dist_name]
         data_array = variable_data[var_name]

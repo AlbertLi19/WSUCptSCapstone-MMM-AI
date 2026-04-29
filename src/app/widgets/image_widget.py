@@ -24,11 +24,13 @@ class ImageWidget(QLabel):
         self._crop_mode = False
         self.crop_ended.connect(self._crop_ended)
         self._crop_rect = None
+        self._crop_dimension_text = ""
 
         self._scale = None #Pixels per micron.
         self._scale_mode = False
         self._scale_point1 = None  # First point
         self._scale_point2 = None  # Second point
+        self._scale_anchor_y = None
         self._selected_point = None  # Track which point is selected for moving
         self._shift_pressed = False
         self._unit = None
@@ -149,11 +151,14 @@ class ImageWidget(QLabel):
             self._linehairs[3] = QPoint(self._offset_x + self._pixmap_size.width()//2, self._offset_y + self._pixmap_size.height())
             self._crop_rubberband = QRubberBand(QRubberBand.Rectangle, self)
             self._crop_rubberband.setGeometry(QRect(self._crosshairs[0],self._crosshairs[3]))
+            self._update_crop_dimension_text(self._crop_rubberband.geometry())
             self._crop_rubberband.show()
             self.update()
 
     @pyqtSlot()
     def _crop_ended(self):
+        if self._crop_rubberband is None:
+            return
         currentQRect = self._crop_rubberband.geometry()
         self._crop_rubberband.deleteLater()
         self._crop_rubberband = None
@@ -179,6 +184,7 @@ class ImageWidget(QLabel):
         self._crop_rect = QRect(int(x), int(y), int(w), int(h))
 
         self._pixmap = self._pixmap.copy(self._crop_rect)
+        self._crop_dimension_text = ""
         self._resize()
 
     @pyqtSlot()
@@ -216,6 +222,7 @@ class ImageWidget(QLabel):
                     self._scale_mode = True
                     self._scale_point1 = None
                     self._scale_point2 = None
+                    self._scale_anchor_y = None
                     self.setFocus()
                     self.scale_started.emit()
 
@@ -231,6 +238,7 @@ class ImageWidget(QLabel):
         self._set_scale()
         self._scale_point1 = None
         self._scale_point2 = None
+        self._scale_anchor_y = None
         self.update()
 
     def _set_scale(self):
@@ -317,20 +325,17 @@ class ImageWidget(QLabel):
                                         self._crosshairs[2].y())
             
             self._crop_rubberband.setGeometry(QRect(self._crosshairs[0],self._crosshairs[3]).normalized())
+            self._update_crop_dimension_text(self._crop_rubberband.geometry())
             self.update()
 
         if self._scale_mode and self._selected_point:
             # Update the selected point's position
             if self._selected_point == 1:
-                if self._shift_pressed:
-                    self._scale_point1 = QPoint(event.pos().x(), self._scale_point2.y())
-                else:
-                    self._scale_point1 = event.pos()
+                new_y = self._scale_anchor_y if self._scale_anchor_y is not None else event.pos().y()
+                self._scale_point1 = QPoint(event.pos().x(), new_y)
             elif self._selected_point == 2:
-                if self._shift_pressed:
-                    self._scale_point2 = QPoint(event.pos().x(), self._scale_point1.y())
-                else:
-                    self._scale_point2 = event.pos()
+                new_y = self._scale_anchor_y if self._scale_anchor_y is not None else event.pos().y()
+                self._scale_point2 = QPoint(event.pos().x(), new_y)
             self.update()
 
     def mouseReleaseEvent(self, event:QMouseEvent):
@@ -373,9 +378,11 @@ class ImageWidget(QLabel):
                 self._selected_point = 2
             elif self._scale_point1 is None:  # If no points exist, create the first one
                 self._scale_point1 = click_pos
+                self._scale_anchor_y = click_pos.y()
                 self._selected_point = 1
             elif self._scale_point2 is None:  # If only one point exists, create the second one
-                self._scale_point2 = click_pos
+                anchor_y = self._scale_anchor_y if self._scale_anchor_y is not None else click_pos.y()
+                self._scale_point2 = QPoint(click_pos.x(), anchor_y)
                 self._selected_point = 2
             self.update()
 
@@ -402,6 +409,9 @@ class ImageWidget(QLabel):
             painter.setPen(pen)
             if self._scale_point1 and self._scale_point2:
                 painter.drawLine(self._scale_point1, self._scale_point2)
+                pixel_len = self._distance(self._scale_point1, self._scale_point2)
+                painter.setPen(QPen(QColor(Qt.white), 1))
+                painter.drawText(10, 20, f"Scale Length: {pixel_len:.2f} px")
 
         if self._crop_mode:
             painter = QPainter(self)
@@ -419,6 +429,9 @@ class ImageWidget(QLabel):
                     painter.drawLine(linehair.x()-5, linehair.y(), linehair.x()+5, linehair.y())
                 elif i == 1 or i == 2:
                     painter.drawLine(linehair.x(), linehair.y()-5, linehair.x(), linehair.y()+5)
+            if self._crop_dimension_text:
+                painter.setPen(QPen(QColor(Qt.white), 1))
+                painter.drawText(10, 20, self._crop_dimension_text)
 
     def keyPressEvent(self, event:QKeyEvent) -> None:
         # changed "== Qt.Key_Return" to "in (Qt.Key_Return, Qt.Key_Enter)" for both scale and crop
@@ -429,6 +442,10 @@ class ImageWidget(QLabel):
         if self._crop_mode and event.key() in (Qt.Key_Return, Qt.Key_Enter):
             self._crop_mode = False
             self.crop_ended.emit()
+
+        if event.key() == Qt.Key_Escape:
+            self._cancel_active_mode()
+            self.update()
 
         if event.key() == Qt.Key_Shift:
             self._shift_pressed = True
@@ -444,6 +461,32 @@ class ImageWidget(QLabel):
     def _distance(self, p1:QPoint, p2:QPoint) -> float:
         """Helper method to calculate the distance between two points."""
         return math.sqrt((p1.x() - p2.x()) ** 2 + (p1.y() - p2.y()) ** 2)
+
+    def _update_crop_dimension_text(self, current_rect: QRect):
+        if current_rect is None or self._pixmap_size.width() == 0 or self._pixmap_size.height() == 0:
+            self._crop_dimension_text = ""
+            return
+        width_px = current_rect.width() * (self._original_size.width() / self._pixmap_size.width())
+        height_px = current_rect.height() * (self._original_size.height() / self._pixmap_size.height())
+        self._crop_dimension_text = f"Crop: {int(round(width_px))} x {int(round(height_px))} px"
+
+    def _cancel_active_mode(self):
+        if self._crop_mode:
+            self._crop_mode = False
+            self._crop_dimension_text = ""
+            if self._crop_rubberband is not None:
+                self._crop_rubberband.deleteLater()
+                self._crop_rubberband = None
+            self._crosshairs = [None, None, None, None]
+            self._linehairs = [None, None, None, None]
+            self.crop_ended.emit()
+            return
+        if self._scale_mode:
+            self._scale_mode = False
+            self._scale_point1 = None
+            self._scale_point2 = None
+            self._scale_anchor_y = None
+            self.scale_ended.emit()
 
     def clear(self):
         """

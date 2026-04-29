@@ -149,7 +149,8 @@ class SegmentationView(QWidget):
         self._desired_output_property_select = QComboBox(self)
         self._desired_output_property_select.addItems(['Size',
                                                        'Orientation',
-                                                       'Aspect Ratio'])
+                                                       'Aspect Ratio',
+                                                       'Spacing'])
         self._desired_output_property_select.setToolTip('Select the desired output property for the histogram.')
         self._desired_output_property_select.currentIndexChanged.connect(self._update_hist_plot)
         self._layout.addWidget(self._desired_output_property_select,self.row,0,1,2)
@@ -345,7 +346,7 @@ class SegmentationView(QWidget):
         if hasattr(self.main_controller, 'segmentation_worker'):
             # SEGMENTATION
             self.main_controller.segmentation_worker._segmentation_complete.connect(self._segmentation_complete)
-            self.main_controller.segmentation_worker._sam_segmentation_complete.connect(self._segmentation_complete)
+            self.main_controller.segmentation_worker._sam_segmentation_complete.connect(self._sam_segmentation_complete)
             # SEGMENTATION
             self.main_controller.segmentation_worker.new_pdf_img.connect(self._new_pdf_img)
             
@@ -550,12 +551,17 @@ class SegmentationView(QWidget):
     def _segmentation_started(self, total_images):
         """Takes in the total number of images to be segmented and creates a progress bar dialog box"""
         self._progress_dialog = ProgressBarDialog(total_images)
+        self._progress_dialog.start_timer()
         self._progress_dialog.show()
 
     def _processed_images(self, processed_images, total_images):
         """Updates the progress bar dialog box with the number of images that have been segmented"""
+        if self._progress_dialog is None:
+            return
         self._progress_dialog.progressBar.setValue(processed_images)
         if processed_images == total_images:
+            final_time = self._progress_dialog.finish_timer()
+            self._tip_label.setText(f"{self.tip_text()}\nLast run time: {final_time}")
             self._progress_dialog.accept()
             self._progress_dialog = None
 
@@ -632,6 +638,7 @@ class SegmentationView(QWidget):
         if self._current_image_index < 0:
             return
         if self._can_run_segmentation():
+            self._run_sam_button.setEnabled(False)
             img_settings = self._image_settings[self._current_image_index]
             if img_settings.filename is not None and self._left_image.nm_per_pix is not None\
                     and img_settings._intensity_threshold is not None and img_settings._disk_radius is not None:
@@ -792,36 +799,10 @@ class SegmentationView(QWidget):
             print("========================\n")
         
 
-    @pyqtSlot(list)
-    def _sam_segmentation_complete(self, impurity_data:list):
-        self.setCursor(Qt.ArrowCursor)
-
-        
-        if self._images: # if some or all images were able to be segmented
-            self._current_image_index = 0
-
-            # keep track of all impurity data in case needed later
-            self._all_impurity_data = impurity_data
-
-            # update impurity data for all images
-            for i in range(len(self._image_settings)):
-                self._image_settings[i]._impurity_data = impurity_data[i]
-
-            crop_rect = None
-            # if a crop rect is saved, apply it to the new image
-            if self._image_settings[self._current_image_index]._crop_rect:
-                crop_rect = self._image_settings[self._current_image_index]._crop_rect
-            else:
-                self._left_image._crop_rect = None
-
-            # set left image to the unsegmented segmented image
-            self._left_image.set_image(self._images[self._current_image_index], crop_rect)
-            seg_fname = self._find_segmented_image(self._image_settings[self._current_image_index].filename)
-            self._right_image.set_image(seg_fname)
-
-        else: 
-            # no images were segmented so reset the app to its default state.
-            self._reset()
+    @pyqtSlot(list, list)
+    def _sam_segmentation_complete(self, impurity_data:list, unsegmented_images:list):
+        # Keep SAM completion behavior aligned with standard segmentation.
+        self._segmentation_complete(impurity_data, unsegmented_images)
 
     @pyqtSlot(list, list)
     def _segmentation_complete(self, impurity_data:list, unsegmented_images:list):
@@ -874,6 +855,7 @@ class SegmentationView(QWidget):
 
         # enable the run segmentation button again
         self._run_segmentation_button.setEnabled(True)
+        self._run_sam_button.setEnabled(True)
 
     @pyqtSlot(str)
     def _new_pdf_img(self, filename:str):
