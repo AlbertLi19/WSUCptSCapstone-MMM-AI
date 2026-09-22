@@ -67,7 +67,7 @@ print(candidates[
 
 if len(candidates) > 0:
     #find biggest sudden increase in depth
-    pop_index = candidates["dDepth_nm"].idxmax()
+    pop_index = candidates.index[0]
     pop = loading.loc[pop_index]
     previous = loading.loc[pop_index - 1]
     print("Data point:", pop_index)
