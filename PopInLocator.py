@@ -1,9 +1,39 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import filedialog
 
-file = "test2.txt"
-df = pd.read_csv(file, sep="\t", skiprows=5, encoding_errors="replace")
+# Create a hidden Tkinter window
+root = tk.Tk()
+root.withdraw()
+
+# Open file selection window
+file_path = filedialog.askopenfilename(
+    title="Select Nanoindentation Data File",
+    filetypes=[
+        ("Text Files", "*.txt"),
+        ("All Files", "*.*")
+    ]
+)
+
+# Close the Tkinter window
+root.destroy()
+
+# Stop the program if no file was selected
+if not file_path:
+    print("No file selected.")
+    raise SystemExit
+
+# Read the selected file
+df = pd.read_csv(
+    file_path,
+    sep="\t",
+    skiprows=5,
+    encoding_errors="replace"
+)
+
+print("Selected file:", file_path)
 
 # pop-in threshold = mean baseline signal + k * stdev
 # smaller k means more sensitive, bigger k means more conservative
@@ -64,12 +94,23 @@ print(candidates[
         "dDepth_dLoad"
     ]
       ])
+# -------------------------------------------------
+# Find the first pop-in
+# -------------------------------------------------
 
 if len(candidates) > 0:
-    #find biggest sudden increase in depth
+
+    # Find the earliest candidate
     pop_index = candidates.index[0]
+
     pop = loading.loc[pop_index]
+
     previous = loading.loc[pop_index - 1]
+
+    print("\n-----------------------")
+    print("FIRST POP-IN DETECTED")
+    print("-----------------------")
+
     print("Data point:", pop_index)
 
     print(
@@ -78,36 +119,39 @@ if len(candidates) > 0:
     )
 
     print(
-        f"Depth after pop-in:  "
+        f"Depth after pop-in: "
         f"{pop['Depth_nm']:.3f} nm"
     )
 
     print(
-        f"Depth jump:          "
+        f"Depth jump: "
         f"{pop['dDepth_nm']:.3f} nm"
     )
 
     print(
-        f"Load:                "
+        f"Load: "
         f"{pop['Load_uN']:.3f} uN"
     )
 
     print(
-        f"Load change:         "
+        f"Load change: "
         f"{pop['dLoad_uN']:.3f} uN"
     )
 
     print(
-        f"Time:                "
+        f"Time: "
         f"{pop['Time_s']:.6f} s"
     )
 
     print(
-        f"dDepth/dLoad:        "
+        f"dDepth/dLoad: "
         f"{pop['dDepth_dLoad']:.4f}"
     )
+
 else:
-    print("No pop-in found.")
+
+    print("\nNo pop-in found.")
+
     pop_index = None
 
 #plot load-depth curve
