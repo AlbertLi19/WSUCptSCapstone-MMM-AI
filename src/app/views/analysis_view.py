@@ -88,11 +88,15 @@ class AnalysisView(QWidget):
         self._analysis_label()
         self._analysis_label2()
 
+    def _font_with_size(self, point_size):
+        font = QFont(self.font())
+        font.setPointSize(point_size)
+        return font
+
     def _histogram_analysis_button(self):
         # Add content to Analysis tab with proper alignment
         self._generate_analysis_button = QPushButton('Generate PDF Probabilities', self)
         self._generate_analysis_button.setToolTip('Generate a chart of PDF probabilities from a default list of PDFs')
-        # self._generate_analysis_button.setFont(QFont('Segoe UI', 14))
         self._analysis_layout.addWidget(self._generate_analysis_button, 0, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
         self._generate_analysis_button.clicked.connect(lambda: self.main_controller._segmentation_worker.run_pdf(False, self.pdf_name) if self._can_generate_analysis() else None)
 
@@ -106,19 +110,18 @@ class AnalysisView(QWidget):
          # Add second button to Analysis tab for optional PDF/MLE/FWHM overlay
         self._generate_overlay_button = QPushButton('Generate PDF Probabilities from List', self)
         self._generate_overlay_button.setToolTip('Generate a chart of PDF probabilities from the selected PDFs below')
-        # self._generate_overlay_button.setFont(QFont('Segoe UI', 14))
         self._analysis_layout.addWidget(self._generate_overlay_button, 2, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
         self._generate_overlay_button.clicked.connect(lambda: self.main_controller._segmentation_worker.run_pdf(True) if self._can_generate_analysis() else None)
 
     def _timeout_textfield(self):
 
         self._timeout_label = QLabel("Timeout (seconds):", self)
-        self._timeout_label.setFont(QFont('Segoe UI', 12))
+        self._timeout_label.setFont(self._font_with_size(12))
         self._analysis_layout.addWidget(self._timeout_label, 3, 0, 1, 1, Qt.AlignLeft | Qt.AlignTop)
 
         self._timeout_input = QLineEdit(self)
         self._timeout_input.setPlaceholderText("Default: 30")
-        self._timeout_input.setFont(QFont('Segoe UI', 12))
+        self._timeout_input.setFont(self._font_with_size(12))
         self._timeout_input.setFixedWidth(100)
         self._analysis_layout.addWidget(self._timeout_input, 3, 1, 1, 1, Qt.AlignLeft | Qt.AlignTop)
 
@@ -135,14 +138,14 @@ class AnalysisView(QWidget):
         # Select all button, will select all distributions
         self._select_all_button = QPushButton('Select All', self)
         self._select_all_button.setToolTip('Select all distributions.')
-        self._select_all_button.setFont(QFont('Segoe UI', 12))
+        self._select_all_button.setFont(self._font_with_size(12))
         self._select_all_button.clicked.connect(self.select_all_distributions)
         button_layout.addWidget(self._select_all_button)
 
         # Deselect all button, will deselect all distributions
         self._deselect_all_button = QPushButton('Deselect All', self)
         self._deselect_all_button.setToolTip('Deselect all distributions.')
-        self._deselect_all_button.setFont(QFont('Segoe UI', 12))
+        self._deselect_all_button.setFont(self._font_with_size(12))
         self._deselect_all_button.clicked.connect(self.deselect_all_distributions)
         button_layout.addWidget(self._deselect_all_button)
 

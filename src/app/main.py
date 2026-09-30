@@ -75,7 +75,9 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setStyleSheet(dark_palette)
-        self.setFont(QFont('Segoe UI', 14))
+        app_font = QFont()
+        app_font.setPointSize(14)
+        self.setFont(app_font)
         self.setWindowTitle('Impurity Segmentation App')
         self.main_view = MainView(self)
         self.setCentralWidget(self.main_view)

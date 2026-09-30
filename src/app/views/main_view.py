@@ -6,6 +6,7 @@ from views.analysis_view import AnalysisView
 from views.segmentation_view import SegmentationView
 from views.crater_view import CraterView  # Uncomment if CraterView is needed
 from views.comparison_view import ComparisonView
+from views.popin_locator_view import PopInLocatorView
 from controllers import MainController
 from analysis_scripts.pdf_generator import pull_timeout
 
@@ -39,6 +40,7 @@ class MainView(QWidget):
         # passing in the image settings to the analysis view
         # for download and analysis
         self._analysis_view = AnalysisView(self, self._controller)
+        self._popin_locator_view = PopInLocatorView(self)
         #self._crater_view = CraterView(self, self._controller)
 
         self._comparison_view = ComparisonView(self, self._controller)
@@ -46,6 +48,7 @@ class MainView(QWidget):
         # Add tabs to tab widget
         self._tab_widget.addTab(self._segmentation_view, "Segmentation")
         self._tab_widget.addTab(self._analysis_view, "Analysis")
+        self._tab_widget.addTab(self._popin_locator_view, "Pop-in Locator")
         self._tab_widget.addTab(self._comparison_view, "Comparison")
         #self._tab_widget.addTab(self._crater_view, "Crater Analysis") # Remove
         self._tab_widget.addTab(self._about_view, "About")
