@@ -1,4 +1,4 @@
-# Sprint 4 Report ( to September 30th)
+# Sprint 4 Report (August 17th to September 30th)
 ## Sprint 4 Video https://youtu.be/QNALxLIwfHw 
 ## What's New (User Facing)
 * Added pop-in locator tab to existing program
