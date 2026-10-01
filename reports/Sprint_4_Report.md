@@ -17,7 +17,7 @@ The indentation crack length measurement model has not yet been completed. Progr
 * https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/22
 * https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/23
 * https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/15 
-We have also included a live demo of the current application in the Sprint 4 YouTube video, demonstrating the new features. 
+* We have also included a live demo of the current application in the Sprint 4 YouTube video, demonstrating the new features. 
 ## Incomplete Issues/User Stories
 Here are links to issues we worked on but did not complete in this sprint (explanation in a comment on the issue): 
 * https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/16 
