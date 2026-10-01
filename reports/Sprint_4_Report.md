@@ -1,93 +1,39 @@
-# Sprint x Report (Dates from Sprint * to Sprint *) 
-
-## YouTube link of Sprint * Video (Make this video unlisted) 
-
-## What's New (User Facing) 
-
- * Feature 1 or Bug Fix 1 
-
- * Feature 2 or Bug Fix 2 
-
- * Feature n or Bug Fix n 
-
-Work Summary (Developer Facing) 
-
-Provide a one paragraph synposis of what your team accomplished this sprint. Don't repeat the "What's New" list of features. Instead, help the instructor understand how you went about the work described there, any barriers you overcame, and any significant learnings for your team. 
-
-Unfinished Work 
-
-If applicable, explain the work you did not finish in this sprint. For issues/user stories in the current sprint that have not been closed, (a) any progress toward completion of the issues has been clearly tracked (by checking the checkboxes of acceptance criteria), (b) a comment has been added to the issue to explain why the issue could not be completed (e.g., "we ran out of time" or "we did not anticipate it would be so much work"), and (c) the issue is added to a subsequent sprint, so that it can be addressed later. 
-
-Completed Issues/User Stories 
-
-Here are links to the issues that we completed in this sprint: 
-
-    URL of issue 1 
-
-    URL of issue 2 
-
-    URL of issue n Reminders (Remove this section when you save the file): 
-
-    Each issue should be assigned to a milestone 
-
-    Each completed issue should be assigned to a pull request 
-
-    Each completed pull request should include a link to a "Before and After" video 
-
-    All team members who contributed to the issue should be assigned to it on GitHub 
-
-    Each issue should be assigned story points using a label 
-
-    Story points contribution of each team member should be indicated in a comment 
-
-Incomplete Issues/User Stories 
-
-Here are links to issues we worked on but did not complete in this sprint: 
-
-    URL of issue 1 <> 
-
-    URL of issue 2 <> 
-
-    URL of issue n <> Examples of explanations (Remove this section when you save the file): 
-
-    "We ran into a complication we did not anticipate (explain briefly)." 
-
-    "We decided that the feature did not add sufficient value for us to work on it in this sprint (explain briefly)." 
-
-    "We could not reproduce the bug" (explain briefly). 
-
-    "We did not get to this issue because..." (explain briefly) 
-
-Code Files for Review 
-
-Please review the following code files, which were actively developed during this sprint, for quality: 
-
-    Name of code file 1 
-
-    Name of code file 2 
-
-    Name of code file 3 
-
-Retrospective Summary 
-
+# Sprint 4 Report ( to September 30th)
+## Sprint 4 Video https://youtu.be/QNALxLIwfHw 
+## What's New (User Facing)
+* Added pop-in locator tab to existing program
+* Added indentation crack length tab to existing program  
+## Work Summary (Developer Facing)
+Pop in locator tab section 
+Indentation crack length tab section 
+In addition, 88 microscopy indentation images provided by the client have been labeled and annotated using CVAT (computer vision annotation tool) to facilitate their use in training a model for use in indentation crack measurement.
+## Unfinished Work
+The indentation crack length measurement model has not yet been completed. Progress has been made and the training data has been labeled/annotated, but the machine learning algorithm is not complete nor trained. Objectives were changed from last sprint and as such training data was not immediately available. As a result, other issues (the pop-in indicator and a traditional crack length algorithm without machine learning) were able to be worked first and given a higher priority. There are also some small bugs we plan to iron out next sprint, in addition to any new issues that might arise. If the client can provide pop-in training images, work can also be started on a pop-in machine learning model.
+## Completed Issues/User Stories
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/pull/13 
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/14
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/19
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/21
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/22
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/23
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/15 
+We have also included a live demo of the current application in the Sprint 4 YouTube video, demonstrating the new features. 
+## Incomplete Issues/User Stories
+Here are links to issues we worked on but did not complete in this sprint (explanation in a comment on the issue): 
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/16 
+## Code Files for Review
+Please review the following code files, which were actively developed during this
+sprint, for quality:
+* [popin_locator.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/analysis_scripts/popin_locator.py)
+* [IndentationCrackMeasurementQt.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/test_indentation/IndentationCrackMeasurementQt.py)
+* [Labels.json](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/data/Indentation_Image_Labels/Labels.json)
+## Retrospective Summary
 Here's what went well: 
-
-    Item 1 
-
-    Item 2 
-
-    Item x Here's what we'd like to improve: 
-
-    Item 1 
-
-    Item 2 
-
-    Item x Here are changes we plan to implement in the next sprint: 
-
-    Item 1 
-
-    Item 2 
-
-    Item x 
-
- 
+* Making the pop in identification algorithm without machine learning.
+* Making the crack length measurement algorithm without machine learning.
+* Preparing the crack length machine learning model’s training data. 
+Here's what we'd like to improve: 
+* Team coordination and communication. 
+Here are changes we plan to implement in the next sprint: 
+* We plan to finish the crack length measurement model and begin training it. 
+* If training data for a pop in identification machine learning model is provided, we plan to start preparing it and working on a model to use it. 
