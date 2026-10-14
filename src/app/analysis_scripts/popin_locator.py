@@ -46,8 +46,8 @@ def load_data(file_path: Union[str, Path]) -> pd.DataFrame:
                 and "depth" in columns[0]
                 and "load" in columns[1]
                 and "time" in columns[2]
-                and "disp" in columns[3]
-                and "force" in columns[4]
+                and ("disp" in columns[3] or "depth" in columns[3])
+                and ("force" in columns[4] or "load" in columns[4])
             ):
                 header_line = line_number
                 break

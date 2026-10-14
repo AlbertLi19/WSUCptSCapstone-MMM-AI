@@ -13,6 +13,11 @@ user to analyze 'crater' impacts through uploading a series of images of materia
 
 ## Installation
 
+The existing **Pop-in Locator** tab offers **Run Detection** for the threshold
+algorithm and **Train Shape Model** / **Run Model** for supervised machine learning
+using normalized local curve shape.
+See [setup, usage, and validation](docs/popin_ml.md).
+
 ### Prerequisites
 
 •	Git 

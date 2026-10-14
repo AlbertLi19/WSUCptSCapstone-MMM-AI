@@ -40,6 +40,9 @@ if [ ! -f "launcher.spec" ]; then
                 --onedir \
                 --windowed \
                 --add-data="src/app/analysis_scripts:analysis_scripts" \
+                --add-data="data/Pop-in Training Data:data/Pop-in Training Data" \
+                --add-data="data/pop-in 4H.xlsx:data" \
+                --add-data="models/popin_model.joblib:models" \
                 --add-data="src/app/Databases:Databases" \
                 --add-data="version.txt:." \
                 --hidden-import=PyQt5 \
@@ -48,6 +51,9 @@ if [ ! -f "launcher.spec" ]; then
                 --hidden-import=matplotlib \
                 --hidden-import=cv2 \
                 --hidden-import=sklearn \
+                --hidden-import=sklearn.ensemble \
+                --hidden-import=openpyxl \
+                --hidden-import=joblib \
                 --hidden-import=scipy \
                 --hidden-import=PIL \
                 --hidden-import=torch \

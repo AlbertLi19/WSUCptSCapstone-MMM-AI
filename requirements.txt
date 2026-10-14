@@ -4,6 +4,8 @@ matplotlib==3.10.7
 numpy<2.0.0,>=1.20.0
 opencv-python>=4.8.0
 pandas==2.3.3
+openpyxl>=3.1,<4
+joblib>=1.2,<2
 Pillow<12,>=7.1.0
 PyQt5==5.15.11
 PyQt5-sip>=12.15,<13
