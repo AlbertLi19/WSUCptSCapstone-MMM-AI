@@ -150,3 +150,101 @@ def test_reopened_tab_automatically_loads_saved_model(gui, monkeypatch, tmp_path
         assert "model ready" in reopened._model_label.text()
     finally:
         reopened.close()
+
+
+@pytest.mark.parametrize("jumps, index", [([], None), ([(80, 20), (100, 50)], 80)])
+def test_threshold_results_and_plot_for_known_curve(gui, monkeypatch, write_popin_curve, jumps, index):
+    app, window = gui
+    path = write_popin_curve(jumps=jumps)
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(path), ""))
+    window._select_file_button.click()
+    window._run_button.click()
+    text = window._results_text.toPlainText()
+    assert "Method: Threshold algorithm" in text
+    assert f"Pop-in candidates: {len(jumps)}" in text
+    axis = window._figure.axes[0]
+    assert len(axis.lines) == 1
+    if index is None:
+        assert "No pop-in candidates exceeded the threshold" in text
+        assert not axis.collections
+    else:
+        assert f"Data point: {index}" in text
+        assert "Depth jump: 21.000 nm" in text
+        # Only the first threshold candidate is marked, even with multiple events.
+        np.testing.assert_allclose(axis.collections[0].get_offsets(), [[100, 160]])
+
+
+def test_selecting_new_file_and_error_clear_previous_results(gui, monkeypatch, write_popin_curve, tmp_path):
+    app, window = gui
+    path = write_popin_curve(jumps=[(80, 20)])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(path), ""))
+    window._select_file_button.click()
+    window._run_button.click()
+    assert window._figure.axes[0].collections
+    path = tmp_path / "empty.txt"
+    path.write_text("")
+    window._select_file_button.click()
+    assert "Ready." in window._results_text.toPlainText()
+    assert "First pop-in" not in window._results_text.toPlainText()
+    assert not window._figure.axes[0].lines
+    assert not window._figure.axes[0].collections
+    window._run_button.click()
+    assert "Data error" in window._results_text.toPlainText()
+    assert "empty" in window._results_text.toPlainText()
+    assert not window._figure.axes[0].collections
+    assert window._run_button.isEnabled()
+    # A valid file still works after the error.
+    path = write_popin_curve(name="recovered.txt")
+    window._select_file_button.click()
+    window._run_button.click()
+    assert "No pop-in candidates exceeded" in window._results_text.toPlainText()
+
+
+def test_prediction_failure_recovers_and_empty_predictions_clear_markers(gui, monkeypatch, write_popin_curve):
+    app, window = gui
+    path = write_popin_curve(jumps=[(80, 20)])
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(path), ""))
+    window._model = object()  # Exercise worker/UI behavior independently of model artifacts.
+    window._select_file_button.click()
+    window._run_button.click()
+    assert window._figure.axes[0].collections
+
+    def fail(*args):
+        raise popin_ml.DataError("Prediction failed for test curve")
+
+    monkeypatch.setattr(popin_ml, "predict", fail)
+    window._run_model_button.click()
+    wait_for_worker(app, window)
+    assert "Prediction failed for test curve" in window._results_text.toPlainText()
+    assert not window._figure.axes[0].lines
+    assert not window._figure.axes[0].collections
+    assert all(button.isEnabled() for button in window.findChildren(QPushButton))
+    monkeypatch.setattr(popin_ml, "predict", lambda *args: [])
+    window._run_model_button.click()
+    wait_for_worker(app, window)
+    assert "Pop-in candidates: 0" in window._results_text.toPlainText()
+    assert "No pop-in candidates exceed the learned threshold" in window._results_text.toPlainText()
+    assert len(window._figure.axes[0].lines) == 1
+    assert not window._figure.axes[0].collections
+
+
+def test_unreadable_saved_model_keeps_threshold_detection_available(gui, monkeypatch, write_popin_curve):
+    app, window = gui
+    path = write_popin_curve()
+    monkeypatch.setattr(popin_ml, "DEFAULT_MODEL", path)  # Existing file, invalid model.
+
+    def fail():
+        raise popin_ml.DataError("Unsupported model")
+
+    monkeypatch.setattr(popin_ml, "load_model", fail)
+    reopened = PopInLocatorView()
+    try:
+        assert "Saved model could not be loaded" in reopened._model_label.text()
+        assert reopened._create_model_button.isEnabled()
+        monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(path), ""))
+        reopened._select_file_button.click()
+        assert not reopened._run_model_button.isEnabled()
+        reopened._run_button.click()
+        assert "Method: Threshold algorithm" in reopened._results_text.toPlainText()
+    finally:
+        reopened.close()
