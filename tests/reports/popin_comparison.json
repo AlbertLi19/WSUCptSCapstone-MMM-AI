@@ -1,0 +1,5648 @@
+{
+  "evaluated_at": "2026-10-20T21:36:25.687434-07:00",
+  "git_revision": "04cbad597eec4bf31bab8240e98d6f6b6143d71e",
+  "working_tree_note": "Source hashes identify evaluated code, including any uncommitted changes.",
+  "python": "3.9.13",
+  "packages": {
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.6.1",
+    "scipy": "1.13.1",
+    "joblib": "1.5.3"
+  },
+  "model": {
+    "path": "models/popin_model.joblib",
+    "sha256": "c2211f874abd50498506ff1931eb2c1a32bb71ec2d29515a4eca2dcf4fd7a6cb",
+    "classifier": "RandomForestClassifier",
+    "feature_schema": "normalized_local_shape_v2",
+    "threshold": 0.2
+  },
+  "source_sha256": {
+    "src/app/analysis_scripts/popin_locator.py": "55596b2f7d4d36e5930ad215c616d169c7a142e288d4f01c1ee1d397bc4181ad",
+    "src/app/analysis_scripts/popin_ml.py": "5d2ffeacca90e77fcb84612e94bd8d14916e3ab1e691c269a4012cd34e9d700a",
+    "tests/compare_popin.py": "abc74a18151eedb839faf42b5e38a48447936cd0df5a13ae6e5805c351955d3b"
+  },
+  "labels_sha256": "2fb08c38f3b1b9b7bfa0edb6259cfae91b7eccbf2de6f53fb8aea5373bf16ebc",
+  "scanned_files": 125,
+  "eligible_curves": 115,
+  "matched_annotations": 115,
+  "unmatched_annotations": 0,
+  "skipped_files": [
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0028.txt",
+      "status": "no_matching_annotation",
+      "reason": "No unique Excel depth/load match in the loading segment.",
+      "matched_annotations": 0
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0002.txt",
+      "status": "no_matching_annotation",
+      "reason": "No unique Excel depth/load match in the loading segment.",
+      "matched_annotations": 0
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0003.txt",
+      "status": "no_matching_annotation",
+      "reason": "No unique Excel depth/load match in the loading segment.",
+      "matched_annotations": 0
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0019.txt",
+      "status": "no_matching_annotation",
+      "reason": "No unique Excel depth/load match in the loading segment.",
+      "matched_annotations": 0
+    },
+    {
+      "file": "SiC-4H-415nm/415nm-4H.txt",
+      "status": "invalid_format",
+      "reason": "Expected tab-separated Depth (nm), Load (uN), Time (s) columns.",
+      "matched_annotations": 0
+    },
+    {
+      "file": "SiC-4H-OFF/Analysis-SiC-4H OFF.txt",
+      "status": "invalid_format",
+      "reason": "Expected tab-separated Depth (nm), Load (uN), Time (s) columns.",
+      "matched_annotations": 0
+    },
+    {
+      "file": "SiC-4H-OFF/Analysis-SiC-4H OFF2.txt",
+      "status": "invalid_format",
+      "reason": "Expected tab-separated Depth (nm), Load (uN), Time (s) columns.",
+      "matched_annotations": 0
+    },
+    {
+      "file": "SiC-4H-UV255nm/Analysis-SiC-4H-UV255.txt",
+      "status": "invalid_format",
+      "reason": "Expected tab-separated Depth (nm), Load (uN), Time (s) columns.",
+      "matched_annotations": 0
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0000-1ST.txt",
+      "status": "no_matching_annotation",
+      "reason": "No unique Excel depth/load match in the loading segment.",
+      "matched_annotations": 0
+    },
+    {
+      "file": "SiC-4H-UV470nm/Analysis-SiC-4H-UV470.txt",
+      "status": "invalid_format",
+      "reason": "Expected tab-separated Depth (nm), Load (uN), Time (s) columns.",
+      "matched_annotations": 0
+    }
+  ],
+  "protocol": "Use the threshold algorithm's first candidate and all saved random forest events. Match events one-to-one to Excel-matched measurement indices within +/-5 points. Match highest classifier scores first. Keep saved split membership and model cutoff; no retraining or tuning.",
+  "groups": {
+    "test": {
+      "threshold_algorithm": {
+        "curves": 23,
+        "true_positives": 22,
+        "false_positives": 0,
+        "false_negatives": 1,
+        "precision": 1.0,
+        "recall": 0.9565217391304348,
+        "f1": 0.9777777777777777,
+        "mean_index_error": 1.4090909090909092,
+        "location_tolerance_points": 5
+      },
+      "random_forest": {
+        "curves": 23,
+        "true_positives": 22,
+        "false_positives": 3,
+        "false_negatives": 1,
+        "precision": 0.88,
+        "recall": 0.9565217391304348,
+        "f1": 0.9166666666666666,
+        "mean_index_error": 0.8636363636363636,
+        "location_tolerance_points": 5
+      }
+    },
+    "all": {
+      "threshold_algorithm": {
+        "curves": 115,
+        "true_positives": 108,
+        "false_positives": 1,
+        "false_negatives": 7,
+        "precision": 0.9908256880733946,
+        "recall": 0.9391304347826087,
+        "f1": 0.9642857142857143,
+        "mean_index_error": 1.4166666666666667,
+        "location_tolerance_points": 5
+      },
+      "random_forest": {
+        "curves": 115,
+        "true_positives": 114,
+        "false_positives": 13,
+        "false_negatives": 1,
+        "precision": 0.8976377952755905,
+        "recall": 0.991304347826087,
+        "f1": 0.9421487603305785,
+        "mean_index_error": 0.8245614035087719,
+        "location_tolerance_points": 5
+      }
+    },
+    "train": {
+      "threshold_algorithm": {
+        "curves": 69,
+        "true_positives": 64,
+        "false_positives": 1,
+        "false_negatives": 5,
+        "precision": 0.9846153846153847,
+        "recall": 0.927536231884058,
+        "f1": 0.9552238805970149,
+        "mean_index_error": 1.4375,
+        "location_tolerance_points": 5
+      },
+      "random_forest": {
+        "curves": 69,
+        "true_positives": 69,
+        "false_positives": 9,
+        "false_negatives": 0,
+        "precision": 0.8846153846153846,
+        "recall": 1.0,
+        "f1": 0.9387755102040817,
+        "mean_index_error": 0.855072463768116,
+        "location_tolerance_points": 5
+      }
+    },
+    "calibration": {
+      "threshold_algorithm": {
+        "curves": 23,
+        "true_positives": 22,
+        "false_positives": 0,
+        "false_negatives": 1,
+        "precision": 1.0,
+        "recall": 0.9565217391304348,
+        "f1": 0.9777777777777777,
+        "mean_index_error": 1.3636363636363635,
+        "location_tolerance_points": 5
+      },
+      "random_forest": {
+        "curves": 23,
+        "true_positives": 23,
+        "false_positives": 1,
+        "false_negatives": 0,
+        "precision": 0.9583333333333334,
+        "recall": 1.0,
+        "f1": 0.9787234042553191,
+        "mean_index_error": 0.6956521739130435,
+        "location_tolerance_points": 5
+      }
+    }
+  },
+  "curves": [
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0000.txt",
+      "sha256": "f0c45b5d8025745e09cb24c4ebe673358397921eb86b243cd5e397720691d63a",
+      "split": "train",
+      "annotated_indices": [
+        1390
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9423026943999904,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1393,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1393,
+            "annotated": 1390,
+            "error": 3
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1391,
+            "depth_nm": 76.395465,
+            "load_uN": 3519.393844,
+            "time_s": 6.961677,
+            "score": 0.9996203086415749
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1391,
+            "annotated": 1390,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0002.txt",
+      "sha256": "0bed395096d3bfdcaafdb851e93169cde22765349daff591261af76ae8249448",
+      "split": "train",
+      "annotated_indices": [
+        1456
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9157232808000241,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1457,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1457,
+            "annotated": 1456,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 125,
+            "depth_nm": 31.701144,
+            "load_uN": 324.884442,
+            "time_s": 0.6256,
+            "score": 0.25416069401881786
+          },
+          {
+            "index": 1457,
+            "depth_nm": 93.376325,
+            "load_uN": 3680.858464,
+            "time_s": 7.291994,
+            "score": 0.9997808790633436
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1457,
+            "annotated": 1456,
+            "error": 1
+          }
+        ],
+        "extra_indices": [
+          125
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0003.txt",
+      "sha256": "6c6b76b583bdcac9e894e5ecd6bfb550eb773c56abe817ab95786eedcdb81391",
+      "split": "calibration",
+      "annotated_indices": [
+        1413
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9540459839999414,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1415,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1415,
+            "annotated": 1413,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1413,
+            "depth_nm": 90.569218,
+            "load_uN": 3568.909105,
+            "time_s": 7.071782,
+            "score": 0.9871731276959897
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1413,
+            "annotated": 1413,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0004.txt",
+      "sha256": "b51524ce1eda0b0d73c5d68888ba029a0a5f8f3c4933f37edd28dcab3747895e",
+      "split": "calibration",
+      "annotated_indices": [
+        1382
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9501088352000042,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1384,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1384,
+            "annotated": 1382,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1382,
+            "depth_nm": 79.230806,
+            "load_uN": 3490.832274,
+            "time_s": 6.916634,
+            "score": 0.9995148268626449
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1382,
+            "annotated": 1382,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0005.txt",
+      "sha256": "982c5b1986dcca94054c00cc5ae5053ef8f6bd8d13802de260a49c65d95c7d16",
+      "split": "calibration",
+      "annotated_indices": [
+        1455
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9798813575999681,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1456,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1456,
+            "annotated": 1455,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1454,
+            "depth_nm": 87.523482,
+            "load_uN": 3671.581007,
+            "time_s": 7.276979,
+            "score": 0.9995781365820898
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1454,
+            "annotated": 1455,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0006.txt",
+      "sha256": "12eac072dd1b7841c9aabc71e6fa541e76403348ac17bd9e8a73969c3ab1799d",
+      "split": "train",
+      "annotated_indices": [
+        1331
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9681918512000298,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1332,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1332,
+            "annotated": 1331,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1331,
+            "depth_nm": 79.382327,
+            "load_uN": 3359.645202,
+            "time_s": 6.661389,
+            "score": 0.9998045133019204
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1331,
+            "annotated": 1331,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0007.txt",
+      "sha256": "3991f40ab1302c224db270c6661d4e364268116d323ed64a9265fb4809c5808d",
+      "split": "train",
+      "annotated_indices": [
+        1589
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9443153151999815,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1590,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1590,
+            "annotated": 1589,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1588,
+            "depth_nm": 93.054355,
+            "load_uN": 4008.214823,
+            "time_s": 7.947622,
+            "score": 0.9933970524939356
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1588,
+            "annotated": 1589,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0008.txt",
+      "sha256": "e86dbfd854d10825c526710db386af1cde56fc88081711dfbbf554cb4e3d35a8",
+      "split": "calibration",
+      "annotated_indices": [
+        1449
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9709361863999929,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1450,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1450,
+            "annotated": 1449,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1449,
+            "depth_nm": 90.533262,
+            "load_uN": 3656.69349,
+            "time_s": 7.251955,
+            "score": 0.9997182799852427
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1449,
+            "annotated": 1449,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0009.txt",
+      "sha256": "e31c91bbe64388a5210727e70f7cb9a65b96d981e6d31dfdd774aae965be1aaa",
+      "split": "train",
+      "annotated_indices": [
+        1348
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.948639471200008,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1349,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1349,
+            "annotated": 1348,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1348,
+            "depth_nm": 87.532333,
+            "load_uN": 3400.982943,
+            "time_s": 6.74647,
+            "score": 0.9997755761831872
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1348,
+            "annotated": 1348,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0010.txt",
+      "sha256": "533dd5c2e60464f09d9b2d4ece2c0aa61f0388f38fcbb6b0d781431a2b3a6986",
+      "split": "test",
+      "annotated_indices": [
+        1380
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 1.0279364400000044,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1381,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1381,
+            "annotated": 1380,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1379,
+            "depth_nm": 81.168393,
+            "load_uN": 3479.499957,
+            "time_s": 6.901619,
+            "score": 0.999494410653391
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1379,
+            "annotated": 1380,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0011.txt",
+      "sha256": "dc1971777cf0ba8b00c115d29753966f761d02e82024fac34f9c602e8c0ea6b2",
+      "split": "train",
+      "annotated_indices": [
+        1672
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9073361200000103,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1677,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1677,
+            "annotated": 1672,
+            "error": 5
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1674,
+            "depth_nm": 85.293806,
+            "load_uN": 4225.501369,
+            "time_s": 8.378035,
+            "score": 0.9933552509195213
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1674,
+            "annotated": 1672,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0012.txt",
+      "sha256": "ffd7aea2c117680f8048ce9724ad4c8d597a6be22073c333e67b9120b2c0ee5a",
+      "split": "test",
+      "annotated_indices": [
+        1410
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9528552528000271,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1412,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1412,
+            "annotated": 1410,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1412,
+            "depth_nm": 80.255308,
+            "load_uN": 3562.396434,
+            "time_s": 7.066778,
+            "score": 0.9997115377707926
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1412,
+            "annotated": 1410,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0013.txt",
+      "sha256": "27de01b90d00246123cd0ee4383bcd42e4dc90378c892271b0e811eca6adc00e",
+      "split": "train",
+      "annotated_indices": [
+        1401
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 1.2672528703999468,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1403,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1403,
+            "annotated": 1401,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1402,
+            "depth_nm": 86.04635,
+            "load_uN": 3537.004099,
+            "time_s": 7.01673,
+            "score": 0.9933933930301405
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1402,
+            "annotated": 1401,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0014.txt",
+      "sha256": "af52c111c4bc0e5b695e4275505a951d2fab64e21ea26cf37a8f38010a834523",
+      "split": "train",
+      "annotated_indices": [
+        1420
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 1.4929240431999595,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1421,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1421,
+            "annotated": 1420,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1419,
+            "depth_nm": 86.426633,
+            "load_uN": 3579.697761,
+            "time_s": 7.101811,
+            "score": 0.9870742153916311
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1419,
+            "annotated": 1420,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0015.txt",
+      "sha256": "4d11f1684c99e7b0d67d5bbe47434de9c7f3be27af7e2b49a74810f99b8d443a",
+      "split": "test",
+      "annotated_indices": [
+        1440
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 1.3761216071999243,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1441,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1441,
+            "annotated": 1440,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1440,
+            "depth_nm": 87.852778,
+            "load_uN": 3632.459612,
+            "time_s": 7.206912,
+            "score": 0.8244921570723436
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1440,
+            "annotated": 1440,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0016.txt",
+      "sha256": "27c94e866d85739a56164cde3f67f84e90d12fb82339156cb75132ac008d2aa5",
+      "split": "test",
+      "annotated_indices": [
+        1565
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.981802565599966,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1566,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1566,
+            "annotated": 1565,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1563,
+            "depth_nm": 92.063428,
+            "load_uN": 3943.07783,
+            "time_s": 7.822502,
+            "score": 0.9996063669454319
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1563,
+            "annotated": 1565,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0017.txt",
+      "sha256": "8c88b4a64e4a22ce10334802c41b963d004cf76856b3345bbd4e8d9b8aa82903",
+      "split": "train",
+      "annotated_indices": [
+        1534
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8842107231999782,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1535,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1535,
+            "annotated": 1534,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1535,
+            "depth_nm": 94.824744,
+            "load_uN": 3872.024495,
+            "time_s": 7.682368,
+            "score": 0.9997384810867123
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1535,
+            "annotated": 1534,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0018.txt",
+      "sha256": "a771bdfd2dff8b9fe431a5f3cfe6105bc20647e2f8d6649decf4fa3c1e8909c8",
+      "split": "train",
+      "annotated_indices": [
+        1520
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.985200709600038,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1521,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1521,
+            "annotated": 1520,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1520,
+            "depth_nm": 94.482779,
+            "load_uN": 3834.0293,
+            "time_s": 7.607296,
+            "score": 0.9997682985067676
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1520,
+            "annotated": 1520,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0019.txt",
+      "sha256": "8ab2167a6fc82894fc622f8348ed8fef0a30a2758470926914fb93932c05182c",
+      "split": "test",
+      "annotated_indices": [
+        1261
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 1.3160823344000063,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1263,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1263,
+            "annotated": 1261,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1261,
+            "depth_nm": 79.020944,
+            "load_uN": 3180.361514,
+            "time_s": 6.311053,
+            "score": 0.9681962837301767
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1261,
+            "annotated": 1261,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0020.txt",
+      "sha256": "f0203c094664dad03f1fc45ff2efee1140938f4b8cc3b0f7fa849bfc04a47cea",
+      "split": "train",
+      "annotated_indices": [
+        1338
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 1.5353753655999618,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1342,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1342,
+            "annotated": 1338,
+            "error": 4
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1339,
+            "depth_nm": 77.740332,
+            "load_uN": 3377.304308,
+            "time_s": 6.701427,
+            "score": 0.9620090171794612
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1339,
+            "annotated": 1338,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0021.txt",
+      "sha256": "adf0af081ec09831d43db82b0c7a6301b39db92b82631a4cc2ea4f4f84331e5b",
+      "split": "train",
+      "annotated_indices": [
+        1242
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 1.960625860799987,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1248,
+            "score": 1.0
+          }
+        ],
+        "matches": [],
+        "extra_indices": [
+          1248
+        ],
+        "missed_indices": [
+          1242
+        ]
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1244,
+            "depth_nm": 77.625118,
+            "load_uN": 3137.3103,
+            "time_s": 6.225971,
+            "score": 0.958380669236314
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1244,
+            "annotated": 1242,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0022.txt",
+      "sha256": "1948e3b187cc0706e0292597a5c922e49ea8a369361a92986012f8073a9715d4",
+      "split": "train",
+      "annotated_indices": [
+        1448
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 3.1346380544000025,
+        "candidate_count": 0,
+        "events": [],
+        "matches": [],
+        "extra_indices": [],
+        "missed_indices": [
+          1448
+        ]
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1450,
+            "depth_nm": 83.542896,
+            "load_uN": 3657.508572,
+            "time_s": 7.25696,
+            "score": 0.893125405047685
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1450,
+            "annotated": 1448,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0023.txt",
+      "sha256": "7809cec84d286bbe8a08049c14a4c4668b71e383940c8c7352a5a2799f199416",
+      "split": "train",
+      "annotated_indices": [
+        1530
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 3.051592948000139,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1534,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1534,
+            "annotated": 1530,
+            "error": 4
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1532,
+            "depth_nm": 86.810624,
+            "load_uN": 3864.631801,
+            "time_s": 7.667354,
+            "score": 0.9053704709525873
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1532,
+            "annotated": 1530,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0024.txt",
+      "sha256": "9c5cd91acad9f537573b1bf8e1fea1370d89005ddcf24c1adca7271e20785224",
+      "split": "train",
+      "annotated_indices": [
+        1426
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 4.750782580800025,
+        "candidate_count": 0,
+        "events": [],
+        "matches": [],
+        "extra_indices": [],
+        "missed_indices": [
+          1426
+        ]
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1428,
+            "depth_nm": 75.531344,
+            "load_uN": 3602.224659,
+            "time_s": 7.146854,
+            "score": 0.8216067538644316
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1428,
+            "annotated": 1426,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0025.txt",
+      "sha256": "58c1749281a40f0dd9253143b7ae71255497ddbf72bc52d9c2c7f28c0895634d",
+      "split": "calibration",
+      "annotated_indices": [
+        1459
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 5.030323199199985,
+        "candidate_count": 0,
+        "events": [],
+        "matches": [],
+        "extra_indices": [],
+        "missed_indices": [
+          1459
+        ]
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1458,
+            "depth_nm": 80.564848,
+            "load_uN": 3677.66678,
+            "time_s": 7.296998,
+            "score": 0.43585332529465115
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1458,
+            "annotated": 1459,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0026.txt",
+      "sha256": "b8b82a063d4894dbc3c152b1b3764f5c4b0f382b80aeae9ebc11fd409eae584a",
+      "split": "test",
+      "annotated_indices": [
+        1514
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 6.087816955199951,
+        "candidate_count": 0,
+        "events": [],
+        "matches": [],
+        "extra_indices": [],
+        "missed_indices": [
+          1514
+        ]
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1508,
+            "depth_nm": 82.876891,
+            "load_uN": 3804.058255,
+            "time_s": 7.547238,
+            "score": 0.3492605125853004
+          }
+        ],
+        "matches": [],
+        "extra_indices": [
+          1508
+        ],
+        "missed_indices": [
+          1514
+        ]
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0027.txt",
+      "sha256": "533fea6062147e429a3ba8f06b00dd07c3d2ace9e61ad940ddc845bbf20a8a15",
+      "split": "train",
+      "annotated_indices": [
+        1531
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 4.936664612800015,
+        "candidate_count": 0,
+        "events": [],
+        "matches": [],
+        "extra_indices": [],
+        "missed_indices": [
+          1531
+        ]
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1530,
+            "depth_nm": 88.804902,
+            "load_uN": 3859.107137,
+            "time_s": 7.657344,
+            "score": 0.8605380260277993
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1530,
+            "annotated": 1531,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-415nm/displaced Larger SiC Sample 415_Position 63 0029.txt",
+      "sha256": "65080d8697f2f5f4d4e7184877a37701bdcd01a4b8234c64480bc47b00363299",
+      "split": "train",
+      "annotated_indices": [
+        1268
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 6.099658655199984,
+        "candidate_count": 0,
+        "events": [],
+        "matches": [],
+        "extra_indices": [],
+        "missed_indices": [
+          1268
+        ]
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1270,
+            "depth_nm": 77.32032,
+            "load_uN": 3202.415797,
+            "time_s": 6.356096,
+            "score": 0.7673010287872181
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1270,
+            "annotated": 1268,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0000.txt",
+      "sha256": "63a22a801a313a7bc655a6f33cf463a0c6bdb87d660cd79cdbf3b7b76b02ff52",
+      "split": "train",
+      "annotated_indices": [
+        1248
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9122959192000288,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1249,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1249,
+            "annotated": 1248,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 68,
+            "depth_nm": 7.20481,
+            "load_uN": 170.900846,
+            "time_s": 0.340326,
+            "score": 0.22377661233093843
+          },
+          {
+            "index": 1248,
+            "depth_nm": 58.269338,
+            "load_uN": 3146.409645,
+            "time_s": 6.24599,
+            "score": 0.999713245663618
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1248,
+            "annotated": 1248,
+            "error": 0
+          }
+        ],
+        "extra_indices": [
+          68
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0001.txt",
+      "sha256": "c2af7829fc80cd4f63a9c0edfefebc485b2857b2dff8045dc27d2718c75a0d3a",
+      "split": "train",
+      "annotated_indices": [
+        1469
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8556891320000131,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1471,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1471,
+            "annotated": 1469,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1469,
+            "depth_nm": 66.762191,
+            "load_uN": 3705.95509,
+            "time_s": 7.352051,
+            "score": 0.9996467212164584
+          },
+          {
+            "index": 1722,
+            "depth_nm": 79.258997,
+            "load_uN": 4345.00138,
+            "time_s": 8.618266,
+            "score": 0.38049675475725225
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1469,
+            "annotated": 1469,
+            "error": 0
+          }
+        ],
+        "extra_indices": [
+          1722
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0004.txt",
+      "sha256": "8fc592a68cb1f3ac390b4de2ce8a778a522ce9626bb035fa2624806c4266a534",
+      "split": "train",
+      "annotated_indices": [
+        1232
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8850406415999721,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1233,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1233,
+            "annotated": 1232,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1233,
+            "depth_nm": 57.733721,
+            "load_uN": 3111.413969,
+            "time_s": 6.170918,
+            "score": 0.9997887968025945
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1233,
+            "annotated": 1232,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0005.txt",
+      "sha256": "5a36a47978e8e0378ef49a5c0e8cb260933cb354a55d7a1d95e4d58a90f48217",
+      "split": "train",
+      "annotated_indices": [
+        1018
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8612530871999768,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1022,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1022,
+            "annotated": 1018,
+            "error": 4
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1020,
+            "depth_nm": 49.789344,
+            "load_uN": 2573.749555,
+            "time_s": 5.104896,
+            "score": 0.9933692297240944
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1020,
+            "annotated": 1018,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0006.txt",
+      "sha256": "7eb02d3706832ba47e786a11c184baa376b86a4c75c6d18cc53b273621d690c3",
+      "split": "calibration",
+      "annotated_indices": [
+        1096
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9241347432000354,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1098,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1098,
+            "annotated": 1096,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1095,
+            "depth_nm": 52.719696,
+            "load_uN": 2762.341283,
+            "time_s": 5.480256,
+            "score": 0.9682290686968719
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1095,
+            "annotated": 1096,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0007.txt",
+      "sha256": "67a1df2bac94eb09fc8226d55aa46acf72a8cb620d664bd577944cdd76966bb8",
+      "split": "train",
+      "annotated_indices": [
+        1270
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8976757120000167,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1272,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1272,
+            "annotated": 1270,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 10,
+            "depth_nm": 1.552577,
+            "load_uN": 29.015242,
+            "time_s": 0.050048,
+            "score": 0.2733947872089762
+          },
+          {
+            "index": 1271,
+            "depth_nm": 60.306229,
+            "load_uN": 3206.831065,
+            "time_s": 6.361101,
+            "score": 0.9998024610898841
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1271,
+            "annotated": 1270,
+            "error": 1
+          }
+        ],
+        "extra_indices": [
+          10
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0008.txt",
+      "sha256": "1282391312f0d348f6efbfcefadf14a4bf0600227a975cb0388dd13e88a6db8d",
+      "split": "train",
+      "annotated_indices": [
+        1266
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8381447176000604,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1268,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1268,
+            "annotated": 1266,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 5,
+            "depth_nm": 0.676983,
+            "load_uN": 16.304453,
+            "time_s": 0.025024,
+            "score": 0.3239650307340066
+          },
+          {
+            "index": 1268,
+            "depth_nm": 62.778006,
+            "load_uN": 3199.007669,
+            "time_s": 6.346086,
+            "score": 0.9998029907635916
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1268,
+            "annotated": 1266,
+            "error": 2
+          }
+        ],
+        "extra_indices": [
+          5
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0009.txt",
+      "sha256": "1f89063c89d6532d67cc84a19b2065d1288509fbb918b3f918e25b87a3fea110",
+      "split": "train",
+      "annotated_indices": [
+        1323
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.884230766399989,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1325,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1325,
+            "annotated": 1323,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1325,
+            "depth_nm": 60.520524,
+            "load_uN": 3342.661095,
+            "time_s": 6.63136,
+            "score": 0.999843782247285
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1325,
+            "annotated": 1323,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0010.txt",
+      "sha256": "36770d95d6b2e3625f6fb606fd5e214a2342e7fdcb492413db2436365a49f3c5",
+      "split": "calibration",
+      "annotated_indices": [
+        1216
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8533951527999398,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1217,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1217,
+            "annotated": 1216,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1217,
+            "depth_nm": 57.192605,
+            "load_uN": 3070.544899,
+            "time_s": 6.090842,
+            "score": 0.9997485052485384
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1217,
+            "annotated": 1216,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0011.txt",
+      "sha256": "fa6dfdf59dd49df07077e87c32e25935cb4360b1ea51c4905b9017552fd685d8",
+      "split": "calibration",
+      "annotated_indices": [
+        1407
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8609072495999472,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1408,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1408,
+            "annotated": 1407,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1405,
+            "depth_nm": 62.943374,
+            "load_uN": 3545.589598,
+            "time_s": 7.031744,
+            "score": 0.9995809147593645
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1405,
+            "annotated": 1407,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0012.txt",
+      "sha256": "2c5faf1cb27c4e7eeed0ed4c56e3e9a5a9a23685bf1a6ec46ffbd7d4dfdaed97",
+      "split": "train",
+      "annotated_indices": [
+        1304
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9292816295999309,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1305,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1305,
+            "annotated": 1304,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1303,
+            "depth_nm": 61.291791,
+            "load_uN": 3287.614015,
+            "time_s": 6.521254,
+            "score": 0.9934296405998774
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1303,
+            "annotated": 1304,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0013.txt",
+      "sha256": "f1b0c231bf94bcc5416470a864a6f5bd92d0e3884db5221963dd9dbdc482de7e",
+      "split": "train",
+      "annotated_indices": [
+        1126
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8458891592000466,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1128,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1128,
+            "annotated": 1126,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 5,
+            "depth_nm": 0.728989,
+            "load_uN": 15.943893,
+            "time_s": 0.025024,
+            "score": 0.2297056239624023
+          },
+          {
+            "index": 1127,
+            "depth_nm": 55.30252,
+            "load_uN": 2843.232515,
+            "time_s": 5.64041,
+            "score": 0.9935185621357713
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1127,
+            "annotated": 1126,
+            "error": 1
+          }
+        ],
+        "extra_indices": [
+          5
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0014.txt",
+      "sha256": "4e56cd563d3680bc112b031e784b44b8be4f7b57acb2f42bff325ecd61753fdc",
+      "split": "test",
+      "annotated_indices": [
+        1372
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8904369279999925,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1373,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1373,
+            "annotated": 1372,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1372,
+            "depth_nm": 60.659885,
+            "load_uN": 3462.009158,
+            "time_s": 6.866586,
+            "score": 0.9996771569406828
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1372,
+            "annotated": 1372,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0015.txt",
+      "sha256": "c39bbd014f3837ac4e11fe200bb5d8c21383cb6862ea0cffa2e366007c8babc7",
+      "split": "train",
+      "annotated_indices": [
+        1067
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9071682423999564,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1068,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1068,
+            "annotated": 1067,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1066,
+            "depth_nm": 54.448153,
+            "load_uN": 2688.809871,
+            "time_s": 5.335117,
+            "score": 0.9995766391772228
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1066,
+            "annotated": 1067,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0016.txt",
+      "sha256": "aa1c7a4fd31c10c2cda6e4b510842c4e8e17a808d1d95fe3c54c157111da5198",
+      "split": "test",
+      "annotated_indices": [
+        1320
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.879245035200023,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1323,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1323,
+            "annotated": 1320,
+            "error": 3
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1321,
+            "depth_nm": 60.548661,
+            "load_uN": 3332.970839,
+            "time_s": 6.611341,
+            "score": 0.993500674285135
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1321,
+            "annotated": 1320,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0017.txt",
+      "sha256": "fba365069a79018fc8d7815c6cf2c7c2cfa3627b48223979b8bd19c7f651254e",
+      "split": "test",
+      "annotated_indices": [
+        1240
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8780959143999914,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1242,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1242,
+            "annotated": 1240,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1240,
+            "depth_nm": 59.204836,
+            "load_uN": 3128.192122,
+            "time_s": 6.205952,
+            "score": 0.9933554841551953
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1240,
+            "annotated": 1240,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0018.txt",
+      "sha256": "d08e67846ef5fa56dedaf19a5401d4410151d908785144b620e25fefe28d9ab1",
+      "split": "train",
+      "annotated_indices": [
+        1455
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.861771628800046,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1456,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1456,
+            "annotated": 1455,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1455,
+            "depth_nm": 63.627892,
+            "load_uN": 3671.354237,
+            "time_s": 7.281984,
+            "score": 0.9997634710412202
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1455,
+            "annotated": 1455,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0019.txt",
+      "sha256": "79bb3d754f0628db575153ef7de6b1ef1932c58af9cafd7e13f38751135c5867",
+      "split": "test",
+      "annotated_indices": [
+        1479
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8797662575999632,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1482,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1482,
+            "annotated": 1479,
+            "error": 3
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1482,
+            "depth_nm": 66.548019,
+            "load_uN": 3739.48159,
+            "time_s": 7.417114,
+            "score": 0.9872249208219881
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1482,
+            "annotated": 1479,
+            "error": 3
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0020.txt",
+      "sha256": "971041bcfd802cc288d932e5282f541b7110a550132787cb26adb060849e441b",
+      "split": "calibration",
+      "annotated_indices": [
+        1201
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8825163760000118,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1202,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1202,
+            "annotated": 1201,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 5,
+            "depth_nm": 0.782445,
+            "load_uN": 15.54862,
+            "time_s": 0.025024,
+            "score": 0.5743773994689008
+          },
+          {
+            "index": 1199,
+            "depth_nm": 58.897504,
+            "load_uN": 3024.523861,
+            "time_s": 6.000755,
+            "score": 0.993241489146453
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1199,
+            "annotated": 1201,
+            "error": 2
+          }
+        ],
+        "extra_indices": [
+          5
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0021.txt",
+      "sha256": "407bbe165af06f4d53cab72f6636b08fcaf8c849217f3aec67b60ad4d7859fbe",
+      "split": "train",
+      "annotated_indices": [
+        1585
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9254716368000516,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1588,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1588,
+            "annotated": 1585,
+            "error": 3
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1587,
+            "depth_nm": 69.133414,
+            "load_uN": 4004.418891,
+            "time_s": 7.942618,
+            "score": 0.9997696646781961
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1587,
+            "annotated": 1585,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0022.txt",
+      "sha256": "b71ed0c14abaf248d4742703f2fe89555305ce47410e4d974ae3df083352bc73",
+      "split": "test",
+      "annotated_indices": [
+        1248
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8811181175999695,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1249,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1249,
+            "annotated": 1248,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1247,
+            "depth_nm": 57.013759,
+            "load_uN": 3146.357072,
+            "time_s": 6.240986,
+            "score": 0.9996172944767417
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1247,
+            "annotated": 1248,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0023.txt",
+      "sha256": "d9580ae01f5c4fbe35badd1da3969b2e85f158a1d2f07e653c310941ea0b542d",
+      "split": "train",
+      "annotated_indices": [
+        1226
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8510480344000063,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1227,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1227,
+            "annotated": 1226,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 77,
+            "depth_nm": 7.72676,
+            "load_uN": 196.299352,
+            "time_s": 0.38537,
+            "score": 0.2047873762027661
+          },
+          {
+            "index": 1226,
+            "depth_nm": 57.62476,
+            "load_uN": 3092.931206,
+            "time_s": 6.135885,
+            "score": 0.9872375497822594
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1226,
+            "annotated": 1226,
+            "error": 0
+          }
+        ],
+        "extra_indices": [
+          77
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0024.txt",
+      "sha256": "3844625a9bc67dd6f9deca801ab6fa38d388dda4f1fe5bb986e07607d68a2a7a",
+      "split": "train",
+      "annotated_indices": [
+        1275
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8900229719999885,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1277,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1277,
+            "annotated": 1275,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1275,
+            "depth_nm": 58.237999,
+            "load_uN": 3216.795678,
+            "time_s": 6.38112,
+            "score": 0.99966500990548
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1275,
+            "annotated": 1275,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0025.txt",
+      "sha256": "1c9ea559784a89d77ec7513a64ff06ccf9726c44709f54429029678c754e9982",
+      "split": "train",
+      "annotated_indices": [
+        1599
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9009608727999646,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1600,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1600,
+            "annotated": 1599,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1599,
+            "depth_nm": 67.445359,
+            "load_uN": 4035.218695,
+            "time_s": 8.002675,
+            "score": 0.9996732132554855
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1599,
+            "annotated": 1599,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0026.txt",
+      "sha256": "268f65c8eebd60fe02806ec4c402197a13568d656a34829c73c0fab4a5b5a453",
+      "split": "calibration",
+      "annotated_indices": [
+        1207
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9622468896000151,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1209,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1209,
+            "annotated": 1207,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1207,
+            "depth_nm": 56.969201,
+            "load_uN": 3044.992638,
+            "time_s": 6.040794,
+            "score": 0.9994871270208042
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1207,
+            "annotated": 1207,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0027.txt",
+      "sha256": "8669db59e1df40f70abae01bb62a295ba50fe22c5de620293716679844cb56e8",
+      "split": "train",
+      "annotated_indices": [
+        1327
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8832853391999753,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1328,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1328,
+            "annotated": 1327,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1327,
+            "depth_nm": 60.181661,
+            "load_uN": 3347.876196,
+            "time_s": 6.64137,
+            "score": 0.9997616392100023
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1327,
+            "annotated": 1327,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0028.txt",
+      "sha256": "da2712afc1e3739acf1b573653eb031a46465b8c11e12a85c8ade20e0bfd7163",
+      "split": "calibration",
+      "annotated_indices": [
+        1131
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8882252008000084,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1135,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1135,
+            "annotated": 1131,
+            "error": 4
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1132,
+            "depth_nm": 53.046139,
+            "load_uN": 2855.797179,
+            "time_s": 5.665434,
+            "score": 0.9808253654812497
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1132,
+            "annotated": 1131,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-OFF/SiC-4H 0029.txt",
+      "sha256": "a7237458fe319420d3c042b4be39319a38d03fb12bbbc97a972242d5ae48f853",
+      "split": "train",
+      "annotated_indices": [
+        1020
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.905165037599968,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1021,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1021,
+            "annotated": 1020,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1019,
+            "depth_nm": 49.660831,
+            "load_uN": 2570.627231,
+            "time_s": 5.099891,
+            "score": 0.9870803654718818
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1019,
+            "annotated": 1020,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0000.txt",
+      "sha256": "e634b67f31baa0dbe9ea926653b2da7fc989e88c6a3e4d37143c551d09768a36",
+      "split": "train",
+      "annotated_indices": [
+        1605
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9122175256000029,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1606,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1606,
+            "annotated": 1605,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1604,
+            "depth_nm": 78.112139,
+            "load_uN": 4049.276526,
+            "time_s": 8.027699,
+            "score": 0.9995820690071249
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1604,
+            "annotated": 1605,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0001.txt",
+      "sha256": "ece8e1cba48fef122cc5b4c02a1440303d803da22b13e9f5221c5bce5e0d3667",
+      "split": "train",
+      "annotated_indices": [
+        1603
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8731798696000218,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1604,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1604,
+            "annotated": 1603,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 73,
+            "depth_nm": 14.121044,
+            "load_uN": 189.080822,
+            "time_s": 0.36535,
+            "score": 0.20442689623734012
+          },
+          {
+            "index": 1604,
+            "depth_nm": 81.556428,
+            "load_uN": 4049.19931,
+            "time_s": 8.027699,
+            "score": 0.9996406570257703
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1604,
+            "annotated": 1603,
+            "error": 1
+          }
+        ],
+        "extra_indices": [
+          73
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0002.txt",
+      "sha256": "5eb3cd873e874dcd69a1c02ed41920d8fbb0ca67fc7fef6151e63817d21741b1",
+      "split": "train",
+      "annotated_indices": [
+        1585
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8611910128000326,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1586,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1586,
+            "annotated": 1585,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1585,
+            "depth_nm": 79.403127,
+            "load_uN": 4000.382221,
+            "time_s": 7.932608,
+            "score": 0.9997135325765857
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1585,
+            "annotated": 1585,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0003.txt",
+      "sha256": "fcb3266fe25cfce945f6cab197e565cb7e77cfdddacac17b55f1735918f55fe5",
+      "split": "train",
+      "annotated_indices": [
+        1560
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9232803207999956,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1561,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1561,
+            "annotated": 1560,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1561,
+            "depth_nm": 81.13331,
+            "load_uN": 3939.454328,
+            "time_s": 7.812493,
+            "score": 0.9997899691732185
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1561,
+            "annotated": 1560,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0004.txt",
+      "sha256": "bf666142672c7e2b8385967e600bb1825e48899ed1cbf9c2363248f3e74aaa2a",
+      "split": "train",
+      "annotated_indices": [
+        1338
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8582370936000352,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1339,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1339,
+            "annotated": 1338,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1338,
+            "depth_nm": 78.945148,
+            "load_uN": 3375.384683,
+            "time_s": 6.696422,
+            "score": 0.9997438059162084
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1338,
+            "annotated": 1338,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0005.txt",
+      "sha256": "112b65e301148f9261e537023c189bdf5abc6a1a96b37e07ff2615312c3df663",
+      "split": "train",
+      "annotated_indices": [
+        1610
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9238733800000223,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1611,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1611,
+            "annotated": 1610,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1608,
+            "depth_nm": 90.362981,
+            "load_uN": 4056.706638,
+            "time_s": 8.047718,
+            "score": 0.9994911271741996
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1608,
+            "annotated": 1610,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0006.txt",
+      "sha256": "63c27360fe9147754d5fcaf16400571b48edd154e050fdde4b627a3c48aaca02",
+      "split": "calibration",
+      "annotated_indices": [
+        1539
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9300661863998579,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1540,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1540,
+            "annotated": 1539,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1540,
+            "depth_nm": 90.858662,
+            "load_uN": 3884.107712,
+            "time_s": 7.707392,
+            "score": 0.9998114785172125
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1540,
+            "annotated": 1539,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0007.txt",
+      "sha256": "9276d94fd26abff65657a9c26316167f75eb976e29972f48ee8be33b5ec318db",
+      "split": "test",
+      "annotated_indices": [
+        1699
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9069691543999386,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1700,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1700,
+            "annotated": 1699,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1700,
+            "depth_nm": 95.548303,
+            "load_uN": 4288.724099,
+            "time_s": 8.50816,
+            "score": 0.9997858260251438
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1700,
+            "annotated": 1699,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0008.txt",
+      "sha256": "615c7ddcbbc650f83dc392810dbcace12fb4796a4a9ca134bb5a03e77826d7ae",
+      "split": "train",
+      "annotated_indices": [
+        1577
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8866879344000956,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1578,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1578,
+            "annotated": 1577,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1576,
+            "depth_nm": 87.923198,
+            "load_uN": 3974.405377,
+            "time_s": 7.887565,
+            "score": 0.9996128536538069
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1576,
+            "annotated": 1577,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0009.txt",
+      "sha256": "ffe5c55bf290608147c8aa7ee9de791005610f9ba425e3ee681bc5407acad363",
+      "split": "train",
+      "annotated_indices": [
+        1668
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8912341727999569,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1669,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1669,
+            "annotated": 1668,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1669,
+            "depth_nm": 93.539629,
+            "load_uN": 4209.787975,
+            "time_s": 8.353011,
+            "score": 0.9998113304704471
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1669,
+            "annotated": 1668,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0010.txt",
+      "sha256": "14e4fc4e5244c2adfb2c0ee65bcdbb529be494fa6cbd623f08fce91c83af48df",
+      "split": "test",
+      "annotated_indices": [
+        1445
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8706076488000153,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1446,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1446,
+            "annotated": 1445,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1446,
+            "depth_nm": 88.710336,
+            "load_uN": 3645.480251,
+            "time_s": 7.236941,
+            "score": 0.9996992369381579
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1446,
+            "annotated": 1445,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0011.txt",
+      "sha256": "97ef4f2d929f93c42dbcd40fe2daa843e7902f9189a719151042ce1e37641d5f",
+      "split": "train",
+      "annotated_indices": [
+        1485
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9346419160000391,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1486,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1486,
+            "annotated": 1485,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1485,
+            "depth_nm": 83.695355,
+            "load_uN": 3744.470297,
+            "time_s": 7.432128,
+            "score": 0.9997878785539139
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1485,
+            "annotated": 1485,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0012.txt",
+      "sha256": "9ca9beb351d8f964c11fda43b6d5de1a201d29e14dae3349c4abf25f4a9f81c4",
+      "split": "calibration",
+      "annotated_indices": [
+        1402
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9077550463999824,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1403,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1403,
+            "annotated": 1402,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1401,
+            "depth_nm": 83.750771,
+            "load_uN": 3531.748935,
+            "time_s": 7.011725,
+            "score": 0.9996440543362336
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1401,
+            "annotated": 1402,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0013.txt",
+      "sha256": "6a4e528459820f98cbbbfcac51859910d1fbfb63a22146ebf4e390da7aa1e384",
+      "split": "calibration",
+      "annotated_indices": [
+        1540
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9027194607999985,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1541,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1541,
+            "annotated": 1540,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1540,
+            "depth_nm": 85.010744,
+            "load_uN": 3883.219289,
+            "time_s": 7.707392,
+            "score": 0.9997163835439359
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1540,
+            "annotated": 1540,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0014.txt",
+      "sha256": "1a18dd7b9301d66008f4be1e88dc961cb1c927d69774c15b63c804a51d955dd5",
+      "split": "test",
+      "annotated_indices": [
+        1627
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9163052511999766,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1628,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1628,
+            "annotated": 1627,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1628,
+            "depth_nm": 92.908111,
+            "load_uN": 4105.634165,
+            "time_s": 8.147814,
+            "score": 0.9809656010005654
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1628,
+            "annotated": 1627,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0015.txt",
+      "sha256": "19e877f4a55e6b3c5d59da555a83af11fe177c4a6a8eb4a2eba56b50cce0ae94",
+      "split": "train",
+      "annotated_indices": [
+        1504
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9151135280000049,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1505,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1505,
+            "annotated": 1504,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1505,
+            "depth_nm": 84.41301,
+            "load_uN": 3794.59534,
+            "time_s": 7.532224,
+            "score": 0.9872156777246757
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1505,
+            "annotated": 1504,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0016.txt",
+      "sha256": "d910693e40df90d7f3f7167a57a1a02d8d4cce72b0a18689d4f3519b4d58c52a",
+      "split": "train",
+      "annotated_indices": [
+        1847
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8841495048000236,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1848,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1848,
+            "annotated": 1847,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1847,
+            "depth_nm": 92.303749,
+            "load_uN": 4659.708069,
+            "time_s": 9.243866,
+            "score": 0.9935055107915824
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1847,
+            "annotated": 1847,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0017.txt",
+      "sha256": "54dbe17187aa0668c06fa0abc5eb1fd0ff83953648442682e3ce4328a7e14a99",
+      "split": "train",
+      "annotated_indices": [
+        1671
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8953596687999168,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1673,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1673,
+            "annotated": 1671,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1670,
+            "depth_nm": 82.766205,
+            "load_uN": 4212.498408,
+            "time_s": 8.358016,
+            "score": 0.9996067824458794
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1670,
+            "annotated": 1671,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0018.txt",
+      "sha256": "c676df2a7a13ebcc3f4a48b4ddd4dde885960cdfeadd2021e541b49f506e7e1b",
+      "split": "calibration",
+      "annotated_indices": [
+        1540
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9230959680000288,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1542,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1542,
+            "annotated": 1540,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1540,
+            "depth_nm": 82.315104,
+            "load_uN": 3883.280812,
+            "time_s": 7.707392,
+            "score": 0.993362505877667
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1540,
+            "annotated": 1540,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0019.txt",
+      "sha256": "d1fe1677d79b40168b95987a41a93219b976a11f1f2374cf0bc57eb75fb4b64c",
+      "split": "test",
+      "annotated_indices": [
+        1480
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9066103272000486,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1481,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1481,
+            "annotated": 1480,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1478,
+            "depth_nm": 83.55506,
+            "load_uN": 3726.514466,
+            "time_s": 7.397094,
+            "score": 0.9996177457802601
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1478,
+            "annotated": 1480,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0020.txt",
+      "sha256": "fec67d7ed903f6f361945f9957f474e46e86ace129c855dfe9654417acd6ed26",
+      "split": "test",
+      "annotated_indices": [
+        990
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8697507512000199,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 992,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 992,
+            "annotated": 990,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 989,
+            "depth_nm": 49.44623,
+            "load_uN": 2492.860806,
+            "time_s": 4.949747,
+            "score": 0.9933072029006015
+          },
+          {
+            "index": 1879,
+            "depth_nm": 80.614314,
+            "load_uN": 4741.260077,
+            "time_s": 9.404019,
+            "score": 0.3298023803282657
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 989,
+            "annotated": 990,
+            "error": 1
+          }
+        ],
+        "extra_indices": [
+          1879
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0021.txt",
+      "sha256": "ecf61173be195d96507fe356c9f6c18425d6e26e2eba230ee971d613ec402f1b",
+      "split": "train",
+      "annotated_indices": [
+        1401
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9056351880000076,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1402,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1402,
+            "annotated": 1401,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1399,
+            "depth_nm": 62.539796,
+            "load_uN": 3528.534477,
+            "time_s": 7.001715,
+            "score": 0.9996026682723118
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1399,
+            "annotated": 1401,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0022.txt",
+      "sha256": "8dfbcf63cce2540e7b3c0148a4fc93ebc2e29b9fba3d93deece2f65f6240b4b7",
+      "split": "calibration",
+      "annotated_indices": [
+        1370
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.876749822399972,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1371,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1371,
+            "annotated": 1370,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1370,
+            "depth_nm": 61.095442,
+            "load_uN": 3455.376482,
+            "time_s": 6.856576,
+            "score": 0.9997616027368897
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1370,
+            "annotated": 1370,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0023.txt",
+      "sha256": "46fa435c1cf2caeadbfcaaf549a29f21dc06fe8f72508890f65526170a6879d3",
+      "split": "train",
+      "annotated_indices": [
+        1248
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8995575319999708,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1249,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1249,
+            "annotated": 1248,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1248,
+            "depth_nm": 57.685979,
+            "load_uN": 3147.083408,
+            "time_s": 6.24599,
+            "score": 0.9997558677064788
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1248,
+            "annotated": 1248,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0024.txt",
+      "sha256": "ba4fe48b2b325a9424559aae8af024fe5a2c77eb74f8be70347a62427ffa3c8d",
+      "split": "train",
+      "annotated_indices": [
+        1340
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8774157751999521,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1341,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1341,
+            "annotated": 1340,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1338,
+            "depth_nm": 60.045949,
+            "load_uN": 3374.356203,
+            "time_s": 6.696422,
+            "score": 0.9996174359467105
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1338,
+            "annotated": 1340,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0025.txt",
+      "sha256": "f003d0d4821b5ff38a3d589fb284b1f7d33dcd96f0c784e7ac435671c049ee1c",
+      "split": "train",
+      "annotated_indices": [
+        1273
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8557674583999971,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1274,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1274,
+            "annotated": 1273,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1273,
+            "depth_nm": 58.515991,
+            "load_uN": 3210.288161,
+            "time_s": 6.37111,
+            "score": 0.9934976323783257
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1273,
+            "annotated": 1273,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0026.txt",
+      "sha256": "6f974863678bbc22ec26824e88753ff0eda3467df1317ab411bb563782c39ba1",
+      "split": "train",
+      "annotated_indices": [
+        1411
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8648297831999728,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1412,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1412,
+            "annotated": 1411,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1411,
+            "depth_nm": 62.415742,
+            "load_uN": 3558.846684,
+            "time_s": 7.061773,
+            "score": 0.9997922889779376
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1411,
+            "annotated": 1411,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0027.txt",
+      "sha256": "d9fd5496b846b2dbbd00246dd62c8feaa804724747e2fee08cb87b4d2db7950a",
+      "split": "calibration",
+      "annotated_indices": [
+        1415
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8671886192000233,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1416,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1416,
+            "annotated": 1415,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1414,
+            "depth_nm": 63.054702,
+            "load_uN": 3566.588749,
+            "time_s": 7.076787,
+            "score": 0.9995237117717336
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1414,
+            "annotated": 1415,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0028.txt",
+      "sha256": "4e5e51fa11063ebb5a8296c23da7fd7dfc283317c2b111d4c50700439a1ba7d3",
+      "split": "test",
+      "annotated_indices": [
+        1517
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.88256118399999,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1518,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1518,
+            "annotated": 1517,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1517,
+            "depth_nm": 65.602849,
+            "load_uN": 3826.555209,
+            "time_s": 7.592282,
+            "score": 0.9995209061930976
+          },
+          {
+            "index": 1924,
+            "depth_nm": 82.222139,
+            "load_uN": 4855.424136,
+            "time_s": 9.629235,
+            "score": 0.44151441281275394
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1517,
+            "annotated": 1517,
+            "error": 0
+          }
+        ],
+        "extra_indices": [
+          1924
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV255nm/SiC-4H-UV255 0029.txt",
+      "sha256": "0a0350b34651f7de76be5dc9e7969182c260f088d07656ebd23fc4e9cc4638b5",
+      "split": "train",
+      "annotated_indices": [
+        1425
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8916558687999812,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1426,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1426,
+            "annotated": 1425,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1425,
+            "depth_nm": 63.302657,
+            "load_uN": 3594.263153,
+            "time_s": 7.13184,
+            "score": 0.9997585679414666
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1425,
+            "annotated": 1425,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0000.txt",
+      "sha256": "68013149661a71d6eae1701d89dfe7c16a7bd0f1d9a62f4b2f1990651543c3f3",
+      "split": "train",
+      "annotated_indices": [
+        1382
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9009928160001077,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1383,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1383,
+            "annotated": 1382,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1381,
+            "depth_nm": 92.681962,
+            "load_uN": 3483.116702,
+            "time_s": 6.911629,
+            "score": 0.9996519537436848
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1381,
+            "annotated": 1382,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0001.txt",
+      "sha256": "8455e9fd5519fa39f39a4f4a1bbdfbb70b1862af9ad3a4da5ea06410cb8fa8ba",
+      "split": "calibration",
+      "annotated_indices": [
+        1490
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8624709544000357,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1491,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1491,
+            "annotated": 1490,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1491,
+            "depth_nm": 94.054814,
+            "load_uN": 3763.386804,
+            "time_s": 7.462157,
+            "score": 0.9997760593254521
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1491,
+            "annotated": 1490,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0002.txt",
+      "sha256": "3eb57abcee62d85564520b05455617a3d44156db3a5e8f526ef590670073fafd",
+      "split": "test",
+      "annotated_indices": [
+        1451
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8732090600000761,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1452,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1452,
+            "annotated": 1451,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1451,
+            "depth_nm": 84.151871,
+            "load_uN": 3663.433065,
+            "time_s": 7.261965,
+            "score": 0.9996554813974573
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1451,
+            "annotated": 1451,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0003.txt",
+      "sha256": "723b49077cb6aaeae651c1c3b9a358a81598b68e1c9e27acc924aa80c9c45413",
+      "split": "train",
+      "annotated_indices": [
+        1273
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8575058431999698,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1275,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1275,
+            "annotated": 1273,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1273,
+            "depth_nm": 79.138012,
+            "load_uN": 3213.97861,
+            "time_s": 6.37111,
+            "score": 0.9934522247734273
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1273,
+            "annotated": 1273,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0004.txt",
+      "sha256": "ca802c81c43ded69720cd77618f30a27d41332d89aade4e7de3e9dce08943f93",
+      "split": "train",
+      "annotated_indices": [
+        1469
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8230574871999398,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1470,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1470,
+            "annotated": 1469,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1468,
+            "depth_nm": 84.643667,
+            "load_uN": 3705.23156,
+            "time_s": 7.347046,
+            "score": 0.9996055816211449
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1468,
+            "annotated": 1469,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0005.txt",
+      "sha256": "b3aa684b6ec575b2b0050cfac2665fc618cbe9db199d0a237e77c96588a3c744",
+      "split": "train",
+      "annotated_indices": [
+        1500
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.846110466399995,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1501,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1501,
+            "annotated": 1500,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1501,
+            "depth_nm": 84.890903,
+            "load_uN": 3788.088548,
+            "time_s": 7.512205,
+            "score": 0.9997841323416873
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1501,
+            "annotated": 1500,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0006.txt",
+      "sha256": "a431742f8b4f466fe741d181986977984eccf6a6c612045786c64d5207e1f3bb",
+      "split": "test",
+      "annotated_indices": [
+        1414
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8530548448001495,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1415,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1415,
+            "annotated": 1414,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1414,
+            "depth_nm": 88.022078,
+            "load_uN": 3567.42752,
+            "time_s": 7.076787,
+            "score": 0.9871049930081306
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1414,
+            "annotated": 1414,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0007.txt",
+      "sha256": "b71c2df508c86192b7eb354e6f9f6b902f24f8e32237cc322afdad7b5a18a054",
+      "split": "test",
+      "annotated_indices": [
+        1431
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8514465023999788,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1432,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1432,
+            "annotated": 1431,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1431,
+            "depth_nm": 81.963464,
+            "load_uN": 3610.474842,
+            "time_s": 7.161869,
+            "score": 0.9683667226769849
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1431,
+            "annotated": 1431,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0008.txt",
+      "sha256": "3c57d5ddf53db617abdb1ee9a66d69279dbf6fce85b93989ce48b3e3c22f111f",
+      "split": "train",
+      "annotated_indices": [
+        1607
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8998908792000472,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1608,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1608,
+            "annotated": 1607,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1605,
+            "depth_nm": 85.912189,
+            "load_uN": 4049.753109,
+            "time_s": 8.032704,
+            "score": 0.9995901187746362
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1605,
+            "annotated": 1607,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0009.txt",
+      "sha256": "5107d6db58c607353556cbde5b83385fedbf7b4c82b7c606abd1b02c4111e5ea",
+      "split": "train",
+      "annotated_indices": [
+        1451
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8710416592000211,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1452,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1452,
+            "annotated": 1451,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1451,
+            "depth_nm": 85.146385,
+            "load_uN": 3659.963192,
+            "time_s": 7.261965,
+            "score": 0.9997396527226327
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1451,
+            "annotated": 1451,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0010.txt",
+      "sha256": "967a19454fc2905e0101007e5102a8307624cfa53a421a3f1425d4809459911e",
+      "split": "train",
+      "annotated_indices": [
+        1614
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8567912624000548,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1615,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1615,
+            "annotated": 1614,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1613,
+            "depth_nm": 93.56596,
+            "load_uN": 4069.280519,
+            "time_s": 8.072742,
+            "score": 0.9933643078429266
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1613,
+            "annotated": 1614,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0011.txt",
+      "sha256": "a626f4b6e4214ae1bb364bea2d23ab1d603805932b364ef97a9514f61f2dbc59",
+      "split": "test",
+      "annotated_indices": [
+        1470
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8502580311999335,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1472,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1472,
+            "annotated": 1470,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1469,
+            "depth_nm": 86.282105,
+            "load_uN": 3705.106308,
+            "time_s": 7.352051,
+            "score": 0.9933633238755
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1469,
+            "annotated": 1470,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0012.txt",
+      "sha256": "77d43fc4372e91c5b50187091202c37f78e788e5149b40199ddd83d0c6d6ae5f",
+      "split": "train",
+      "annotated_indices": [
+        1670
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9016683991999679,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1672,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1672,
+            "annotated": 1670,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1669,
+            "depth_nm": 93.635393,
+            "load_uN": 4210.425876,
+            "time_s": 8.353011,
+            "score": 0.9995951190828217
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1669,
+            "annotated": 1670,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0013.txt",
+      "sha256": "8b3ab3a8b27c613dc14b14f5d00e83a208e14c6d36e369772404a433b2ba88bf",
+      "split": "test",
+      "annotated_indices": [
+        1509
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8816521704000154,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1510,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1510,
+            "annotated": 1509,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1510,
+            "depth_nm": 89.311612,
+            "load_uN": 3808.311491,
+            "time_s": 7.557248,
+            "score": 0.9998056990824926
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1510,
+            "annotated": 1509,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0014.txt",
+      "sha256": "65f1c97f7a6891f292b19ac43c51290fb07bbe9abe27d61a2fb9768714b29d0a",
+      "split": "test",
+      "annotated_indices": [
+        1604
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8487119463999835,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1605,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1605,
+            "annotated": 1604,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1605,
+            "depth_nm": 90.557637,
+            "load_uN": 4048.502336,
+            "time_s": 8.032704,
+            "score": 0.9934731042380521
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1605,
+            "annotated": 1604,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0015.txt",
+      "sha256": "cc287bd09e20498e976b93d79c741328851d9be11a0731a0c116ef3ec9b18802",
+      "split": "calibration",
+      "annotated_indices": [
+        1386
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8868302239999747,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1387,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1387,
+            "annotated": 1386,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1386,
+            "depth_nm": 82.917992,
+            "load_uN": 3495.097199,
+            "time_s": 6.936653,
+            "score": 0.9871796752277004
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1386,
+            "annotated": 1386,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0016.txt",
+      "sha256": "1b41d1f801f9296afa4075ed4182a99007640f9bd282efa6edd48cc44f3e7ecb",
+      "split": "train",
+      "annotated_indices": [
+        1581
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8757669023999806,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1582,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1582,
+            "annotated": 1581,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1581,
+            "depth_nm": 89.473945,
+            "load_uN": 3987.479951,
+            "time_s": 7.912589,
+            "score": 0.9809887131311985
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1581,
+            "annotated": 1581,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0017.txt",
+      "sha256": "e2cbdd63fbfe16ac44efbaa09782c3cdce72b92f4415648de03a503a59d8a55c",
+      "split": "calibration",
+      "annotated_indices": [
+        1459
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.860684231200063,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1460,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1460,
+            "annotated": 1459,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1458,
+            "depth_nm": 81.844153,
+            "load_uN": 3676.95861,
+            "time_s": 7.296998,
+            "score": 0.9996072291829192
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1458,
+            "annotated": 1459,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0018.txt",
+      "sha256": "76d6af78975e7f55bf2727d8b74b4abd49c7034408dd55abcc6bea340d8be94d",
+      "split": "train",
+      "annotated_indices": [
+        1498
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8611069975999884,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1499,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1499,
+            "annotated": 1498,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1497,
+            "depth_nm": 82.449346,
+            "load_uN": 3775.724226,
+            "time_s": 7.492186,
+            "score": 0.9996096638659427
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1497,
+            "annotated": 1498,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0020.txt",
+      "sha256": "fc7feaa016986aba3aaed763e2fe8f902ca9630a42d631326f88371e8c88f16f",
+      "split": "calibration",
+      "annotated_indices": [
+        1512
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.867851444800025,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1513,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1513,
+            "annotated": 1512,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1513,
+            "depth_nm": 89.44063,
+            "load_uN": 3815.770784,
+            "time_s": 7.572262,
+            "score": 0.9997039926353354
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1513,
+            "annotated": 1512,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0021.txt",
+      "sha256": "f14f17c8a669411924ba370ec6066890813d357c78d0db8aa39494fc4f8cd828",
+      "split": "train",
+      "annotated_indices": [
+        1460
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8910560536000202,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1461,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1461,
+            "annotated": 1460,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1461,
+            "depth_nm": 84.642361,
+            "load_uN": 3684.262372,
+            "time_s": 7.312013,
+            "score": 0.999754766148236
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1461,
+            "annotated": 1460,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0022.txt",
+      "sha256": "0065c1035632b3a68a02ad053eb08fede530063604dd525fde0dce3ec8d86b24",
+      "split": "train",
+      "annotated_indices": [
+        1381
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.9025814208000198,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1382,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1382,
+            "annotated": 1381,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1381,
+            "depth_nm": 79.77599,
+            "load_uN": 3482.534012,
+            "time_s": 6.911629,
+            "score": 0.9997443052584257
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1381,
+            "annotated": 1381,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0023.txt",
+      "sha256": "8489c9b87ace362c17a2ac820243ba2f16f3ac520a63e9b9bb4799b5a313edb4",
+      "split": "train",
+      "annotated_indices": [
+        1462
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8482550336000597,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1463,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1463,
+            "annotated": 1462,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1461,
+            "depth_nm": 85.80324,
+            "load_uN": 3684.127429,
+            "time_s": 7.312013,
+            "score": 0.9996278480180767
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1461,
+            "annotated": 1462,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0024.txt",
+      "sha256": "60fd2abe215f2686f5db300f2d71dc36eb934d85a66d05cb031fc45ac2e39275",
+      "split": "calibration",
+      "annotated_indices": [
+        1660
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8768336256000081,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1661,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1661,
+            "annotated": 1660,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1659,
+            "depth_nm": 92.124601,
+            "load_uN": 4184.818035,
+            "time_s": 8.302963,
+            "score": 0.9683946210492612
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1659,
+            "annotated": 1660,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0025.txt",
+      "sha256": "1d1e89969769614c46398a2b9adaff1ef677d9b6100d7e67c567358cdc5e4232",
+      "split": "train",
+      "annotated_indices": [
+        1385
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8915590864000192,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1386,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1386,
+            "annotated": 1385,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1386,
+            "depth_nm": 82.361785,
+            "load_uN": 3494.907192,
+            "time_s": 6.936653,
+            "score": 0.9997850260128477
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1386,
+            "annotated": 1385,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0026.txt",
+      "sha256": "7151231cb1a5337ab9aa8ac94ec046d5ad26565f162bdd66b8734bf8a83d8c5f",
+      "split": "train",
+      "annotated_indices": [
+        1427
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8296213447999475,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1428,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1428,
+            "annotated": 1427,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1427,
+            "depth_nm": 83.829106,
+            "load_uN": 3598.360628,
+            "time_s": 7.14185,
+            "score": 0.999656804749644
+          },
+          {
+            "index": 1975,
+            "depth_nm": 105.005493,
+            "load_uN": 4984.061594,
+            "time_s": 9.88448,
+            "score": 0.6238564636569228
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1427,
+            "annotated": 1427,
+            "error": 0
+          }
+        ],
+        "extra_indices": [
+          1975
+        ],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0027.txt",
+      "sha256": "91821c4e9d06e8c9122f47170f1a6bb9821c0b734252e6e36426e24519965c6e",
+      "split": "train",
+      "annotated_indices": [
+        1681
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.883716594400014,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1683,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1683,
+            "annotated": 1681,
+            "error": 2
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1682,
+            "depth_nm": 93.57622,
+            "load_uN": 4243.250204,
+            "time_s": 8.418074,
+            "score": 0.9996716503279497
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1682,
+            "annotated": 1681,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0028.txt",
+      "sha256": "191a8156d33675d48658e44a2b38f7313fcc26130cee0d231e4327be99932385",
+      "split": "train",
+      "annotated_indices": [
+        1551
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8629986080000458,
+        "candidate_count": 2,
+        "events": [
+          {
+            "index": 1552,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1552,
+            "annotated": 1551,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1551,
+            "depth_nm": 86.56287,
+            "load_uN": 3911.732362,
+            "time_s": 7.762445,
+            "score": 0.9997999429183032
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1551,
+            "annotated": 1551,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    },
+    {
+      "file": "SiC-4H-UV470nm/SiC-4H-UV470 0029.txt",
+      "sha256": "8ee4858bb34ac9515627e5da31994b6bb4d56cb8982e12657b46761762d14f19",
+      "split": "calibration",
+      "annotated_indices": [
+        1394
+      ],
+      "threshold_algorithm": {
+        "threshold_nm": 0.8818302575999573,
+        "candidate_count": 1,
+        "events": [
+          {
+            "index": 1395,
+            "score": 1.0
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1395,
+            "annotated": 1394,
+            "error": 1
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      },
+      "random_forest": {
+        "events": [
+          {
+            "index": 1394,
+            "depth_nm": 83.279669,
+            "load_uN": 3515.016271,
+            "time_s": 6.976691,
+            "score": 0.9934497090282634
+          }
+        ],
+        "matches": [
+          {
+            "predicted": 1394,
+            "annotated": 1394,
+            "error": 0
+          }
+        ],
+        "extra_indices": [],
+        "missed_indices": []
+      }
+    }
+  ]
+}

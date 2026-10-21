@@ -1,8 +1,9 @@
 import sys
 import shutil
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QMessageBox
 from PyQt5.QtGui import QFont
 from views import MainView
+from utility.qt_interrupt_handler import QtInterruptHandler
 import os
 import test_module
 
@@ -84,6 +85,11 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         """Called when user tries to close the application"""
+        if self.main_view._popin_locator_view.model_busy:
+            QMessageBox.information(self, "Model operation in progress",
+                                    "Wait for model creation or prediction to finish before closing.")
+            event.ignore()
+            return
         # deleting files that have been loaded in, so assets dont persist
         # after the app is closed. They get cleared on app init too but that
         # is just for a backup. This way random files are lingering around the
@@ -144,7 +150,12 @@ def main():
     
     main_window = MainWindow()  # Use our new MainWindow class
     main_window.showMaximized()
-    app.exec()
+    with QtInterruptHandler(
+        app,
+        main_window.close,
+        lambda: not main_window.main_view._popin_locator_view.model_busy,
+    ):
+        app.exec()
 
 
 if __name__ == '__main__':

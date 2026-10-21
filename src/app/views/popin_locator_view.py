@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QObject, QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QFileDialog,
@@ -18,6 +18,25 @@ from PyQt5.QtWidgets import (
 )
 
 from analysis_scripts.popin_locator import InvalidDataError, analyze_file
+from analysis_scripts import popin_ml
+
+
+class ModelWorker(QObject):
+    succeeded = pyqtSignal(object)
+    failed = pyqtSignal(str)
+    finished = pyqtSignal()
+
+    def __init__(self, operation):
+        super().__init__()
+        self.operation = operation
+
+    def run(self):
+        try:
+            self.succeeded.emit(self.operation())
+        except Exception as error:
+            self.failed.emit(f"{type(error).__name__}: {error}")
+        finally:
+            self.finished.emit()
 
 
 class PopInLocatorView(QWidget):
@@ -25,11 +44,21 @@ class PopInLocatorView(QWidget):
         super().__init__(parent)
 
         self._selected_file = None
+        self._model = None
+        self._model_thread = None
+        self._model_worker = None
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(20, 20, 20, 20)
         self._layout.setSpacing(12)
 
         self._init_ui()
+        if popin_ml.DEFAULT_MODEL.exists() or popin_ml.BUNDLED_MODEL.exists():
+            try:
+                self._model = popin_ml.load_model()
+                self._model_label.setText("Normalized shape model ready. Select a file to run either detection method.")
+            except Exception as error:
+                self._model_label.setText(f"Saved model could not be loaded: {error}. Click Train Shape Model to rebuild it.")
+        self._update_buttons()
         self._draw_empty_plot("No pop-in data loaded")
 
     def _init_ui(self):
@@ -53,12 +82,26 @@ class PopInLocatorView(QWidget):
         self._run_button.setEnabled(False)
         self._run_button.clicked.connect(self._run_detection)
         button_row.addWidget(self._run_button)
+        self._create_model_button = QPushButton("Train Shape Model")
+        self._create_model_button.setToolTip(
+            "Scan all training text files, skip invalid or unannotated curves, and train using normalized shape.")
+        self._create_model_button.setMinimumHeight(36)
+        self._create_model_button.clicked.connect(self._create_model)
+        button_row.addWidget(self._create_model_button)
+
+        self._run_model_button = QPushButton("Run Model")
+        self._run_model_button.setMinimumHeight(36)
+        self._run_model_button.clicked.connect(self._run_model)
+        button_row.addWidget(self._run_model_button)
         button_row.addStretch()
         controls_layout.addLayout(button_row)
 
         self._file_label = QLabel("No file selected")
         self._file_label.setWordWrap(True)
         controls_layout.addWidget(self._file_label)
+        self._model_label = QLabel("No model available. Click Train Shape Model to train from the Excel labels and curves.")
+        self._model_label.setWordWrap(True)
+        controls_layout.addWidget(self._model_label)
         self._layout.addWidget(controls_group)
 
         content_row = QHBoxLayout()
@@ -102,12 +145,106 @@ class PopInLocatorView(QWidget):
 
         self._selected_file = Path(file_path)
         self._file_label.setText(str(self._selected_file))
-        self._run_button.setEnabled(True)
-        self._results_text.setPlainText("Ready to run pop-in detection.")
+        self._update_buttons()
+        self._results_text.setPlainText("Ready. Choose Run Detection for the algorithm or Run Model for machine learning.")
         self._draw_empty_plot("Ready to analyze selected file")
 
+    @property
+    def model_busy(self):
+        return self._model_thread is not None
+
+    def _update_buttons(self):
+        self._select_file_button.setEnabled(not self.model_busy)
+        self._run_button.setEnabled(not self.model_busy and self._selected_file is not None)
+        self._create_model_button.setEnabled(not self.model_busy)
+        self._run_model_button.setEnabled(
+            not self.model_busy and self._selected_file is not None and self._model is not None)
+
+    def _start_model_work(self, operation, success):
+        self._model_thread = QThread(self)
+        self._model_worker = ModelWorker(operation)
+        self._model_worker.moveToThread(self._model_thread)
+        self._model_thread.started.connect(self._model_worker.run)
+        self._model_worker.succeeded.connect(success)
+        self._model_worker.failed.connect(self._model_failed)
+        self._model_worker.finished.connect(self._model_thread.quit)
+        self._model_worker.finished.connect(self._model_worker.deleteLater)
+        self._model_thread.finished.connect(self._model_work_finished)
+        self._model_thread.finished.connect(self._model_thread.deleteLater)
+        self._update_buttons()
+        self._model_thread.start()
+
+    def _model_work_finished(self):
+        self._model_thread = None
+        self._model_worker = None
+        self._update_buttons()
+
+    def _model_failed(self, message):
+        self._model_label.setText("Model operation failed. See the error below.")
+        self._show_error("Model error", message)
+
+    def _create_model(self):
+        if self.model_busy:
+            return
+        self._model_label.setText("Training normalized shape model and evaluating held-out curves…")
+        self._results_text.setPlainText(
+            "Scanning all training text files and matching Excel load/depth labels…\n"
+            "Invalid files and curves without matching annotations will be skipped.")
+        self._start_model_work(lambda: (popin_ml.train(), popin_ml.load_model()), self._model_created)
+
+    def _model_created(self, result):
+        report, self._model = result
+        test = report["test"]
+        self._model_label.setText("Normalized shape model saved. Select a file, then choose Run Detection or Run Model.")
+        self._results_text.setPlainText(
+            f"Shape model trained from {report['annotation_count']} matched annotations.\n"
+            f"Text files scanned: {report.get('scanned_files', report['labeled_curves'])}\n"
+            f"Eligible labeled curves: {report['labeled_curves']}\n"
+            f"Files skipped: {len(report.get('skipped_files', []))}\n"
+            f"Unmatched Excel annotations skipped: {report.get('unmatched_annotation_count', 0)}\n"
+            "Features: normalized local curve shape; absolute load/depth coordinates excluded.\n"
+            f"Training curves: {len(report['split_files']['train'])}\n"
+            f"Held-out test curves: {len(report['split_files']['test'])}\n"
+            f"Event precision: {test['precision']:.1%}\n"
+            f"Event recall: {test['recall']:.1%}\n"
+            f"F1: {test['f1']:.3f} (within ±5 measurements)\n\n"
+            f"Detection score cutoff: {report['threshold']:.3f} (chosen on calibration curves)\n\n"
+            f"Saved model: {popin_ml.DEFAULT_MODEL}\n"
+            "The model reloads when the application reopens.\n"
+            "Select a text file to predict its pop-in candidates.\n\n"
+            + "\n".join(f"Skipped {row['file']}: {row['reason']}" for row in report.get('skipped_files', [])))
+
+    def _run_model(self):
+        if self.model_busy or self._selected_file is None or self._model is None:
+            return
+        file_path, model = self._selected_file, self._model
+        def operation():
+            curve = popin_ml.load_curve(file_path)
+            return file_path, curve, popin_ml.predict(curve, model)
+        self._model_label.setText("Predicting pop-in locations…")
+        self._start_model_work(operation, self._display_model_results)
+
+    def _display_model_results(self, result):
+        file_path, curve, events = result
+        self._model_label.setText("Model ready. Prediction complete.")
+        lines = [f"File: {file_path.name}", "Method: Machine learning (normalized shape)",
+                 f"Data points: {len(curve)}", f"Pop-in candidates: {len(events)}",
+                 "Indices are zero-based numeric measurements.",
+                 "Scores are classifier votes, not calibrated probabilities.", ""]
+        for number, event in enumerate(events, 1):
+            lines.extend([f"Candidate {number}: data point {event['index']}",
+                          f"Depth: {event['depth_nm']:.5f} nm",
+                          f"Load: {event['load_uN']:.5f} uN",
+                          f"Time: {event['time_s']:.6f} s",
+                          f"Score: {event['score']:.3f}", ""])
+        if not events:
+            lines.append("No pop-in candidates exceed the learned threshold.")
+        self._results_text.setPlainText("\n".join(lines))
+        loading = popin_ml.loading(curve)
+        self._draw_popin_plot(file_path, loading[:, 0], loading[:, 1], events)
+
     def _run_detection(self):
-        if self._selected_file is None:
+        if self.model_busy or self._selected_file is None:
             return
 
         try:
@@ -136,6 +273,7 @@ class PopInLocatorView(QWidget):
 
         lines = [
             f"File: {file_path.name}",
+            "Method: Threshold algorithm",
             f"Data points: {len(result['data'])}",
             f"Loading points: {len(loading)}",
             f"Maximum load index: {int(loading['Load_uN'].idxmax())}",
@@ -169,36 +307,27 @@ class PopInLocatorView(QWidget):
     def _draw_result_plot(self, result):
         loading = result["loading"]
         pop_index = result["pop_index"]
-        file_path = result["file_path"]
-
-        ax = self._prepare_axis()
-        ax.plot(
-            loading["Depth_nm"],
-            loading["Load_uN"],
-            color="#5dade2",
-            linewidth=1.0,
-            label="Loading Curve",
-        )
-
+        events = []
         if pop_index is not None:
             pop = loading.loc[pop_index]
-            ax.scatter(
-                pop["Depth_nm"],
-                pop["Load_uN"],
-                color="#ff5c5c",
-                s=80,
-                label="First Pop-in Candidate",
-                zorder=5,
-            )
-            ax.annotate(
-                "First Pop-in Candidate",
-                (pop["Depth_nm"], pop["Load_uN"]),
-                xytext=(20, -35),
-                textcoords="offset points",
-                color="#ffffff",
-                arrowprops={"arrowstyle": "->", "color": "#ff5c5c"},
-            )
+            events.append({"depth_nm": pop["Depth_nm"], "load_uN": pop["Load_uN"]})
+        self._draw_popin_plot(result["file_path"], loading["Depth_nm"], loading["Load_uN"], events)
 
+    def _draw_popin_plot(self, file_path, depth, load, events):
+        """Use one loading curve, scale, and style for either detector."""
+        ax = self._prepare_axis()
+        ax.plot(depth, load, color="#5dade2", linewidth=1.0, label="Loading Curve")
+        # Fix limits from the curve alone so candidate locations cannot change
+        # the scale when switching methods, including when no event is found.
+        ax.margins(x=0.05, y=0.05)
+        ax.set_xlim(ax.get_xlim())
+        ax.set_ylim(ax.get_ylim())
+        if events:
+            ax.scatter([e["depth_nm"] for e in events], [e["load_uN"] for e in events],
+                       color="#ff5c5c", s=80, zorder=5, label="Pop-in Candidates")
+            for number, event in enumerate(events, 1):
+                ax.annotate(str(number), (event["depth_nm"], event["load_uN"]),
+                            xytext=(6, 8), textcoords="offset points", color="#ffffff")
         ax.set_xlabel("Depth (nm)", color="#ffffff")
         ax.set_ylabel("Load (uN)", color="#ffffff")
         ax.set_title(f"Pop-in Detection: {file_path.name}", color="#ffffff")
@@ -235,7 +364,7 @@ class PopInLocatorView(QWidget):
             spine.set_color("#9a9a9a")
 
         if show_legend:
-            legend = ax.legend()
+            legend = ax.legend(loc="upper left")
             if legend is not None:
                 legend.get_frame().set_facecolor("#3d3d3d")
                 legend.get_frame().set_edgecolor("#5d5d5d")
