@@ -197,8 +197,8 @@ def test_only_candidate_plateau_is_refined(write_popin_curve):
 
 @pytest.mark.parametrize("jumps, expected", [
     ([(80, 20)], [(79, 80)]),
-    ([(80, 20), (100, 50)], [(79, 80), (99, 100)]),
-    ([(50, 20), (119, 20)], [(49, 50), (118, 119)]),
+    ([(80, 20), (100, 50)], [(79, 80)]),
+    ([(50, 20), (119, 20)], [(49, 50)]),
 ])
 def test_isolated_popin_keeps_candidate_interval(write_popin_curve, jumps, expected):
     result = analyze_file(write_popin_curve(jumps=jumps))
@@ -210,7 +210,9 @@ def test_candidates_on_same_plateau_share_region(write_popin_curve):
     increments[80:85] = 0.1
     result = analyze_file(write_popin_curve(load=np.cumsum(increments), jumps=[(81, 20), (83, 20)]))
     region, = result["flat_regions"]
-    assert region["candidate_indices"] == [81, 83]
+    assert result["candidate_count"] == 2
+    assert result["pop_index"] == 81
+    assert region["candidate_indices"] == [81]
     assert (region["start_index"], region["end_index"]) == (79, 84)
 
 

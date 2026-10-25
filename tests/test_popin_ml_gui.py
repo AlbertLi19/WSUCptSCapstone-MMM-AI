@@ -187,6 +187,21 @@ def test_threshold_results_and_plot_for_known_curve(gui, monkeypatch, write_popi
         np.testing.assert_allclose(axis.collections[1].get_offsets(), [[104, 160.5]])
 
 
+def test_algorithm_counts_all_candidates_and_displays_only_first_region(gui, write_popin_curve):
+    _, window = gui
+    window._selected_file = write_popin_curve(jumps=[(80, 20), (100, 50)])
+    window._run_detection()
+    text = window._results_text.toPlainText()
+    assert "Pop-in candidates: 2" in text
+    assert "Candidate regions: 1" in text
+    assert "Pop-in data points: 80" in text
+    assert "Candidate region 2" not in text
+    assert len(window._region_artists) == 1
+    axis = window._figure.axes[0]
+    np.testing.assert_allclose(axis.lines[1].get_xydata(), [[79, 158], [100, 160]])
+    assert len(axis.collections) == 2
+
+
 def test_selecting_new_file_and_error_clear_previous_results(gui, monkeypatch, write_popin_curve, tmp_path):
     app, window = gui
     loads = np.cumsum(np.r_[np.full(80, 2.), np.zeros(5), np.full(35, 2.)])

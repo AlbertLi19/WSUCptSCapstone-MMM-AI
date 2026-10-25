@@ -223,7 +223,7 @@ def analyze_file(file_path: Union[str, Path]) -> dict:
     loading = calculate_derivatives(get_loading_section(df))
     threshold = calculate_threshold(loading)
     candidates = get_popin_candidates(loading, threshold)
-    regions, flat_slope_threshold = find_flat_load_regions(loading, candidates)
+    regions, flat_slope_threshold = find_flat_load_regions(loading, candidates.head(1))
 
     pop_index = None
     if not candidates.empty:
