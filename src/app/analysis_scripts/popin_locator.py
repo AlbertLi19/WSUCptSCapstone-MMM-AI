@@ -9,6 +9,7 @@ MULTIPLIER = 8
 BASELINE_START = 50
 MIN_POINTS = 70
 MIN_BASELINE_POINTS = 20
+FLAT_SLOPE_FRACTION = 0.2
 
 
 class InvalidDataError(Exception):
@@ -166,12 +167,63 @@ def find_first_popin(loading: pd.DataFrame, threshold: float) -> Optional[int]:
     return int(candidates.index[0])
 
 
+def find_flat_load_regions(loading: pd.DataFrame, candidates: pd.DataFrame) -> tuple[list[dict], float]:
+    """Refine threshold candidates by extending over adjacent flat-load steps.
+
+    Each candidate starts with its preceding measurement and the candidate
+    measurement. Extend left/right only while depth increases and the absolute
+    load/depth slope is at most 20% of the median positive loading slope.
+    An isolated candidate retains its original two-measurement interval.
+    Candidates sharing the same flat interval are grouped together.
+    """
+    depth_change = loading["Depth_nm"].diff().to_numpy(dtype=float)
+    load_change = loading["Load_uN"].diff().to_numpy(dtype=float)
+    slopes = np.full(len(loading), np.nan)
+    np.divide(load_change, depth_change, out=slopes, where=depth_change > 0)
+    baseline = slopes[BASELINE_START:]
+    positive = baseline[np.isfinite(baseline) & (baseline > 0)]
+    if len(positive) == 0:
+        if candidates.empty:
+            return [], 0.0
+        raise InvalidDataError("Unable to estimate a positive loading slope for flat-load detection.")
+    slope_threshold = float(np.median(positive) * FLAT_SLOPE_FRACTION)
+    flat = np.isfinite(slopes) & (np.abs(slopes) <= slope_threshold)
+    flat[:BASELINE_START] = False
+
+    regions = {}
+    for candidate_index in candidates.index:
+        seed = int(loading.index.get_loc(candidate_index))
+        start, end = seed - 1, seed
+        while start >= BASELINE_START and flat[start]:
+            start -= 1
+        while end + 1 < len(loading) and flat[end + 1]:
+            end += 1
+        key = (start, end)
+        if key in regions:
+            regions[key]["candidate_indices"].append(int(candidate_index))
+            continue
+        first, last = loading.iloc[start], loading.iloc[end]
+        regions[key] = {
+            "candidate_indices": [int(candidate_index)],
+            "start_index": int(loading.index[start]),
+            "end_index": int(loading.index[end]),
+            "start_depth_nm": float(first["Depth_nm"]),
+            "end_depth_nm": float(last["Depth_nm"]),
+            "start_load_uN": float(first["Load_uN"]),
+            "end_load_uN": float(last["Load_uN"]),
+            "start_time_s": float(first["Time_s"]),
+            "end_time_s": float(last["Time_s"]),
+        }
+    return list(regions.values()), slope_threshold
+
+
 def analyze_file(file_path: Union[str, Path]) -> dict:
     file = validate_file(file_path)
     df = load_data(file)
     loading = calculate_derivatives(get_loading_section(df))
     threshold = calculate_threshold(loading)
     candidates = get_popin_candidates(loading, threshold)
+    regions, flat_slope_threshold = find_flat_load_regions(loading, candidates)
 
     pop_index = None
     if not candidates.empty:
@@ -181,6 +233,8 @@ def analyze_file(file_path: Union[str, Path]) -> dict:
         "file_path": file,
         "data": df,
         "loading": loading,
+        "flat_regions": regions,
+        "flat_slope_threshold": flat_slope_threshold,
         "threshold": threshold,
         "candidate_count": len(candidates),
         "pop_index": pop_index,
