@@ -10,6 +10,7 @@ from analysis_scripts.popin_locator import (
     calculate_derivatives,
     calculate_threshold,
     find_first_popin,
+    find_flat_load_regions,
     get_loading_section,
     get_popin_candidates,
     load_data,
@@ -168,3 +169,65 @@ def test_threshold_requires_enough_finite_baseline_points():
         calculate_threshold(pd.DataFrame({"dDepth_nm": np.ones(69)}))
     with np.errstate(invalid="ignore"), pytest.raises(InvalidDataError, match="valid pop-in threshold"):
         calculate_threshold(pd.DataFrame({"dDepth_nm": np.r_[np.zeros(50), np.full(20, np.inf)]}))
+
+
+def test_flat_load_without_popin_candidate_is_ignored(write_popin_curve):
+    increments = np.full(120, 2.)
+    increments[80:85] = 0
+    result = analyze_file(write_popin_curve(load=np.cumsum(increments)))
+    assert result["candidate_count"] == 0
+    assert result["flat_regions"] == []
+
+
+def test_only_candidate_plateau_is_refined(write_popin_curve):
+    increments = np.full(120, 2.)
+    increments[75:85] = 0.1
+    increments[100:110] = 0  # Unrelated flat region must not become an event.
+    result = analyze_file(write_popin_curve(load=np.cumsum(increments), jumps=[(80, 20)]))
+    assert result["candidate_count"] == 1
+    assert result["flat_slope_threshold"] == pytest.approx(0.4)
+    region, = result["flat_regions"]
+    assert region["candidate_indices"] == [80]
+    assert (region["start_index"], region["end_index"]) == (74, 84)
+    assert region["start_depth_nm"] == 74
+    assert region["end_depth_nm"] == 104
+    assert region["start_time_s"] == pytest.approx(0.74)
+    assert region["end_time_s"] == pytest.approx(0.84)
+
+
+@pytest.mark.parametrize("jumps, expected", [
+    ([(80, 20)], [(79, 80)]),
+    ([(80, 20), (100, 50)], [(79, 80), (99, 100)]),
+    ([(50, 20), (119, 20)], [(49, 50), (118, 119)]),
+])
+def test_isolated_popin_keeps_candidate_interval(write_popin_curve, jumps, expected):
+    result = analyze_file(write_popin_curve(jumps=jumps))
+    assert [(r["start_index"], r["end_index"]) for r in result["flat_regions"]] == expected
+
+
+def test_candidates_on_same_plateau_share_region(write_popin_curve):
+    increments = np.full(120, 2.)
+    increments[80:85] = 0.1
+    result = analyze_file(write_popin_curve(load=np.cumsum(increments), jumps=[(81, 20), (83, 20)]))
+    region, = result["flat_regions"]
+    assert region["candidate_indices"] == [81, 83]
+    assert (region["start_index"], region["end_index"]) == (79, 84)
+
+
+def test_flat_region_flushes_at_end_and_splits_on_depth_reversal(write_popin_curve):
+    frame = load_data(write_popin_curve())
+    frame.loc[110:, "Load_uN"] = frame.loc[109, "Load_uN"]
+    frame.loc[114, "Depth_nm"] = frame.loc[113, "Depth_nm"] - 1
+    regions, _ = find_flat_load_regions(frame, frame.loc[[111, 116]])
+    assert [(r["start_index"], r["end_index"]) for r in regions] == [(109, 113), (114, 119)]
+
+
+def test_flat_regions_are_invariant_to_axis_units(write_popin_curve):
+    increments = np.full(120, 2.)
+    increments[80:85] = 0.1
+    frame = load_data(write_popin_curve(load=np.cumsum(increments)))
+    frame["Load_uN"] *= 1000
+    frame["Depth_nm"] *= 0.001
+    regions, threshold = find_flat_load_regions(frame, frame.loc[[82]])
+    assert [(r["start_index"], r["end_index"]) for r in regions] == [(79, 84)]
+    assert threshold == pytest.approx(400000)

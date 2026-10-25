@@ -1,7 +1,9 @@
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from PyQt5.QtCore import QObject, QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QFont
@@ -10,6 +12,7 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QPushButton,
     QSizePolicy,
     QTextEdit,
@@ -19,6 +22,14 @@ from PyQt5.QtWidgets import (
 
 from analysis_scripts.popin_locator import InvalidDataError, analyze_file
 from analysis_scripts import popin_ml
+
+
+class PopInNavigationToolbar(NavigationToolbar):
+    # Only create navigation and image-save actions; subplot and parameter
+    # editor actions (and their dialog callbacks) are never registered.
+    toolitems = tuple(item for item in NavigationToolbar.toolitems
+                     if item[3] in {"home", "back", "forward", "pan", "zoom", "save_figure"}
+                     or item[0] is None)
 
 
 class ModelWorker(QObject):
@@ -47,6 +58,10 @@ class PopInLocatorView(QWidget):
         self._model = None
         self._model_thread = None
         self._model_worker = None
+        self._threshold_result = None
+        self._region_artists = []
+        self._drag_endpoint = None
+        self._results_file_path = None
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(20, 20, 20, 20)
         self._layout.setSpacing(12)
@@ -119,6 +134,13 @@ class PopInLocatorView(QWidget):
         )
         self._results_text.setPlainText("Select a .txt file to begin.")
         results_layout.addWidget(self._results_text)
+        self._save_results_button = QPushButton("Save Detection Results")
+        self._save_results_button.setEnabled(False)
+        self._save_results_button.clicked.connect(self._save_detection_results)
+        results_layout.addWidget(self._save_results_button)
+        self._save_results_status = QLabel()
+        self._save_results_status.setWordWrap(True)
+        results_layout.addWidget(self._save_results_status)
         content_row.addWidget(results_group, 1)
 
         graph_group = QGroupBox("Load-Depth Plot")
@@ -126,7 +148,18 @@ class PopInLocatorView(QWidget):
         self._figure = Figure(figsize=(8, 5), tight_layout=True)
         self._canvas = FigureCanvas(self._figure)
         self._canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self._toolbar = PopInNavigationToolbar(self._canvas, self)
+        graph_layout.addWidget(self._toolbar)
+        plot_help = QLabel(
+            "Scroll to zoom; use the toolbar to pan, box zoom, or reset. "
+            "With pan/zoom off, drag a start/end marker along the curve.")
+        plot_help.setWordWrap(True)
+        graph_layout.addWidget(plot_help)
         graph_layout.addWidget(self._canvas)
+        self._canvas.mpl_connect("scroll_event", self._zoom_plot)
+        self._canvas.mpl_connect("button_press_event", self._start_endpoint_drag)
+        self._canvas.mpl_connect("motion_notify_event", self._move_endpoint)
+        self._canvas.mpl_connect("button_release_event", self._finish_endpoint_drag)
         content_row.addWidget(graph_group, 2)
 
         self._layout.addLayout(content_row, 1)
@@ -159,6 +192,26 @@ class PopInLocatorView(QWidget):
         self._create_model_button.setEnabled(not self.model_busy)
         self._run_model_button.setEnabled(
             not self.model_busy and self._selected_file is not None and self._model is not None)
+        self._save_results_button.setEnabled(not self.model_busy and self._results_file_path is not None)
+
+    def _save_detection_results(self):
+        if self.model_busy or self._results_file_path is None:
+            return
+        default_path = self._results_file_path.with_name(
+            f"{self._results_file_path.stem}_detection_results.txt")
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Save Detection Results", str(default_path), "Text Files (*.txt)")
+        if not file_path:
+            return
+        destination = Path(file_path)
+        if not destination.suffix:
+            destination = destination.with_suffix(".txt")
+        try:
+            destination.write_text(self._results_text.toPlainText() + "\n", encoding="utf-8")
+        except OSError as error:
+            QMessageBox.critical(self, "Save failed", f"Could not save detection results:\n{error}")
+            return
+        self._save_results_status.setText(f"Saved results to {destination}")
 
     def _start_model_work(self, operation, success):
         self._model_thread = QThread(self)
@@ -186,6 +239,7 @@ class PopInLocatorView(QWidget):
     def _create_model(self):
         if self.model_busy:
             return
+        self._draw_empty_plot("Training shape model")
         self._model_label.setText("Training normalized shape model and evaluating held-out curves…")
         self._results_text.setPlainText(
             "Scanning all training text files and matching Excel load/depth labels…\n"
@@ -266,9 +320,9 @@ class PopInLocatorView(QWidget):
         self._draw_result_plot(result)
 
     def _display_results(self, result):
+        self._save_results_status.clear()
         loading = result["loading"]
-        pop_index = result["pop_index"]
-        threshold = result["threshold"]
+        regions = result["flat_regions"]
         file_path = result["file_path"]
 
         lines = [
@@ -278,27 +332,34 @@ class PopInLocatorView(QWidget):
             f"Loading points: {len(loading)}",
             f"Maximum load index: {int(loading['Load_uN'].idxmax())}",
             f"Maximum load: {loading['Load_uN'].max():.3f} uN",
-            f"Pop-in threshold: {threshold:.6f} nm",
+            f"Flat-load slope threshold: {result['flat_slope_threshold']:.6f} uN/nm",
+            f"Pop-in threshold: {result['threshold']:.6f} nm",
             f"Pop-in candidates: {result['candidate_count']}",
+            "Endpoint extension: at most 20% of normal loading slope",
+            f"Candidate regions: {len(regions)}",
         ]
 
-        if pop_index is None:
+        if not regions:
             lines.extend(["", "No pop-in candidates exceeded the threshold."])
-        else:
-            pop = loading.loc[pop_index]
-            previous = loading.loc[pop_index - 1]
+        for number, region in enumerate(regions, 1):
+            depth_change = region["end_depth_nm"] - region["start_depth_nm"]
+            load_change = region["end_load_uN"] - region["start_load_uN"]
+            slope_text = (f"{load_change / depth_change:.6f} uN/nm"
+                          if depth_change != 0 else "Undefined (zero depth span)")
             lines.extend(
                 [
                     "",
-                    "First pop-in candidate detected",
-                    f"Data point: {pop_index}",
-                    f"Depth before pop-in: {previous['Depth_nm']:.3f} nm",
-                    f"Depth after pop-in: {pop['Depth_nm']:.3f} nm",
-                    f"Depth jump: {pop['dDepth_nm']:.3f} nm",
-                    f"Load: {pop['Load_uN']:.3f} uN",
-                    f"Load change: {pop['dLoad_uN']:.3f} uN",
-                    f"Time: {pop['Time_s']:.6f} s",
-                    f"dDepth/dLoad: {pop['dDepth_dLoad']:.4f}",
+                    f"Candidate region {number}" + (" (manually adjusted)" if region.get("manually_adjusted") else ""),
+                    "Pop-in data points: " + ", ".join(map(str, region["candidate_indices"])),
+                    f"Start data point: {region['start_index']}",
+                    f"End data point: {region['end_index']}",
+                    f"Start: depth {region['start_depth_nm']:.3f} nm, "
+                    f"load {region['start_load_uN']:.3f} uN, time {region['start_time_s']:.6f} s",
+                    f"End: depth {region['end_depth_nm']:.3f} nm, "
+                    f"load {region['end_load_uN']:.3f} uN, time {region['end_time_s']:.6f} s",
+                    f"Depth span: {depth_change:.3f} nm",
+                    f"Load change: {load_change:.3f} uN",
+                    f"dy/dx (Δload/Δdepth): {slope_text}",
                 ]
             )
 
@@ -306,14 +367,11 @@ class PopInLocatorView(QWidget):
 
     def _draw_result_plot(self, result):
         loading = result["loading"]
-        pop_index = result["pop_index"]
-        events = []
-        if pop_index is not None:
-            pop = loading.loc[pop_index]
-            events.append({"depth_nm": pop["Depth_nm"], "load_uN": pop["Load_uN"]})
-        self._draw_popin_plot(result["file_path"], loading["Depth_nm"], loading["Load_uN"], events)
+        self._draw_popin_plot(result["file_path"], loading["Depth_nm"], loading["Load_uN"], [],
+                              regions=result["flat_regions"])
+        self._threshold_result = result
 
-    def _draw_popin_plot(self, file_path, depth, load, events):
+    def _draw_popin_plot(self, file_path, depth, load, events, regions=()):
         """Use one loading curve, scale, and style for either detector."""
         ax = self._prepare_axis()
         ax.plot(depth, load, color="#5dade2", linewidth=1.0, label="Loading Curve")
@@ -322,17 +380,92 @@ class PopInLocatorView(QWidget):
         ax.margins(x=0.05, y=0.05)
         ax.set_xlim(ax.get_xlim())
         ax.set_ylim(ax.get_ylim())
+        for number, region in enumerate(regions, 1):
+            segment = slice(region["start_index"], region["end_index"] + 1)
+            line, = ax.plot(depth.iloc[segment], load.iloc[segment], color="#ffd166", linewidth=3,
+                            label="Candidate region" if number == 1 else None)
+            artists = {"line": line}
+            for endpoint, color, marker in (("start", "#76d7a4", "o"), ("end", "#ff5c5c", "s")):
+                x, y = region[f"{endpoint}_depth_nm"], region[f"{endpoint}_load_uN"]
+                artists[endpoint] = ax.scatter([x], [y], color=color, marker=marker, s=65, zorder=5,
+                                               label=endpoint.title() if number == 1 else None)
+            self._region_artists.append(artists)
         if events:
             ax.scatter([e["depth_nm"] for e in events], [e["load_uN"] for e in events],
                        color="#ff5c5c", s=80, zorder=5, label="Pop-in Candidates")
-            for number, event in enumerate(events, 1):
-                ax.annotate(str(number), (event["depth_nm"], event["load_uN"]),
-                            xytext=(6, 8), textcoords="offset points", color="#ffffff")
         ax.set_xlabel("Depth (nm)", color="#ffffff")
         ax.set_ylabel("Load (uN)", color="#ffffff")
         ax.set_title(f"Pop-in Detection: {file_path.name}", color="#ffffff")
         self._style_axis(ax)
+        self._toolbar.push_current()
+        self._results_file_path = Path(file_path)
+        self._update_buttons()
         self._canvas.draw_idle()
+
+    def _zoom_plot(self, event):
+        if event.inaxes is None or event.xdata is None or event.ydata is None:
+            return
+        if self._drag_endpoint is not None or not event.step:
+            return
+        ax = event.inaxes
+        factor = 1.2 ** -float(np.clip(event.step, -10, 10))
+        self._toolbar.push_current()
+        ax.set_xlim(*(event.xdata + (np.asarray(ax.get_xlim()) - event.xdata) * factor))
+        ax.set_ylim(*(event.ydata + (np.asarray(ax.get_ylim()) - event.ydata) * factor))
+        self._toolbar.push_current()
+        self._canvas.draw_idle()
+
+    def _start_endpoint_drag(self, event):
+        if (event.button != 1 or event.inaxes is None or self._toolbar.mode
+                or self._threshold_result is None or self.model_busy):
+            return
+        nearest = 12.0  # Screen pixels: picking stays usable at every zoom level.
+        for number, region in enumerate(self._threshold_result["flat_regions"]):
+            for endpoint in ("start", "end"):
+                point = event.inaxes.transData.transform(
+                    (region[f"{endpoint}_depth_nm"], region[f"{endpoint}_load_uN"]))
+                distance = np.hypot(point[0] - event.x, point[1] - event.y)
+                if distance < nearest:
+                    nearest = distance
+                    self._drag_endpoint = (number, endpoint)
+
+    def _move_endpoint(self, event):
+        if self._drag_endpoint is None or event.inaxes is None:
+            return
+        number, endpoint = self._drag_endpoint
+        result = self._threshold_result
+        region = result["flat_regions"][number]
+        loading = result["loading"]
+        # Keep start before end; manual refinement may extend beyond the
+        # automatically detected plateau anywhere on the loading curve.
+        allowed = (loading.index < region["end_index"] if endpoint == "start"
+                   else loading.index > region["start_index"])
+        candidates = loading.loc[allowed]
+        if candidates.empty:
+            return
+        pixels = event.inaxes.transData.transform(candidates[["Depth_nm", "Load_uN"]].to_numpy())
+        nearest = int(np.argmin(np.sum((pixels - [event.x, event.y]) ** 2, axis=1)))
+        index = int(candidates.index[nearest])
+        if index == region[f"{endpoint}_index"]:
+            return
+        row = loading.loc[index]
+        region[f"{endpoint}_index"] = index
+        for suffix, column in (("depth_nm", "Depth_nm"), ("load_uN", "Load_uN"), ("time_s", "Time_s")):
+            region[f"{endpoint}_{suffix}"] = float(row[column])
+        region["manually_adjusted"] = True
+        artists = self._region_artists[number]
+        point = (region[f"{endpoint}_depth_nm"], region[f"{endpoint}_load_uN"])
+        artists[endpoint].set_offsets([point])
+        segment = loading.loc[region["start_index"]:region["end_index"]]
+        artists["line"].set_data(segment["Depth_nm"], segment["Load_uN"])
+        scrollbar = self._results_text.verticalScrollBar()
+        scroll_position = scrollbar.value()
+        self._display_results(result)
+        scrollbar.setValue(scroll_position)
+        self._canvas.draw_idle()
+
+    def _finish_endpoint_drag(self, event):
+        self._drag_endpoint = None
 
     def _draw_empty_plot(self, message):
         ax = self._prepare_axis()
@@ -351,10 +484,20 @@ class PopInLocatorView(QWidget):
         self._canvas.draw_idle()
 
     def _prepare_axis(self):
+        self._threshold_result = None
+        self._region_artists = []
+        self._drag_endpoint = None
+        self._results_file_path = None
+        self._save_results_button.setEnabled(False)
+        self._save_results_status.clear()
         self._figure.clear()
+        self._toolbar.update()
         self._figure.patch.set_facecolor("#2b2b2b")
         ax = self._figure.add_subplot(111)
         ax.set_facecolor("#2b2b2b")
+        ax.ticklabel_format(axis="both", style="plain", useOffset=False)
+        # Cursor readouts have their own formatters, separate from tick labels.
+        ax.fmt_xdata = ax.fmt_ydata = lambda value: f"{value:.2f}"
         return ax
 
     def _style_axis(self, ax, show_legend=True):
