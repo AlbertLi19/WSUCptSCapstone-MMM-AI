@@ -202,6 +202,43 @@ def test_algorithm_counts_all_candidates_and_displays_only_first_region(gui, wri
     assert len(axis.collections) == 2
 
 
+def test_algorithm_points_are_marked_without_labels_and_survive_drag(gui, write_popin_curve):
+    _, window = gui
+    result = editable_curve(window, write_popin_curve)
+    axis = window._figure.axes[0]
+    assert not axis.texts
+    for line in axis.lines:
+        assert line.get_marker() == "o"
+        assert line.get_markersize() >= 4
+    np.testing.assert_allclose(axis.lines[0].get_xydata(), result["loading"][["Depth_nm", "Load_uN"]])
+    plot_mouse(window, "button_press_event", 78, 158, button=1)
+    plot_mouse(window, "motion_notify_event", 77, 156, button=1)
+    plot_mouse(window, "button_release_event", 77, 156, button=1)
+    assert result["flat_regions"][0]["start_index"] == 77
+    assert axis.lines[1].get_marker() == "o"
+    assert not axis.texts
+
+
+def test_slope_percentage_control_applies_on_detection_and_is_reported(gui, write_popin_curve):
+    _, window = gui
+    increments = np.full(120, 2.)
+    increments[75:85] = 0.6
+    window._selected_file = write_popin_curve(load=np.cumsum(increments), jumps=[(80, 20)])
+    assert window._slope_percentage.value() == 20
+    window._run_detection()
+    assert "Start data point: 79" in window._results_text.toPlainText()
+    window._slope_percentage.setValue(50)
+    window._run_detection()
+    text = window._results_text.toPlainText()
+    assert "Endpoint extension: at most 50% of median positive loading slope" in text
+    assert "Start data point: 74" in text
+    assert "End data point: 84" in text
+    # Changing the input alone must not change the percentage saved with results.
+    window._slope_percentage.setValue(30)
+    window._display_results(window._threshold_result)
+    assert "at most 50%" in window._results_text.toPlainText()
+
+
 def test_selecting_new_file_and_error_clear_previous_results(gui, monkeypatch, write_popin_curve, tmp_path):
     app, window = gui
     loads = np.cumsum(np.r_[np.full(80, 2.), np.zeros(5), np.full(35, 2.)])
@@ -311,6 +348,50 @@ def test_scroll_zoom_and_toolbar_home(gui, write_popin_curve):
     plot_mouse(window, "scroll_event", 80, 160, button="up", step=2)
     window._toolbar.home()
     np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), original)
+
+
+def test_rerun_preserves_view_and_back_forward_home_history(gui, write_popin_curve):
+    _, window = gui
+    result = editable_curve(window, write_popin_curve)
+    window._selected_file = result["file_path"]
+    axis = window._figure.axes[0]
+    original = (axis.get_xlim(), axis.get_ylim())
+    plot_mouse(window, "scroll_event", 80, 160, button="up", step=1)
+    first_zoom = (axis.get_xlim(), axis.get_ylim())
+    plot_mouse(window, "scroll_event", 80, 160, button="up", step=2)
+    second_zoom = (axis.get_xlim(), axis.get_ylim())
+    window._toolbar.back()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), first_zoom)
+    window._slope_percentage.setValue(50)
+    window._run_detection()
+    assert window._figure.axes[0] is axis
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), first_zoom)
+    assert "at most 50%" in window._results_text.toPlainText()
+    assert len(axis.lines) == 2  # No duplicate curves or endpoint markers.
+    assert len(axis.collections) == 2
+    window._toolbar.forward()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), second_zoom)
+    window._toolbar.back()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), first_zoom)
+    window._toolbar.home()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), original)
+
+
+def test_new_file_resets_view_and_navigation_history(gui, write_popin_curve):
+    _, window = gui
+    editable_curve(window, write_popin_curve)
+    previous_axis = window._figure.axes[0]
+    plot_mouse(window, "scroll_event", 80, 160, button="up", step=2)
+    window._selected_file = write_popin_curve(name="other.txt", load=np.arange(120) * 200)
+    window._run_detection()
+    axis = window._figure.axes[0]
+    assert axis is not previous_axis
+    limits = (axis.get_xlim(), axis.get_ylim())
+    assert axis.get_ylim()[1] > 20000
+    window._toolbar.back()
+    window._toolbar.forward()
+    window._toolbar.home()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), limits)
 
 
 def test_drag_both_endpoints_snaps_and_updates_before_release(gui, write_popin_curve):
