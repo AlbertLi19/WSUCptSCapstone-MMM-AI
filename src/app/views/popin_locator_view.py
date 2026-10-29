@@ -8,6 +8,7 @@ from matplotlib.figure import Figure
 from PyQt5.QtCore import QObject, QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
+    QDoubleSpinBox,
     QFileDialog,
     QGroupBox,
     QHBoxLayout,
@@ -20,7 +21,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from analysis_scripts.popin_locator import InvalidDataError, analyze_file
+from analysis_scripts.popin_locator import FLAT_SLOPE_FRACTION, InvalidDataError, analyze_file
 from analysis_scripts import popin_ml
 
 
@@ -111,6 +112,23 @@ class PopInLocatorView(QWidget):
         button_row.addStretch()
         controls_layout.addLayout(button_row)
 
+        slope_row = QHBoxLayout()
+        slope_label = QLabel("Endpoint slope (% of median):")
+        self._slope_percentage = QDoubleSpinBox()
+        self._slope_percentage.setRange(0, 100)
+        self._slope_percentage.setDecimals(1)
+        self._slope_percentage.setSingleStep(1)
+        self._slope_percentage.setSuffix("%")
+        self._slope_percentage.setValue(FLAT_SLOPE_FRACTION * 100)
+        self._slope_percentage.setToolTip(
+            "Extend endpoints over steps whose absolute slope is at most this percentage "
+            "of the median positive loading slope. Click Run Detection to apply.")
+        slope_label.setBuddy(self._slope_percentage)
+        slope_row.addWidget(slope_label)
+        slope_row.addWidget(self._slope_percentage)
+        slope_row.addStretch()
+        controls_layout.addLayout(slope_row)
+
         self._file_label = QLabel("No file selected")
         self._file_label.setWordWrap(True)
         controls_layout.addWidget(self._file_label)
@@ -188,6 +206,7 @@ class PopInLocatorView(QWidget):
 
     def _update_buttons(self):
         self._select_file_button.setEnabled(not self.model_busy)
+        self._slope_percentage.setEnabled(not self.model_busy)
         self._run_button.setEnabled(not self.model_busy and self._selected_file is not None)
         self._create_model_button.setEnabled(not self.model_busy)
         self._run_model_button.setEnabled(
@@ -302,7 +321,8 @@ class PopInLocatorView(QWidget):
             return
 
         try:
-            result = analyze_file(self._selected_file)
+            result = analyze_file(
+                self._selected_file, flat_slope_fraction=self._slope_percentage.value() / 100)
         except InvalidDataError as error:
             self._show_error("Data error", str(error))
             return
@@ -335,7 +355,7 @@ class PopInLocatorView(QWidget):
             f"Flat-load slope threshold: {result['flat_slope_threshold']:.6f} uN/nm",
             f"Pop-in threshold: {result['threshold']:.6f} nm",
             f"Pop-in candidates: {result['candidate_count']}",
-            "Endpoint extension: at most 20% of normal loading slope",
+            f"Endpoint extension: at most {result['flat_slope_fraction'] * 100:g}% of median positive loading slope",
             f"Candidate regions: {len(regions)}",
         ]
 
@@ -368,21 +388,27 @@ class PopInLocatorView(QWidget):
     def _draw_result_plot(self, result):
         loading = result["loading"]
         self._draw_popin_plot(result["file_path"], loading["Depth_nm"], loading["Load_uN"], [],
-                              regions=result["flat_regions"])
+                              regions=result["flat_regions"], show_points=True)
         self._threshold_result = result
 
-    def _draw_popin_plot(self, file_path, depth, load, events, regions=()):
+    def _draw_popin_plot(self, file_path, depth, load, events, regions=(), show_points=False):
         """Use one loading curve, scale, and style for either detector."""
-        ax = self._prepare_axis()
-        ax.plot(depth, load, color="#5dade2", linewidth=1.0, label="Loading Curve")
+        preserve_view = self._results_file_path == Path(file_path) and bool(self._figure.axes)
+        ax = self._prepare_axis(preserve_view=preserve_view)
+        ax.plot(depth, load, color="#5dade2", linewidth=1.0, label="Loading Curve",
+                marker="o" if show_points else None, markersize=4,
+                markerfacecolor="#d6eaf8", markeredgecolor="#5dade2", markeredgewidth=0.6)
         # Fix limits from the curve alone so candidate locations cannot change
         # the scale when switching methods, including when no event is found.
-        ax.margins(x=0.05, y=0.05)
-        ax.set_xlim(ax.get_xlim())
-        ax.set_ylim(ax.get_ylim())
+        if not preserve_view:
+            ax.margins(x=0.05, y=0.05)
+            ax.set_xlim(ax.get_xlim())
+            ax.set_ylim(ax.get_ylim())
         for number, region in enumerate(regions, 1):
             segment = slice(region["start_index"], region["end_index"] + 1)
             line, = ax.plot(depth.iloc[segment], load.iloc[segment], color="#ffd166", linewidth=3,
+                            marker="o", markersize=4, markerfacecolor="#fff3cd",
+                            markeredgecolor="#b8860b", markeredgewidth=0.6,
                             label="Candidate region" if number == 1 else None)
             artists = {"line": line}
             for endpoint, color, marker in (("start", "#76d7a4", "o"), ("end", "#ff5c5c", "s")):
@@ -397,7 +423,8 @@ class PopInLocatorView(QWidget):
         ax.set_ylabel("Load (uN)", color="#ffffff")
         ax.set_title(f"Pop-in Detection: {file_path.name}", color="#ffffff")
         self._style_axis(ax)
-        self._toolbar.push_current()
+        if not preserve_view:
+            self._toolbar.push_current()
         self._results_file_path = Path(file_path)
         self._update_buttons()
         self._canvas.draw_idle()
@@ -483,13 +510,24 @@ class PopInLocatorView(QWidget):
         self._style_axis(ax, show_legend=False)
         self._canvas.draw_idle()
 
-    def _prepare_axis(self):
+    def _prepare_axis(self, preserve_view=False):
         self._threshold_result = None
         self._region_artists = []
         self._drag_endpoint = None
         self._results_file_path = None
         self._save_results_button.setEnabled(False)
         self._save_results_status.clear()
+        if preserve_view:
+            # Navigation history refers to this exact Axes instance. Replace
+            # plotted data without clearing the axes or pushing a new view,
+            # which would discard any Forward history after going Back.
+            ax = self._figure.axes[0]
+            for artist in list(ax.lines) + list(ax.collections) + list(ax.texts):
+                artist.remove()
+            legend = ax.get_legend()
+            if legend is not None:
+                legend.remove()
+            return ax
         self._figure.clear()
         self._toolbar.update()
         self._figure.patch.set_facecolor("#2b2b2b")
