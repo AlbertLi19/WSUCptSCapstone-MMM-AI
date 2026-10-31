@@ -10,11 +10,15 @@
 Most of the work for this project is complete, there is some training data that still needs to be annotated and some small bug fixes here and there, but the majority of the project is complete.
 * (more unfinished work here)
 ## Completed Issues/User Stories
-* completed issues/user stories here
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/16
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/17
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/28
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/29
 * We have also included a live demo of the current application in the Sprint 5 YouTube video, demonstrating the new features. 
 ## Incomplete Issues/User Stories
-Here are links to issues we worked on but did not complete in this sprint (explanation in a comment on the issue): 
-* incomplete issues/user stories here
+Here are links to issues we worked on but did not complete in this sprint (These are the Final Report and Final Review Kanban Board issues): 
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/18
+* https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/27
 ## Code Files for Review
 Please review the following code files, which were actively developed during this
 sprint, for quality:
