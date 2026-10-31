@@ -21,7 +21,7 @@ See [setup, usage, and validation](docs/popin_ml.md).
 ### Prerequisites
 
 •	Git 
-•	Python  
+•	Python 3.11 or 3.12
 •	pip (or package manager of choice)
 
 ### Installation Steps
@@ -107,7 +107,56 @@ Minor bug fixes required in crater analysis
 
 There is a possibility of errors due to dependency downloads, should this occur attempt downloading each requirement listed in requirements.txt individually. Versions can be ignored if this is required, simply download whichever one you can.
 
-More recent Python version might cause failures as well, currently unknown. Python version 3.9.13 confirmed to work.
+Use Python 3.11 or 3.12 with the current requirements. The pinned SciPy version
+requires Python 3.11 or newer, and the NumPy requirement (`numpy<2`) supports
+Python up to 3.12.
+
+## Continuous integration
+
+[GitHub Actions CI](.github/workflows/ci.yml) runs on every push, pull request,
+and manual dispatch from the repository's Actions tab. It checks Python syntax
+in `src/app` and `tests` and runs the full `tests/` suite on Ubuntu with Python
+3.11 and 3.12, including
+the Qt integration tests using the offscreen platform. Dependencies are cached,
+and CI installs CPU-only PyTorch to avoid downloading CUDA libraries.
+
+Each test job uploads a JUnit XML report as an Actions artifact, retained for
+14 days, including when tests fail. No repository secrets are required.
+
+To run the same checks locally after installing `requirements.txt`:
+
+```bash
+python -m compileall -q src/app tests
+QT_QPA_PLATFORM=offscreen python -m pytest tests -q --junitxml=test-results/pytest.xml
+```
+
+In Windows PowerShell, set `$env:QT_QPA_PLATFORM = "offscreen"` before running
+the pytest command without the environment-variable prefix. The SIGINT tests
+currently exercise POSIX signal behavior, so CI runs on Linux.
+
+## Windows releases
+
+[Windows release workflow](.github/workflows/build-release.yml) runs when a
+stable version tag such as `v1.0.14` is pushed. The tag must match `version.txt`.
+It runs both CI test jobs, builds the Windows x64 executable with Python 3.11
+and PyInstaller, then publishes a GitHub release with generated release notes,
+`SegmentationApp-vX.Y.Z-windows-x64.zip`, and `SHA256SUMS.txt`.
+The ZIP contains `SegmentationApp.exe`, `version.txt`, and the license; extract
+it before launching the executable. The build uses CPU-only PyTorch.
+
+To release a new version, update and commit `version.txt` with your changes,
+push that commit, then create and push the matching tag:
+
+```bash
+git tag -a v1.0.14 -m "Release 1.0.14"
+git push origin v1.0.14
+```
+
+Use your actual new version in place of `1.0.14`. The workflow can also be run
+manually against an existing matching tag. It requires GitHub Actions to have
+permission to create releases through `GITHUB_TOKEN`; no custom secret is
+needed. Builds are unsigned. This workflow currently produces Windows releases
+only. Existing releases are preserved; attempting to recreate one fails.
 
 ## Additional Documentation
 

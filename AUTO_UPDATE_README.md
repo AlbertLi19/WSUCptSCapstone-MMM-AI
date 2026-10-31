@@ -407,16 +407,17 @@ cd dist && zip -r SegmentationApp-v1.0.1-mac.zip SegmentationApp/ && cd ..
 
 ### GitHub Actions (Recommended)
 
-The repository includes a GitHub Actions workflow that automatically builds for all platforms.
+The repository includes a GitHub Actions workflow that builds Windows x64 releases.
+See [Windows releases](README.md#windows-releases) for the current release procedure.
 
 Location: `.github/workflows/build-release.yml`
 
 **How it works:**
-1. You push a tag: `git push origin v1.0.0`
-2. GitHub Actions triggers
-3. Builds on macOS, Windows, and Linux simultaneously
-4. Creates packages for each platform
-5. Uploads all packages to the release
+1. Update and commit `version.txt`, then push a matching stable tag such as `v1.0.14`.
+2. GitHub Actions validates the tag and runs the Linux CI tests on Python 3.11 and 3.12.
+3. Builds `SegmentationApp.exe` on Windows with CPU-only PyTorch.
+4. Creates a Windows ZIP and SHA-256 checksum file.
+5. Publishes a GitHub release with both files. macOS and Linux builds remain manual.
 
 **Advantages:**
 - No need for multiple machines
@@ -428,7 +429,7 @@ Location: `.github/workflows/build-release.yml`
 ```bash
 # Just commit and push the workflow file
 git add .github/workflows/build-release.yml
-git commit -m "Add multi-platform build workflow"
+git commit -m "Add Windows release workflow"
 git push origin main
 
 # Then push tags as normal

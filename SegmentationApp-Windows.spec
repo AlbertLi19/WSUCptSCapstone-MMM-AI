@@ -5,8 +5,6 @@ import torch
 
 # Custom spec file for Windows build with matplotlib backend exclusions
 
-block_cipher = None
-
 # Collect all torch dependencies (binaries, datas, hiddenimports)
 torch_datas, torch_binaries, torch_hiddenimports = collect_all('torch')
 
@@ -145,19 +143,15 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=['pyi_rth_torch.py'],
     excludes=excluded_modules,
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
     noarchive=False,
 )
 
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+pyz = PYZ(a.pure)
 
 exe = EXE(
     pyz,
     a.scripts,
     a.binaries,
-    a.zipfiles,
     a.datas,
     [],
     name='SegmentationApp',
