@@ -7,3 +7,5 @@ __pycache__/
 *.0.0
 *.0.0.0
 /test-results/
+.idea/misc.xml
+.idea/workspace.xml
