@@ -1,4 +1,6 @@
+import csv
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 import pandas as pd
 import numpy as np
@@ -8,6 +10,7 @@ from matplotlib.figure import Figure
 from PyQt5.QtCore import QObject, QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
+    QDoubleSpinBox,
     QFileDialog,
     QGroupBox,
     QHBoxLayout,
@@ -20,8 +23,14 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from analysis_scripts.popin_locator import InvalidDataError, analyze_file
+from analysis_scripts.popin_locator import FLAT_SLOPE_FRACTION, InvalidDataError, analyze_file
 from analysis_scripts import popin_ml
+
+
+POPIN_CSV_COLUMNS = (
+    "file name", "pop-in start load", "pop-in start depth", "pop-in start time",
+    "pop-in end load", "pop-in end depth", "pop-in end time",
+)
 
 
 class PopInNavigationToolbar(NavigationToolbar):
@@ -62,6 +71,7 @@ class PopInLocatorView(QWidget):
         self._region_artists = []
         self._drag_endpoint = None
         self._results_file_path = None
+        self._locations_csv_path = Path(__file__).resolve().parents[3] / "popin_locations.csv"
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(20, 20, 20, 20)
         self._layout.setSpacing(12)
@@ -111,6 +121,23 @@ class PopInLocatorView(QWidget):
         button_row.addStretch()
         controls_layout.addLayout(button_row)
 
+        slope_row = QHBoxLayout()
+        slope_label = QLabel("Endpoint slope (% of median):")
+        self._slope_percentage = QDoubleSpinBox()
+        self._slope_percentage.setRange(0, 100)
+        self._slope_percentage.setDecimals(1)
+        self._slope_percentage.setSingleStep(1)
+        self._slope_percentage.setSuffix("%")
+        self._slope_percentage.setValue(FLAT_SLOPE_FRACTION * 100)
+        self._slope_percentage.setToolTip(
+            "Extend endpoints over steps whose absolute slope is at most this percentage "
+            "of the median positive loading slope. Click Run Detection to apply.")
+        slope_label.setBuddy(self._slope_percentage)
+        slope_row.addWidget(slope_label)
+        slope_row.addWidget(self._slope_percentage)
+        slope_row.addStretch()
+        controls_layout.addLayout(slope_row)
+
         self._file_label = QLabel("No file selected")
         self._file_label.setWordWrap(True)
         controls_layout.addWidget(self._file_label)
@@ -137,7 +164,17 @@ class PopInLocatorView(QWidget):
         self._save_results_button = QPushButton("Save Detection Results")
         self._save_results_button.setEnabled(False)
         self._save_results_button.clicked.connect(self._save_detection_results)
-        results_layout.addWidget(self._save_results_button)
+        self._save_csv_button = QPushButton("Save to CSV")
+        self._save_csv_button.setEnabled(False)
+        self._save_csv_button.setToolTip(
+            "Save the current start/end load (uN), depth (nm), and time (s) "
+            "to popin_locations.csv in the project folder.")
+        self._save_csv_button.clicked.connect(self._save_popin_csv)
+        save_row = QHBoxLayout()
+        for button in (self._save_results_button, self._save_csv_button):
+            button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+            save_row.addWidget(button, 1)
+        results_layout.addLayout(save_row)
         self._save_results_status = QLabel()
         self._save_results_status.setWordWrap(True)
         results_layout.addWidget(self._save_results_status)
@@ -188,11 +225,83 @@ class PopInLocatorView(QWidget):
 
     def _update_buttons(self):
         self._select_file_button.setEnabled(not self.model_busy)
+        self._slope_percentage.setEnabled(not self.model_busy)
         self._run_button.setEnabled(not self.model_busy and self._selected_file is not None)
         self._create_model_button.setEnabled(not self.model_busy)
         self._run_model_button.setEnabled(
             not self.model_busy and self._selected_file is not None and self._model is not None)
         self._save_results_button.setEnabled(not self.model_busy and self._results_file_path is not None)
+        self._save_csv_button.setEnabled(
+            not self.model_busy and self._threshold_result is not None
+            and bool(self._threshold_result["flat_regions"]))
+
+    def _save_popin_csv(self):
+        if (self.model_busy or self._threshold_result is None
+                or not self._threshold_result["flat_regions"]):
+            return
+        result = self._threshold_result
+        region = result["flat_regions"][0]
+        row = [result["file_path"].name] + [
+            region[f"{endpoint}_{field}"]
+            for endpoint in ("start", "end")
+            for field in ("load_uN", "depth_nm", "time_s")
+        ]
+        temporary_path = None
+        try:
+            rows = []
+            if self._locations_csv_path.exists():
+                with self._locations_csv_path.open(newline="", encoding="utf-8-sig") as saved:
+                    contents = list(csv.reader(saved))
+                if contents:
+                    if contents[0] != list(POPIN_CSV_COLUMNS):
+                        raise ValueError("The CSV header does not match the expected pop-in columns.")
+                    rows = [entry for entry in contents[1:] if entry]
+            exists = any(entry[0] == row[0] for entry in rows)
+            message = (
+                f"{row[0]} already exists in {self._locations_csv_path.name}.\n\n"
+                "Confirming will overwrite the pop-in data for that file with the current "
+                "start and end values. Continue?"
+                if exists else
+                f"Save the current pop-in start and end values for {row[0]} "
+                f"to {self._locations_csv_path.name}?"
+            )
+            if QMessageBox.question(
+                self, "Confirm CSV save", message,
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No,
+            ) != QMessageBox.Yes:
+                return
+            # Collapse any duplicates from earlier append-only saves, preserving
+            # the first matching row's position and all other files' data.
+            updated = []
+            replaced = False
+            for entry in rows:
+                if entry[0] == row[0]:
+                    if not replaced:
+                        updated.append(row)
+                        replaced = True
+                else:
+                    updated.append(entry)
+            if not replaced:
+                updated.append(row)
+            # Replace only after writing succeeds so a failed save cannot
+            # truncate the previous CSV.
+            with NamedTemporaryFile(
+                mode="w", newline="", encoding="utf-8", delete=False,
+                dir=self._locations_csv_path.parent, prefix=".popin_locations_", suffix=".csv",
+            ) as output:
+                temporary_path = Path(output.name)
+                writer = csv.writer(output)
+                writer.writerow(POPIN_CSV_COLUMNS)
+                writer.writerows(updated)
+            temporary_path.replace(self._locations_csv_path)
+        except (OSError, UnicodeError, csv.Error, ValueError) as error:
+            QMessageBox.critical(self, "Save failed", f"Could not save pop-in locations:\n{error}")
+            return
+        finally:
+            if temporary_path is not None and temporary_path.exists():
+                temporary_path.unlink()
+        action = "Updated" if exists else "Saved"
+        self._save_results_status.setText(f"{action} pop-in location in {self._locations_csv_path}")
 
     def _save_detection_results(self):
         if self.model_busy or self._results_file_path is None:
@@ -302,7 +411,8 @@ class PopInLocatorView(QWidget):
             return
 
         try:
-            result = analyze_file(self._selected_file)
+            result = analyze_file(
+                self._selected_file, flat_slope_fraction=self._slope_percentage.value() / 100)
         except InvalidDataError as error:
             self._show_error("Data error", str(error))
             return
@@ -335,7 +445,7 @@ class PopInLocatorView(QWidget):
             f"Flat-load slope threshold: {result['flat_slope_threshold']:.6f} uN/nm",
             f"Pop-in threshold: {result['threshold']:.6f} nm",
             f"Pop-in candidates: {result['candidate_count']}",
-            "Endpoint extension: at most 20% of normal loading slope",
+            f"Endpoint extension: at most {result['flat_slope_fraction'] * 100:g}% of median positive loading slope",
             f"Candidate regions: {len(regions)}",
         ]
 
@@ -368,21 +478,28 @@ class PopInLocatorView(QWidget):
     def _draw_result_plot(self, result):
         loading = result["loading"]
         self._draw_popin_plot(result["file_path"], loading["Depth_nm"], loading["Load_uN"], [],
-                              regions=result["flat_regions"])
+                              regions=result["flat_regions"], show_points=True)
         self._threshold_result = result
+        self._update_buttons()
 
-    def _draw_popin_plot(self, file_path, depth, load, events, regions=()):
+    def _draw_popin_plot(self, file_path, depth, load, events, regions=(), show_points=False):
         """Use one loading curve, scale, and style for either detector."""
-        ax = self._prepare_axis()
-        ax.plot(depth, load, color="#5dade2", linewidth=1.0, label="Loading Curve")
+        preserve_view = self._results_file_path == Path(file_path) and bool(self._figure.axes)
+        ax = self._prepare_axis(preserve_view=preserve_view)
+        ax.plot(depth, load, color="#5dade2", linewidth=1.0, label="Loading Curve",
+                marker="o" if show_points else None, markersize=4,
+                markerfacecolor="#d6eaf8", markeredgecolor="#5dade2", markeredgewidth=0.6)
         # Fix limits from the curve alone so candidate locations cannot change
         # the scale when switching methods, including when no event is found.
-        ax.margins(x=0.05, y=0.05)
-        ax.set_xlim(ax.get_xlim())
-        ax.set_ylim(ax.get_ylim())
+        if not preserve_view:
+            ax.margins(x=0.05, y=0.05)
+            ax.set_xlim(ax.get_xlim())
+            ax.set_ylim(ax.get_ylim())
         for number, region in enumerate(regions, 1):
             segment = slice(region["start_index"], region["end_index"] + 1)
             line, = ax.plot(depth.iloc[segment], load.iloc[segment], color="#ffd166", linewidth=3,
+                            marker="o", markersize=4, markerfacecolor="#fff3cd",
+                            markeredgecolor="#b8860b", markeredgewidth=0.6,
                             label="Candidate region" if number == 1 else None)
             artists = {"line": line}
             for endpoint, color, marker in (("start", "#76d7a4", "o"), ("end", "#ff5c5c", "s")):
@@ -397,7 +514,8 @@ class PopInLocatorView(QWidget):
         ax.set_ylabel("Load (uN)", color="#ffffff")
         ax.set_title(f"Pop-in Detection: {file_path.name}", color="#ffffff")
         self._style_axis(ax)
-        self._toolbar.push_current()
+        if not preserve_view:
+            self._toolbar.push_current()
         self._results_file_path = Path(file_path)
         self._update_buttons()
         self._canvas.draw_idle()
@@ -483,13 +601,25 @@ class PopInLocatorView(QWidget):
         self._style_axis(ax, show_legend=False)
         self._canvas.draw_idle()
 
-    def _prepare_axis(self):
+    def _prepare_axis(self, preserve_view=False):
         self._threshold_result = None
         self._region_artists = []
         self._drag_endpoint = None
         self._results_file_path = None
         self._save_results_button.setEnabled(False)
+        self._save_csv_button.setEnabled(False)
         self._save_results_status.clear()
+        if preserve_view:
+            # Navigation history refers to this exact Axes instance. Replace
+            # plotted data without clearing the axes or pushing a new view,
+            # which would discard any Forward history after going Back.
+            ax = self._figure.axes[0]
+            for artist in list(ax.lines) + list(ax.collections) + list(ax.texts):
+                artist.remove()
+            legend = ax.get_legend()
+            if legend is not None:
+                legend.remove()
+            return ax
         self._figure.clear()
         self._toolbar.update()
         self._figure.patch.set_facecolor("#2b2b2b")

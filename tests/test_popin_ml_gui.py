@@ -1,4 +1,5 @@
 """Exercise the real Qt background workflow without a display."""
+import csv
 import os
 import time
 import importlib.util
@@ -51,7 +52,7 @@ def test_load_run_and_cancel(gui, monkeypatch):
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(path), ""))
     assert not window._run_model_button.isEnabled()
     assert [button.text() for button in window.findChildren(QPushButton)] == [
-        "Select File", "Run Detection", "Train Shape Model", "Run Model", "Save Detection Results"]
+        "Select File", "Run Detection", "Train Shape Model", "Run Model", "Save Detection Results", "Save to CSV"]
     window._select_file_button.click()
     wait_for_worker(app, window)
     assert window._run_model_button.isEnabled()
@@ -202,6 +203,43 @@ def test_algorithm_counts_all_candidates_and_displays_only_first_region(gui, wri
     assert len(axis.collections) == 2
 
 
+def test_algorithm_points_are_marked_without_labels_and_survive_drag(gui, write_popin_curve):
+    _, window = gui
+    result = editable_curve(window, write_popin_curve)
+    axis = window._figure.axes[0]
+    assert not axis.texts
+    for line in axis.lines:
+        assert line.get_marker() == "o"
+        assert line.get_markersize() >= 4
+    np.testing.assert_allclose(axis.lines[0].get_xydata(), result["loading"][["Depth_nm", "Load_uN"]])
+    plot_mouse(window, "button_press_event", 78, 158, button=1)
+    plot_mouse(window, "motion_notify_event", 77, 156, button=1)
+    plot_mouse(window, "button_release_event", 77, 156, button=1)
+    assert result["flat_regions"][0]["start_index"] == 77
+    assert axis.lines[1].get_marker() == "o"
+    assert not axis.texts
+
+
+def test_slope_percentage_control_applies_on_detection_and_is_reported(gui, write_popin_curve):
+    _, window = gui
+    increments = np.full(120, 2.)
+    increments[75:85] = 0.6
+    window._selected_file = write_popin_curve(load=np.cumsum(increments), jumps=[(80, 20)])
+    assert window._slope_percentage.value() == 20
+    window._run_detection()
+    assert "Start data point: 79" in window._results_text.toPlainText()
+    window._slope_percentage.setValue(50)
+    window._run_detection()
+    text = window._results_text.toPlainText()
+    assert "Endpoint extension: at most 50% of median positive loading slope" in text
+    assert "Start data point: 74" in text
+    assert "End data point: 84" in text
+    # Changing the input alone must not change the percentage saved with results.
+    window._slope_percentage.setValue(30)
+    window._display_results(window._threshold_result)
+    assert "at most 50%" in window._results_text.toPlainText()
+
+
 def test_selecting_new_file_and_error_clear_previous_results(gui, monkeypatch, write_popin_curve, tmp_path):
     app, window = gui
     loads = np.cumsum(np.r_[np.full(80, 2.), np.zeros(5), np.full(35, 2.)])
@@ -311,6 +349,50 @@ def test_scroll_zoom_and_toolbar_home(gui, write_popin_curve):
     plot_mouse(window, "scroll_event", 80, 160, button="up", step=2)
     window._toolbar.home()
     np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), original)
+
+
+def test_rerun_preserves_view_and_back_forward_home_history(gui, write_popin_curve):
+    _, window = gui
+    result = editable_curve(window, write_popin_curve)
+    window._selected_file = result["file_path"]
+    axis = window._figure.axes[0]
+    original = (axis.get_xlim(), axis.get_ylim())
+    plot_mouse(window, "scroll_event", 80, 160, button="up", step=1)
+    first_zoom = (axis.get_xlim(), axis.get_ylim())
+    plot_mouse(window, "scroll_event", 80, 160, button="up", step=2)
+    second_zoom = (axis.get_xlim(), axis.get_ylim())
+    window._toolbar.back()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), first_zoom)
+    window._slope_percentage.setValue(50)
+    window._run_detection()
+    assert window._figure.axes[0] is axis
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), first_zoom)
+    assert "at most 50%" in window._results_text.toPlainText()
+    assert len(axis.lines) == 2  # No duplicate curves or endpoint markers.
+    assert len(axis.collections) == 2
+    window._toolbar.forward()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), second_zoom)
+    window._toolbar.back()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), first_zoom)
+    window._toolbar.home()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), original)
+
+
+def test_new_file_resets_view_and_navigation_history(gui, write_popin_curve):
+    _, window = gui
+    editable_curve(window, write_popin_curve)
+    previous_axis = window._figure.axes[0]
+    plot_mouse(window, "scroll_event", 80, 160, button="up", step=2)
+    window._selected_file = write_popin_curve(name="other.txt", load=np.arange(120) * 200)
+    window._run_detection()
+    axis = window._figure.axes[0]
+    assert axis is not previous_axis
+    limits = (axis.get_xlim(), axis.get_ylim())
+    assert axis.get_ylim()[1] > 20000
+    window._toolbar.back()
+    window._toolbar.forward()
+    window._toolbar.home()
+    np.testing.assert_allclose((axis.get_xlim(), axis.get_ylim()), limits)
 
 
 def test_drag_both_endpoints_snaps_and_updates_before_release(gui, write_popin_curve):
@@ -446,3 +528,139 @@ def test_save_model_results_and_model_points_have_no_labels(gui, monkeypatch, wr
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args: (str(destination), ""))
     window._save_results_button.click()
     assert "Method: Machine learning" in destination.read_text()
+
+
+def test_csv_confirms_save_and_overwrites_current_adjusted_endpoints(gui, monkeypatch, write_popin_curve, tmp_path):
+    _, window = gui
+    confirmations = []
+    def confirm(*args):
+        confirmations.append(args[2])
+        return QMessageBox.Yes
+    monkeypatch.setattr(QMessageBox, "question", confirm)
+    destination = tmp_path / "popin_locations.csv"
+    window._locations_csv_path = destination
+    assert not window._save_csv_button.isEnabled()
+    result = editable_curve(window, write_popin_curve)
+    assert window._save_csv_button.isEnabled()
+    window._save_csv_button.click()
+    with destination.open(newline="", encoding="utf-8") as saved:
+        first_rows = list(csv.reader(saved))
+    np.testing.assert_allclose(list(map(float, first_rows[1][1:])), [158, 78, 0.78, 160, 104, 0.84])
+    plot_mouse(window, "button_press_event", 78, 158, button=1)
+    plot_mouse(window, "motion_notify_event", 77, 156, button=1)
+    plot_mouse(window, "button_release_event", 77, 156, button=1)
+    plot_mouse(window, "button_press_event", 104, 160, button=1)
+    plot_mouse(window, "motion_notify_event", 107, 166, button=1)
+    plot_mouse(window, "button_release_event", 107, 166, button=1)
+    window._save_csv_button.click()
+    with destination.open(newline="", encoding="utf-8") as saved:
+        rows = list(csv.reader(saved))
+    assert rows[0] == list(view_module.POPIN_CSV_COLUMNS)
+    assert len(rows) == 2
+    assert all(len(row) == 7 for row in rows)
+    assert rows[1][0] == result["file_path"].name
+    np.testing.assert_allclose(list(map(float, rows[1][1:])), [156, 77, 0.77, 166, 107, 0.87])
+    assert len(confirmations) == 2
+    assert "already exists" not in confirmations[0]
+    assert "already exists" in confirmations[1]
+    assert "overwrite the pop-in data for that file" in confirmations[1]
+    assert "Updated pop-in location" in window._save_results_status.text()
+    window._draw_empty_plot("New file")
+    assert not window._save_csv_button.isEnabled()
+    window._save_popin_csv()
+    with destination.open(newline="", encoding="utf-8") as saved:
+        assert len(list(csv.reader(saved))) == 2
+
+
+def test_csv_unavailable_without_endpoints_or_during_model_work(gui, write_popin_curve):
+    _, window = gui
+    window._selected_file = write_popin_curve()
+    window._run_detection()
+    assert not window._save_csv_button.isEnabled()
+    result = editable_curve(window, write_popin_curve)
+    window._model_thread = object()
+    try:
+        window._update_buttons()
+        assert not window._save_csv_button.isEnabled()
+    finally:
+        window._model_thread = None
+    curve = popin_ml.load_curve(result["file_path"])
+    window._display_model_results((result["file_path"], curve, []))
+    assert not window._save_csv_button.isEnabled()
+
+
+@pytest.mark.parametrize("existing", [False, True])
+def test_csv_cancel_leaves_file_unchanged(gui, monkeypatch, write_popin_curve, tmp_path, existing):
+    _, window = gui
+    result = editable_curve(window, write_popin_curve)
+    destination = tmp_path / "popin_locations.csv"
+    window._locations_csv_path = destination
+    if existing:
+        with destination.open("w", newline="", encoding="utf-8") as saved:
+            csv.writer(saved).writerows([view_module.POPIN_CSV_COLUMNS,
+                                        [result["file_path"].name, 1, 2, 3, 4, 5, 6]])
+    before = destination.read_bytes() if existing else None
+    confirmations = []
+    def cancel(*args):
+        confirmations.append(args)
+        return QMessageBox.No
+    monkeypatch.setattr(QMessageBox, "question", cancel)
+    window._save_csv_button.click()
+    assert len(confirmations) == 1
+    assert confirmations[0][-1] == QMessageBox.No
+    assert (destination.read_bytes() if destination.exists() else None) == before
+    assert not window._save_results_status.text()
+
+
+def test_csv_overwrite_removes_old_duplicates_and_preserves_other_files(gui, monkeypatch, write_popin_curve, tmp_path):
+    _, window = gui
+    result = editable_curve(window, write_popin_curve)
+    destination = tmp_path / "popin_locations.csv"
+    window._locations_csv_path = destination
+    filename = result["file_path"].name
+    other = ["other.txt", "10", "20", "30", "40", "50", "60"]
+    with destination.open("w", newline="", encoding="utf-8") as saved:
+        csv.writer(saved).writerows([view_module.POPIN_CSV_COLUMNS,
+                                    [filename, 1, 2, 3, 4, 5, 6], other,
+                                    [filename, 7, 8, 9, 10, 11, 12]])
+    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    window._save_csv_button.click()
+    with destination.open(newline="", encoding="utf-8") as saved:
+        rows = list(csv.reader(saved))
+    assert len(rows) == 3
+    assert rows[1][0] == filename
+    np.testing.assert_allclose(list(map(float, rows[1][1:])), [158, 78, 0.78, 160, 104, 0.84])
+    assert rows[2] == other
+    # Saving a new filename appends a row and keeps both previous files.
+    result["file_path"] = tmp_path / "new.txt"
+    window._save_csv_button.click()
+    with destination.open(newline="", encoding="utf-8") as saved:
+        appended = list(csv.reader(saved))
+    assert appended[:3] == rows
+    assert appended[3][0] == "new.txt"
+
+
+def test_csv_write_failure_preserves_adjusted_results(gui, monkeypatch, write_popin_curve, tmp_path):
+    _, window = gui
+    editable_curve(window, write_popin_curve)
+    window._locations_csv_path = tmp_path / "missing" / "popin_locations.csv"
+    errors = []
+    monkeypatch.setattr(QMessageBox, "question", lambda *args: QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "critical", lambda *args: errors.append(args[2]))
+    text = window._results_text.toPlainText()
+    window._save_csv_button.click()
+    assert errors and "Could not save pop-in locations" in errors[0]
+    assert window._results_text.toPlainText() == text
+    assert window._save_csv_button.isEnabled()
+
+
+def test_save_buttons_share_original_row_equally(gui):
+    app, window = gui
+    window.resize(1200, 750)
+    window.show()
+    app.processEvents()
+    text_button, csv_button = window._save_results_button, window._save_csv_button
+    assert abs(text_button.width() - csv_button.width()) <= 1
+    assert text_button.height() == csv_button.height()
+    assert text_button.y() == csv_button.y()
+    assert text_button.x() + text_button.width() < csv_button.x()

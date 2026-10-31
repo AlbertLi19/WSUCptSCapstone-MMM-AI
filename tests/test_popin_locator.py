@@ -233,3 +233,29 @@ def test_flat_regions_are_invariant_to_axis_units(write_popin_curve):
     regions, threshold = find_flat_load_regions(frame, frame.loc[[82]])
     assert [(r["start_index"], r["end_index"]) for r in regions] == [(79, 84)]
     assert threshold == pytest.approx(400000)
+
+
+def test_custom_slope_percentage_changes_endpoints(write_popin_curve):
+    increments = np.full(120, 2.)
+    increments[75:85] = 0.6
+    path = write_popin_curve(load=np.cumsum(increments), jumps=[(80, 20)])
+    default = analyze_file(path)
+    custom = analyze_file(path, flat_slope_fraction=0.5)
+    assert default["flat_slope_fraction"] == 0.2
+    assert default["flat_slope_threshold"] == pytest.approx(0.4)
+    assert custom["flat_slope_threshold"] == pytest.approx(1)
+    assert (default["flat_regions"][0]["start_index"], default["flat_regions"][0]["end_index"]) == (79, 80)
+    assert (custom["flat_regions"][0]["start_index"], custom["flat_regions"][0]["end_index"]) == (74, 84)
+    assert custom["candidate_count"] == default["candidate_count"]
+
+
+@pytest.mark.parametrize("fraction", [-0.1, 1.1, np.nan, np.inf])
+def test_invalid_slope_percentage_rejected(write_popin_curve, fraction):
+    with pytest.raises(InvalidDataError, match="between 0% and 100%"):
+        analyze_file(write_popin_curve(), flat_slope_fraction=fraction)
+
+
+@pytest.mark.parametrize("fraction", [0, 1])
+def test_slope_percentage_boundaries(write_popin_curve, fraction):
+    result = analyze_file(write_popin_curve(jumps=[(80, 20)]), flat_slope_fraction=fraction)
+    assert result["flat_slope_threshold"] == pytest.approx(2 * fraction)
