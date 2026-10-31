@@ -3,7 +3,7 @@
 ## What's New (User Facing)
 * Added pop-in locator tab as new GUI tab
 * Added indentation crack length tab as new GUI tab
-* Additional crack length training data provided and annotated
+* Additional crack length training data provided and annotations started
 ## Work Summary (Developer Facing)
 (work summary here)
 ## Unfinished Work
