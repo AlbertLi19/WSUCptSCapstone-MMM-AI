@@ -1,4 +1,6 @@
+import csv
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 import pandas as pd
 import numpy as np
@@ -23,6 +25,12 @@ from PyQt5.QtWidgets import (
 
 from analysis_scripts.popin_locator import FLAT_SLOPE_FRACTION, InvalidDataError, analyze_file
 from analysis_scripts import popin_ml
+
+
+POPIN_CSV_COLUMNS = (
+    "file name", "pop-in start load", "pop-in start depth", "pop-in start time",
+    "pop-in end load", "pop-in end depth", "pop-in end time",
+)
 
 
 class PopInNavigationToolbar(NavigationToolbar):
@@ -63,6 +71,7 @@ class PopInLocatorView(QWidget):
         self._region_artists = []
         self._drag_endpoint = None
         self._results_file_path = None
+        self._locations_csv_path = Path(__file__).resolve().parents[3] / "popin_locations.csv"
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(20, 20, 20, 20)
         self._layout.setSpacing(12)
@@ -155,7 +164,17 @@ class PopInLocatorView(QWidget):
         self._save_results_button = QPushButton("Save Detection Results")
         self._save_results_button.setEnabled(False)
         self._save_results_button.clicked.connect(self._save_detection_results)
-        results_layout.addWidget(self._save_results_button)
+        self._save_csv_button = QPushButton("Save to CSV")
+        self._save_csv_button.setEnabled(False)
+        self._save_csv_button.setToolTip(
+            "Save the current start/end load (uN), depth (nm), and time (s) "
+            "to popin_locations.csv in the project folder.")
+        self._save_csv_button.clicked.connect(self._save_popin_csv)
+        save_row = QHBoxLayout()
+        for button in (self._save_results_button, self._save_csv_button):
+            button.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+            save_row.addWidget(button, 1)
+        results_layout.addLayout(save_row)
         self._save_results_status = QLabel()
         self._save_results_status.setWordWrap(True)
         results_layout.addWidget(self._save_results_status)
@@ -212,6 +231,77 @@ class PopInLocatorView(QWidget):
         self._run_model_button.setEnabled(
             not self.model_busy and self._selected_file is not None and self._model is not None)
         self._save_results_button.setEnabled(not self.model_busy and self._results_file_path is not None)
+        self._save_csv_button.setEnabled(
+            not self.model_busy and self._threshold_result is not None
+            and bool(self._threshold_result["flat_regions"]))
+
+    def _save_popin_csv(self):
+        if (self.model_busy or self._threshold_result is None
+                or not self._threshold_result["flat_regions"]):
+            return
+        result = self._threshold_result
+        region = result["flat_regions"][0]
+        row = [result["file_path"].name] + [
+            region[f"{endpoint}_{field}"]
+            for endpoint in ("start", "end")
+            for field in ("load_uN", "depth_nm", "time_s")
+        ]
+        temporary_path = None
+        try:
+            rows = []
+            if self._locations_csv_path.exists():
+                with self._locations_csv_path.open(newline="", encoding="utf-8-sig") as saved:
+                    contents = list(csv.reader(saved))
+                if contents:
+                    if contents[0] != list(POPIN_CSV_COLUMNS):
+                        raise ValueError("The CSV header does not match the expected pop-in columns.")
+                    rows = [entry for entry in contents[1:] if entry]
+            exists = any(entry[0] == row[0] for entry in rows)
+            message = (
+                f"{row[0]} already exists in {self._locations_csv_path.name}.\n\n"
+                "Confirming will overwrite the pop-in data for that file with the current "
+                "start and end values. Continue?"
+                if exists else
+                f"Save the current pop-in start and end values for {row[0]} "
+                f"to {self._locations_csv_path.name}?"
+            )
+            if QMessageBox.question(
+                self, "Confirm CSV save", message,
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No,
+            ) != QMessageBox.Yes:
+                return
+            # Collapse any duplicates from earlier append-only saves, preserving
+            # the first matching row's position and all other files' data.
+            updated = []
+            replaced = False
+            for entry in rows:
+                if entry[0] == row[0]:
+                    if not replaced:
+                        updated.append(row)
+                        replaced = True
+                else:
+                    updated.append(entry)
+            if not replaced:
+                updated.append(row)
+            # Replace only after writing succeeds so a failed save cannot
+            # truncate the previous CSV.
+            with NamedTemporaryFile(
+                mode="w", newline="", encoding="utf-8", delete=False,
+                dir=self._locations_csv_path.parent, prefix=".popin_locations_", suffix=".csv",
+            ) as output:
+                temporary_path = Path(output.name)
+                writer = csv.writer(output)
+                writer.writerow(POPIN_CSV_COLUMNS)
+                writer.writerows(updated)
+            temporary_path.replace(self._locations_csv_path)
+        except (OSError, UnicodeError, csv.Error, ValueError) as error:
+            QMessageBox.critical(self, "Save failed", f"Could not save pop-in locations:\n{error}")
+            return
+        finally:
+            if temporary_path is not None and temporary_path.exists():
+                temporary_path.unlink()
+        action = "Updated" if exists else "Saved"
+        self._save_results_status.setText(f"{action} pop-in location in {self._locations_csv_path}")
 
     def _save_detection_results(self):
         if self.model_busy or self._results_file_path is None:
@@ -390,6 +480,7 @@ class PopInLocatorView(QWidget):
         self._draw_popin_plot(result["file_path"], loading["Depth_nm"], loading["Load_uN"], [],
                               regions=result["flat_regions"], show_points=True)
         self._threshold_result = result
+        self._update_buttons()
 
     def _draw_popin_plot(self, file_path, depth, load, events, regions=(), show_points=False):
         """Use one loading curve, scale, and style for either detector."""
@@ -516,6 +607,7 @@ class PopInLocatorView(QWidget):
         self._drag_endpoint = None
         self._results_file_path = None
         self._save_results_button.setEnabled(False)
+        self._save_csv_button.setEnabled(False)
         self._save_results_status.clear()
         if preserve_view:
             # Navigation history refers to this exact Axes instance. Replace
