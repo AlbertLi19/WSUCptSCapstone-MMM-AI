@@ -6,8 +6,11 @@ import os
 import sys
 import ctypes
 
+# Keep DLL search-directory handles alive for the lifetime of the process.
+_dll_directory_handles = []
+
 # Add the application directory to PATH so DLLs can find dependencies
-if hasattr(sys, '_MEIPASS'):
+if os.name == 'nt' and hasattr(sys, '_MEIPASS'):
     # Running as PyInstaller bundle
     bundle_dir = sys._MEIPASS
     torch_lib = os.path.join(bundle_dir, 'torch', 'lib')
@@ -34,17 +37,8 @@ if hasattr(sys, '_MEIPASS'):
     # Method 2: Add to DLL directory search (Python 3.8+)
     if hasattr(os, 'add_dll_directory'):
         try:
-            os.add_dll_directory(system32)
-            os.add_dll_directory(bundle_dir)
-            os.add_dll_directory(torch_lib)
+            for directory in (system32, bundle_dir, torch_lib):
+                if os.path.isdir(directory):
+                    _dll_directory_handles.append(os.add_dll_directory(directory))
         except (OSError, FileNotFoundError):
             pass  # Directory might not exist yet
-    
-    # Method 3: Set the working directory temporarily during DLL load
-    # This helps Windows find the DLLs during initialization
-    try:
-        original_cwd = os.getcwd()
-        os.chdir(bundle_dir)
-        # Directory will be changed back after import completes
-    except:
-        pass

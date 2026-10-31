@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_all
+from PyInstaller.utils.hooks import collect_all, copy_metadata
 import os
 import torch
 
@@ -7,6 +7,27 @@ import torch
 
 # Collect all torch dependencies (binaries, datas, hiddenimports)
 torch_datas, torch_binaries, torch_hiddenimports = collect_all('torch')
+
+# Transformers resolves model classes lazily and checks distribution metadata.
+# Include the SAM path used by this app without collecting every optional model.
+sam_hiddenimports = [
+    'transformers.pipelines.mask_generation',
+    'transformers.models.sam.configuration_sam',
+    'transformers.models.sam.modeling_sam',
+    'transformers.models.sam.processing_sam',
+    'transformers.models.sam.image_processing_sam',
+    'transformers.models.sam.image_processing_sam_fast',
+    'transformers.models.auto.configuration_auto',
+    'transformers.models.auto.modeling_auto',
+    'transformers.models.auto.processing_auto',
+    'transformers.models.auto.image_processing_auto',
+    'torchvision.ops',
+]
+dependency_metadata = (
+    copy_metadata('transformers', recursive=True)
+    + copy_metadata('torchvision', recursive=True)
+    + copy_metadata('scipy')
+)
 
 # Dynamically locate torch lib directory and critical DLLs
 torch_root = os.path.dirname(torch.__file__)
@@ -101,8 +122,10 @@ a = Analysis(
         ('src\\app\\Databases', 'Databases'),
         ('version.txt', '.'),
         ('pyi_rth_torch.py', '.'),
-    ] + torch_datas,
+    ] + torch_datas + dependency_metadata,
     hiddenimports=[
+        'backports',
+        'backports.tarfile',
         'PyQt5',
         'PyQt5.QtCore',
         'PyQt5.QtGui',
@@ -138,7 +161,7 @@ a = Analysis(
         'skimage.segmentation',
         'fitter',
         'loguru',
-    ] + torch_hiddenimports,
+    ] + torch_hiddenimports + sam_hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=['pyi_rth_torch.py'],

@@ -66,13 +66,25 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -m pip install 'torch>=2.0.0' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cpu
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -m pip install -r requirements.txt 'pyinstaller==6.16.0'
+          python -m pip install -r requirements.txt
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m pip check
       - name: Build executable using the Windows spec
         run: python -m PyInstaller --noconfirm --clean SegmentationApp-Windows.spec
+      - name: Test the packaged executable before publishing
+        run: python scripts/smoke_test_executable.py dist/SegmentationApp.exe --report test-results/frozen-smoke.json
+      - name: Upload packaging diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build-diagnostics
+          path: |
+            test-results/frozen-smoke.json
+            build/SegmentationApp/warn-SegmentationApp.txt
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Package executable and calculate SHA-256
         env:
           RELEASE_TAG: ${{ github.ref_name }}

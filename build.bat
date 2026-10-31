@@ -5,13 +5,6 @@ echo ==========================================
 echo Building Segmentation App Executable
 echo ==========================================
 
-REM Check if PyInstaller is installed
-where pyinstaller >nul 2>nul
-if %ERRORLEVEL% NEQ 0 (
-    echo PyInstaller not found. Installing...
-    pip install pyinstaller
-)
-
 REM Use local venv if available
 if exist .venv\Scripts\python.exe (
     echo Using local virtual environment...
@@ -20,16 +13,20 @@ if exist .venv\Scripts\python.exe (
     set PYTHON_CMD=python
 )
 
-REM Check Python version
-%PYTHON_CMD% -c "import sys; exit(1) if sys.version_info[:3] == (3, 10, 0) else exit(0)"
-if %ERRORLEVEL% NEQ 0 (
-    echo.
-    echo WARNING: You are using Python 3.10.0.
-    echo This version has a known bug that causes PyInstaller to fail with "IndexError: tuple index out of range".
-    echo If the build fails, please upgrade to Python 3.10.1 or later.
-    echo.
-    timeout /t 5
+REM Fail early instead of attempting incompatible SciPy/NumPy installations.
+%PYTHON_CMD% -c "import sys; sys.exit(0 if sys.version_info[:2] in ((3, 11), (3, 12)) else 1)"
+if errorlevel 1 (
+    echo ERROR: Use 64-bit Python 3.11 or 3.12 with the current requirements.
+    exit /b 1
 )
+
+REM Use the same compatible packaging tools and CPU libraries as release CI.
+%PYTHON_CMD% -m pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cpu
+if errorlevel 1 exit /b 1
+%PYTHON_CMD% -m pip install -r requirements.txt
+if errorlevel 1 exit /b 1
+%PYTHON_CMD% -m pip check
+if errorlevel 1 exit /b 1
 
 REM Clean previous builds
 echo Cleaning previous builds...
@@ -43,12 +40,17 @@ REM Build using the custom Windows spec file
 if exist SegmentationApp-Windows.spec (
     echo Using custom Windows spec file ^(with matplotlib backend exclusions^)...
     %PYTHON_CMD% -m PyInstaller SegmentationApp-Windows.spec
+    if errorlevel 1 exit /b 1
 ) else (
     echo ERROR: SegmentationApp-Windows.spec not found!
     echo Please ensure the spec file exists in the project root.
     pause
     exit /b 1
 )
+
+REM Do not distribute a bundle that cannot start or load its required modules.
+%PYTHON_CMD% scripts\smoke_test_executable.py dist\SegmentationApp.exe --report test-results\frozen-smoke.json
+if errorlevel 1 exit /b 1
 
 echo.
 echo ==========================================

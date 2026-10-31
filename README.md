@@ -42,6 +42,28 @@ python .\src\app\main.py
 
 After a few seconds, the app should start in a new window
 
+### Dependencies
+
+`requirements.txt` is the shared dependency list for the application, standalone
+Python scripts, tests, and executable packaging. Use 64-bit Python 3.11 or 3.12.
+
+For CPU-only Windows/Linux installations, install the matching PyTorch packages
+before installing the complete list:
+
+```bash
+python -m pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements.txt
+python -m pip check
+```
+
+On macOS, install `requirements.txt` directly using the normal package index.
+Keep the pinned NumPy, OpenCV, scikit-learn, torch/torchvision, and packaging
+versions together: they protect numerical compatibility, saved model loading,
+native operations, and frozen imports. The archived research notebooks and
+Google Colab setup are not needed by the executable and are excluded.
+Legacy Tkinter utilities require a Python installation with Tcl/Tk support;
+Linux Qt/OpenCV system libraries are installed separately by CI.
+
 ## Building an Executable
 
 ### For Distribution with Auto-Update Feature
@@ -105,7 +127,9 @@ run_app.bat
 
 Minor bug fixes required in crater analysis
 
-There is a possibility of errors due to dependency downloads, should this occur attempt downloading each requirement listed in requirements.txt individually. Versions can be ignored if this is required, simply download whichever one you can.
+If a dependency download fails, retry the install in a fresh virtual environment
+using the supported Python version. Keep the versions in `requirements.txt`
+rather than substituting arbitrary versions.
 
 Use Python 3.11 or 3.12 with the current requirements. The pinned SciPy version
 requires Python 3.11 or newer, and the NumPy requirement (`numpy<2`) supports
@@ -142,7 +166,16 @@ It runs both CI test jobs, builds the Windows x64 executable with Python 3.11
 and PyInstaller, then publishes a GitHub release with generated release notes,
 `SegmentationApp-vX.Y.Z-windows-x64.zip`, and `SHA256SUMS.txt`.
 The ZIP contains `SegmentationApp.exe`, `version.txt`, and the license; extract
-it before launching the executable. The build uses CPU-only PyTorch.
+it before launching the executable. The build uses matching CPU-only PyTorch
+and torchvision packages and pinned packaging tools from `requirements.txt`.
+
+Before publishing, the workflow launches the actual executable from an isolated
+directory and checks setuptools/backports imports, dependency metadata, PyTorch
+and torchvision native operations, SAM imports, the bundled pop-in model, and
+the main Qt window. These checks run offline without downloading SAM weights.
+Failures block publication. The `windows-build-diagnostics` Actions artifact
+contains the smoke-test report (if Python started) and PyInstaller warnings.
+`build.bat` uses the same build requirements and executable checks locally.
 
 To release a new version, update and commit `version.txt` with your changes,
 push that commit, then create and push the matching tag:
@@ -157,6 +190,9 @@ manually against an existing matching tag. It requires GitHub Actions to have
 permission to create releases through `GITHUB_TOKEN`; no custom secret is
 needed. Builds are unsigned. This workflow currently produces Windows releases
 only. Existing releases are preserved; attempting to recreate one fails.
+For a packaging fix, commit the changes and an updated `version.txt`, then push
+a new matching tag (for example, `v1.1.1` after `v1.1.0`). Rerunning an old tag
+uses the old packaging code and does not include later fixes.
 
 ## Additional Documentation
 

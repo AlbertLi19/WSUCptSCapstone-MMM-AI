@@ -141,6 +141,11 @@ def preload_torch_native_libs() -> None:
 
 def main():
     """Main launcher function"""
+    if "--smoke-test" in sys.argv:
+        # Run inside the real frozen executable, after PyInstaller's runtime hooks.
+        from bundle_smoke_test import main as smoke_main
+        sys.exit(smoke_main())
+
     print("=" * 60)
     print("Impurity Segmentation App - Starting...")
     print("=" * 60)
@@ -264,13 +269,8 @@ def main():
     print("\nStarting application...\n")
     
     # Import and run the main application
-    try:
-        from main import main as app_main
-        app_main()
-    except ImportError:
-        # Fallback if main doesn't have a main() function
-        import main
-        # The main.py file runs on import
+    from main import main as app_main
+    app_main()
 
 
 if __name__ == "__main__":
