@@ -8,7 +8,7 @@
 (work summary here)
 ## Unfinished Work
 Most of the work for this project is complete, there is some training data that still needs to be annotated and some small bug fixes here and there, but the majority of the project is complete.
-(more unfinished work here)
+* (more unfinished work here)
 ## Completed Issues/User Stories
 * completed issues/user stories here
 * We have also included a live demo of the current application in the Sprint 5 YouTube video, demonstrating the new features. 
