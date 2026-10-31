@@ -27,9 +27,11 @@ sprint, for quality:
 Here's what went well: 
 * Adding the pop-in locator tab to the GUI.
 * Adding the indentation crack length tab to the GUI.
-* Preparing the crack length machine learning model’s training data. 
+* Preparing the crack length machine learning model’s training data.
+
 Here's what we'd like to improve: 
-* Team coordination and communication. 
+* Team coordination and communication.
+
 Here are changes we plan to implement in the next sprint: 
 * Iron out all remaining bugs and issues.
 * Finish annotating all new training data.
