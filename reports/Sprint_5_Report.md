@@ -1,5 +1,5 @@
-# Sprint 4 Report (August 17th to September 30th)
-## Sprint 4 Video (video link here)
+# Sprint 5 Report (September 30th to October 31st)
+## Sprint 5 Video (video link here)
 ## What's New (User Facing)
 * Added pop-in locator tab as new GUI tab
 * Added indentation crack length tab as new GUI tab
