@@ -27,7 +27,7 @@ Here are links to issues we worked on but did not complete in this sprint (These
 ## Code Files for Review
 Please review the following code files, which were actively developed during this
 sprint, for quality:
-* add files here
+* [build-release.yml](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/.github/workflows/build-release.yml)
 ## Retrospective Summary
 Here's what went well: 
 * Adding the pop-in locator tab to the GUI.
