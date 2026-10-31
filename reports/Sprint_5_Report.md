@@ -1,9 +1,14 @@
 # Sprint 5 Report (September 30th to October 31st)
 ## Sprint 5 Video (video link here)
 ## What's New (User Facing)
-* Added pop-in locator tab as new GUI tab
-* Added indentation crack length tab as new GUI tab
-* Additional crack length training data provided and annotations started
+*	CI and deployment workflow
+*	Pop-in algorithm identifies displacement rather than depth, with the pop-in start and end points being identified and allowing for manual adjustment
+*	Real time updating of coordinates of data points, and exporting to structured data file
+*	Set scale by drawing a known length or entering FOV (µm)
+*	Implemented client requested pop-in features such as manipulatable start and end points
+*	Train U-Net on labeled indentation JSONs and generate estimated crack lengths
+*	Edit suggested cracks: move endpoints, rotate lines, add missed cracks
+*	Export reviewed crack measurements JSON (each / longest / total in µm)
 ## Work Summary (Developer Facing)
 (work summary here)
 ## Unfinished Work
