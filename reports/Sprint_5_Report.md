@@ -1,5 +1,5 @@
 # Sprint 5 Report (September 30th to October 31st)
-## Sprint 5 Video (video link here)
+## [(Sprint 5 Video)](https://youtu.be/zZPriK48-iE)
 ## What's New (User Facing)
 *	CI and deployment workflow
 *	Pop-in algorithm identifies displacement rather than depth, with the pop-in start and end points being identified and allowing for manual adjustment
