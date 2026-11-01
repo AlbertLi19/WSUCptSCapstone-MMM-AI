@@ -10,7 +10,7 @@
 *	Edit suggested cracks: move endpoints, rotate lines, add missed cracks
 *	Export reviewed crack measurements JSON (each / longest / total in µm)
 ## Work Summary (Developer Facing)
-(work summary here)
+After discussion with the client during the current and prior sprint, we identified the major issues remaining to be finished. We completed a U-Net model for identifying crack lengths as planned for this sprint. We also made some changes that we decided upon meetings with the client. These changes included modifying the pop-in algorithm to identify both the start and end points of the pop-in displacement, rather than a simple point, and user modification of the points. The U-Net also allows for user manipulation and has two options to set scale, through Field of View or through drawing a line on the image, as requested by the client. Both these features of the application have an export feature to save the tabulated data and images.
 ## Unfinished Work
 Most of the work for this project is complete, there is some training data that still needs to be annotated and some small bug fixes here and there, but the majority of the project is complete.
 * (more unfinished work here)
