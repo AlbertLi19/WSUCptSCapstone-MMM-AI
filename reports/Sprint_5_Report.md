@@ -29,6 +29,7 @@ Please review the following code files, which were actively developed during thi
 sprint, for quality:
 * [build-release.yml](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/.github/workflows/build-release.yml)
 * [popin_locator.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/analysis_scripts/popin_locator.py)
+* [popin_locator_view.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/views/popin_locator_view.py)
 * [ci.yml](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/.github/workflows/ci.yml)
 * [smoke_test_executable.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/scripts/smoke_test_executable.py)
 * 
