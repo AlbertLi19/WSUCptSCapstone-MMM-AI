@@ -53,4 +53,4 @@ Here's what we'd like to improve:
 Here are changes we plan to implement in the next sprint: 
 * Iron out all remaining bugs and issues.
 * Finish annotating all new training data.
-* additional changes here
+* Add the crack length estimator to the GUI as a new tab.
