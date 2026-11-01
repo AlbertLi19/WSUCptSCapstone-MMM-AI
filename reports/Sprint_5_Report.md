@@ -12,8 +12,8 @@
 ## Work Summary (Developer Facing)
 After discussion with the client during the current and prior sprint, we identified the major issues remaining to be finished. We completed a U-Net model for identifying crack lengths as planned for this sprint. We also made some changes that we decided upon meetings with the client. These changes included modifying the pop-in algorithm to identify both the start and end points of the pop-in displacement, rather than a simple point, and user modification of the points. The U-Net also allows for user manipulation and has two options to set scale, through Field of View or through drawing a line on the image, as requested by the client. Both these features of the application have an export feature to save the tabulated data and images.
 ## Unfinished Work
-Most of the work for this project is complete, there is some training data that still needs to be annotated and some small bug fixes here and there, but the majority of the project is complete.
-* (more unfinished work here)
+The crack length estimation tool still needs to be added as a new tab to the existing application. We have also researched a better model(NASA MicroNet) but have not fully integrated/benchmarked it as the new default. We also plan on expanding the crack length estimator to include triangular indentations using new training data provided by the client.
+
 ## Completed Issues/User Stories
 * https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/16
 * https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/issues/17
