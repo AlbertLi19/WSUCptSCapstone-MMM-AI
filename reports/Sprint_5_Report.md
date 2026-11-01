@@ -30,6 +30,8 @@ sprint, for quality:
 * [build-release.yml](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/.github/workflows/build-release.yml)
 * [popin_locator.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/analysis_scripts/popin_locator.py)
 * [popin_locator_view.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/views/popin_locator_view.py)
+* [test_popin_locator_.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/tests/test_popin_locator.py)
+* []()
 * [ci.yml](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/.github/workflows/ci.yml)
 * [smoke_test_executable.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/scripts/smoke_test_executable.py)
 * [bundle_smoke_test.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/bundle_smoke_test.py)
