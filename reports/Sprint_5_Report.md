@@ -30,6 +30,7 @@ sprint, for quality:
 * [build-release.yml](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/.github/workflows/build-release.yml)
 * [popin_locator.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/ffc9a36a13de6b97be9edf09c8dd12cdf1ef2e91/src/app/analysis_scripts/popin_locator.py)
 * [ci.yml](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/.github/workflows/ci.yml)
+* [smoke_test_executable.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/scripts/smoke_test_executable.py)
 ## Retrospective Summary
 Here's what went well: 
 * Adding the pop-in locator tab to the GUI.
