@@ -41,7 +41,8 @@ sprint, for quality:
 ## Retrospective Summary
 Here's what went well: 
 * Adding the pop-in locator tab to the GUI.
-* Adding the indentation crack length tab to the GUI.
+* Improved the crack length estimator according to client desires.
+* Improved the pop-in locator according to client desires.
 * Preparing training data for the different models.
 
 Here's what we'd like to improve: 
