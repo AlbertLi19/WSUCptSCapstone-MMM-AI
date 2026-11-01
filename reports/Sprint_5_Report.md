@@ -32,6 +32,7 @@ sprint, for quality:
 * [popin_locator_view.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/views/popin_locator_view.py)
 * [ci.yml](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/.github/workflows/ci.yml)
 * [smoke_test_executable.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/scripts/smoke_test_executable.py)
+* [bundle_smoke_test.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/bundle_smoke_test.py)
 * 
 ## Retrospective Summary
 Here's what went well: 
