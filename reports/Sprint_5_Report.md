@@ -33,7 +33,11 @@ sprint, for quality:
 * [ci.yml](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/.github/workflows/ci.yml)
 * [smoke_test_executable.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/scripts/smoke_test_executable.py)
 * [bundle_smoke_test.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/bundle_smoke_test.py)
-* 
+* [launcher.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/src/app/launcher.py)
+* [SegmentationApp-Windows.spec](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/SegmentationApp-Windows.spec)
+* [build.bat](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/build.bat)
+* [pyi_rth_torch.py](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/pyi_rth_torch.py)
+* [setup_and_run.bat](https://github.com/AlbertLi19/WSUCptSCapstone-MMM-AI/blob/main/setup_and_run.bat)
 ## Retrospective Summary
 Here's what went well: 
 * Adding the pop-in locator tab to the GUI.
