@@ -1,10 +1,15 @@
 import sys
 import shutil
+import os
+
+# Windows: load torch before PyQt so crack-measurement / SAM torch use does not
+# fail with a c10.dll initialization error.
+import torch  # noqa: F401
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QMessageBox
 from PyQt5.QtGui import QFont
 from views import MainView
 from utility.qt_interrupt_handler import QtInterruptHandler
-import os
 import test_module
 
 # Define paths for various directories

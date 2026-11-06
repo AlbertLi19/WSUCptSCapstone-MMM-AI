@@ -13,7 +13,8 @@ from PyQt5.QtWidgets import QApplication
 
 from src.crack_measurement.model import (read_records, masks_for, UNet, train,
     predict, estimate_four, clip_guide)
-from src.crack_measurement.gui import ImageView, Window, _suggested_pairs, anchor_to_center, scale_from_fov
+from src.crack_measurement.gui import (ImageView, Window, CrackMeasurementWidget,
+                                       _suggested_pairs, anchor_to_center, scale_from_fov)
 
 
 def test_actual_dataset():
@@ -211,9 +212,9 @@ def test_window_smoke(qt_app):
     window = Window()
     window.show()
     qt_app.processEvents()
-    assert len(window.actions) >= 8
-    assert window.table.columnCount() == 4
-    assert 'Estimate accuracy' in window.accuracy_box.text()
+    assert len(window.panel.actions) >= 8
+    assert window.panel.table.columnCount() == 4
+    assert 'Estimate accuracy' in window.panel.accuracy_box.text()
     window.close()
 
 
@@ -257,18 +258,18 @@ def test_export_measurements_writes_reviewed_json(qt_app, tmp_path, monkeypatch)
 
     path = tmp_path/'indentation_99.png'
     cv2.imwrite(str(path), np.zeros((200, 300), np.uint8))
-    window = Window()
-    window.view.load(path)
-    window.view.scale_um = .5
-    window.view.scale_set = True
-    window.scale_method = 'fov'
-    window.view.measurements = [[np.array([0., 0.]), np.array([30., 40.])]]
+    panel = CrackMeasurementWidget()
+    panel.view.load(path)
+    panel.view.scale_um = .5
+    panel.view.scale_set = True
+    panel.scale_method = 'fov'
+    panel.view.measurements = [[np.array([0., 0.]), np.array([30., 40.])]]
     output = tmp_path/'reviewed.json'
     monkeypatch.setattr(QFileDialog, 'getSaveFileName', lambda *args: (str(output), 'JSON files (*.json)'))
     monkeypatch.setattr(QMessageBox, 'question', lambda *args, **kwargs: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, 'information', lambda *args: None)
 
-    window.export_measurements()
+    panel.export_measurements()
 
     data = json.loads(output.read_text())
     assert data['reviewed'] is True
@@ -281,7 +282,7 @@ def test_export_measurements_writes_reviewed_json(qt_app, tmp_path, monkeypatch)
     assert data['measurements'][0]['length_um'] == pytest.approx(25)
     assert data['summary_um']['longest'] == pytest.approx(25)
     assert data['summary_um']['total'] == pytest.approx(25)
-    window.close()
+    panel.close()
 
 
 def test_estimation_requires_scale_for_each_image(qt_app, tmp_path, monkeypatch):
@@ -289,37 +290,37 @@ def test_estimation_requires_scale_for_each_image(qt_app, tmp_path, monkeypatch)
 
     path = tmp_path/'image.png'
     cv2.imwrite(str(path), np.zeros((200, 300), np.uint8))
-    window = Window()
-    window.checkpoint = tmp_path/'model.pt'
-    window.checkpoint.touch()
+    panel = CrackMeasurementWidget()
+    panel.checkpoint = tmp_path/'model.pt'
+    panel.checkpoint.touch()
     warnings, jobs = [], []
     monkeypatch.setattr(QMessageBox, 'warning', lambda parent, title, message: warnings.append(message))
-    monkeypatch.setattr(window, 'start_job', lambda *args: jobs.append(args))
-    assert not window.view.scale_set
-    window.view.load(path)
-    generate = next(button for button in window.actions if button.text().startswith('Generate'))
+    monkeypatch.setattr(panel, 'start_job', lambda *args: jobs.append(args))
+    assert not panel.view.scale_set
+    panel.view.load(path)
+    generate = next(button for button in panel.actions if button.text().startswith('Generate'))
     generate.click()
     assert len(warnings) == 1 and 'Set scale' in warnings[-1]
     assert not jobs
 
     monkeypatch.setattr(QInputDialog, 'getDouble', lambda *args: (10, False))
-    window.calibrate(100)
-    assert not window.view.scale_set
-    window.generate()
+    panel.calibrate(100)
+    assert not panel.view.scale_set
+    panel.generate()
     assert len(warnings) == 2 and not jobs
 
     monkeypatch.setattr(QInputDialog, 'getDouble', lambda *args: (10, True))
-    window.calibrate(100)
-    assert window.view.scale_set
-    assert window.view.scale_um == pytest.approx(.1)
-    window.generate()
+    panel.calibrate(100)
+    assert panel.view.scale_set
+    assert panel.view.scale_um == pytest.approx(.1)
+    panel.generate()
     assert len(jobs) == 1
 
-    window.view.load(path)
-    assert not window.view.scale_set
-    window.generate()
+    panel.view.load(path)
+    assert not panel.view.scale_set
+    panel.generate()
     assert len(warnings) == 3 and len(jobs) == 1
-    window.close()
+    panel.close()
 
 
 def test_microscope_tiffs_load_without_opencv_metadata_warnings(monkeypatch, capfd):

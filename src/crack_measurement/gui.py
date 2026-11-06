@@ -534,11 +534,11 @@ def _suggested_bundle(probabilities, threshold=.5):
     return center, pairs, meta
 
 
-class Window(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle('Indentation Crack Measurement — Qt')
-        self.resize(1400, 900)
+class CrackMeasurementWidget(QWidget):
+    """Embeddable crack-measurement panel for the standalone window or main-app tab."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setStyleSheet(STYLE)
         self.checkpoint = ROOT/'models/crack_unet.pt'
         self.measurement_checkpoint = None
@@ -547,11 +547,9 @@ class Window(QMainWindow):
         self.job = None
         self.estimate_accuracy = None
 
-        central = QWidget()
-        layout = QVBoxLayout(central)
+        layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(8)
-        self.setCentralWidget(central)
 
         primary = QHBoxLayout()
         secondary = QHBoxLayout()
@@ -650,11 +648,23 @@ class Window(QMainWindow):
         splitter.setStretchFactor(0, 5)
         splitter.setStretchFactor(1, 2)
 
+        self.status_label = QLabel('Open an indentation image to begin.')
+        self.status_label.setWordWrap(True)
+        self.status_label.setStyleSheet('QLabel { color:#aeb8c2; padding:2px 4px; }')
+        layout.addWidget(self.status_label)
+
         self.view.calibration.connect(self.calibrate)
         self.view.changed.connect(self.update_summary)
         self.view.zoom_changed.connect(self.update_zoom)
         self.update_summary()
-        self.statusBar().showMessage('Open an indentation image to begin.')
+        self.show_status('Open an indentation image to begin.')
+
+    def show_status(self, message):
+        if getattr(self, 'status_label', None) is not None:
+            self.status_label.setText(message)
+        window = self.window()
+        if isinstance(window, QMainWindow) and window.statusBar() is not None:
+            window.statusBar().showMessage(message)
 
     def update_zoom(self, factor):
         self.zoom_label.setText(f'{round(factor * 100)}%')
@@ -725,7 +735,7 @@ class Window(QMainWindow):
             name = self.view.image_path.name if self.view.image_path else 'image'
             scale_note = (f'scale {self.view.scale_um:.6f} µm/px'
                           if self.view.scale_set else 'default scale is 10 µm per 100 px')
-            self.statusBar().showMessage(f'Loaded {name} · {width} × {height} px · {scale_note}')
+            self.show_status(f'Loaded {name} · {width} × {height} px · {scale_note}')
 
     def load(self):
         path, _ = QFileDialog.getOpenFileName(self, 'Open image...', str(ROOT/'data/Indentation Images'),
@@ -737,7 +747,7 @@ class Window(QMainWindow):
                 self.measurement_threshold = None
                 self.scale_method = None
                 self.estimate_accuracy = None
-                self.statusBar().showMessage('Image loaded. Use Set scale before generating crack estimates.')
+                self.show_status('Image loaded. Use Set scale before generating crack estimates.')
             except Exception as exc:
                 self.error(str(exc))
 
@@ -786,7 +796,7 @@ class Window(QMainWindow):
             self.view.adding = False
             self.view.calibrating = True
             self.view.setFocus()
-            self.statusBar().showMessage(
+            self.show_status(
                 'Click and drag along a known distance, then enter its length in micrometers.')
             return
 
@@ -797,7 +807,7 @@ class Window(QMainWindow):
         self.view.scale_set = True
         self.scale_method = 'fov'
         self.view.refresh()
-        self.statusBar().showMessage(
+        self.show_status(
             f'Scale set from FOV: {self.view.scale_um:.6f} µm/pixel '
             f'({width}×{height} px, FOV {fov_width.value():g}×{fov_height.value():g} µm).')
 
@@ -809,7 +819,7 @@ class Window(QMainWindow):
             self.view.scale_set = True
             self.scale_method = 'drawn_line'
             self.view.refresh()
-            self.statusBar().showMessage(
+            self.show_status(
                 f'Scale set by drawn line: {self.view.scale_um:.6f} µm/pixel for this image.')
 
     def load_model(self):
@@ -826,9 +836,9 @@ class Window(QMainWindow):
                     'encoder_seg': 'pretrained ResNet-18 encoder',
                     'micronet_unet': 'NASA MicroNet ResNet-50',
                 }.get(architecture, architecture)
-                self.statusBar().showMessage(f'Checkpoint selected ({note}): {path}')
+                self.show_status(f'Checkpoint selected ({note}): {path}')
             except Exception:
-                self.statusBar().showMessage(f'Checkpoint selected: {path}')
+                self.show_status(f'Checkpoint selected: {path}')
 
     def start_job(self, function, callback, cancellable=False):
         self.job = Job(function)
@@ -836,7 +846,7 @@ class Window(QMainWindow):
             button.setEnabled(False)
         self.threshold.setEnabled(False)
         self.cancel.setEnabled(cancellable)
-        self.job.progress.connect(self.statusBar().showMessage)
+        self.job.progress.connect(self.show_status)
         self.job.result.connect(callback)
         self.job.error.connect(self.error)
         self.job.finished.connect(self.job_finished)
@@ -859,13 +869,13 @@ class Window(QMainWindow):
                 f'Replace {output}?', QMessageBox.Yes | QMessageBox.No) != QMessageBox.Yes:
             return
         args = (dialog.labels.text(), dialog.images.text(), output, dialog.epochs.value(), dialog.size.value())
-        self.statusBar().showMessage('Training U-Net…')
+        self.show_status('Training U-Net…')
         def done(path):
             if path:
                 self.checkpoint = Path(path)
-                self.statusBar().showMessage(f'Training complete. Best checkpoint: {path}')
+                self.show_status(f'Training complete. Best checkpoint: {path}')
             else:
-                self.statusBar().showMessage('Training cancelled. Any completed best checkpoint remains on disk.')
+                self.show_status('Training cancelled. Any completed best checkpoint remains on disk.')
         self.start_job(lambda job: train(*args, job.progress.emit, job.isInterruptionRequested), done, True)
 
     def generate(self):
@@ -879,14 +889,14 @@ class Window(QMainWindow):
         threshold = self.threshold.value()
         self.measurement_checkpoint = self.checkpoint
         self.measurement_threshold = threshold
-        self.statusBar().showMessage('Estimating cracks…')
+        self.show_status('Estimating cracks…')
         def done(bundle):
             center, measurements, meta = bundle
             self.view.center = None if center is None else np.asarray(center, float)
             self.view.measurements = [[np.asarray(a, float), np.asarray(b, float)] for a, b in measurements]
             self.view.measurement_meta = meta
             self.view.refresh()
-            self.statusBar().showMessage(
+            self.show_status(
                 f'{len(measurements)} measurement(s) generated. Missing directions were not forced. '
                 'Drag red tips or colored lines to adjust.')
         self.start_job(lambda job: _suggested_bundle(predict(image, self.checkpoint), threshold), done)
@@ -897,7 +907,7 @@ class Window(QMainWindow):
         self.view.calibrating = False
         self.view.adding = True
         self.view.setFocus()
-        self.statusBar().showMessage(
+        self.show_status(
             'Click at the start of the missed crack, drag to its tip, then release. Press Esc to cancel.')
 
     def export_measurements(self):
@@ -913,7 +923,7 @@ class Window(QMainWindow):
             'Only export after you have moved, rotated, or corrected the generated lines.',
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if confirmed != QMessageBox.Yes:
-            self.statusBar().showMessage('Export cancelled. Measurements were not marked as reviewed.')
+            self.show_status('Export cancelled. Measurements were not marked as reviewed.')
             return
 
         image_path = self.view.image_path
@@ -963,20 +973,38 @@ class Window(QMainWindow):
             save_correction(destination, record)
         except (OSError, ValueError) as exc:
             return self.error(f'Could not export measurements: {exc}')
-        self.statusBar().showMessage(f'Measurements exported for future training: {destination}')
+        self.show_status(f'Measurements exported for future training: {destination}')
         QMessageBox.information(self, 'Export complete', f'Measurements saved to:\n{destination}')
 
     def error(self, message):
-        self.statusBar().showMessage(message)
+        self.show_status(message)
         QMessageBox.warning(self, 'Crack measurement', message)
 
     def closeEvent(self, event):
         if self.job is not None and self.job.isRunning():
             self.job.requestInterruption()
-            self.statusBar().showMessage('Stopping work. Close the window after the current step finishes.')
+            self.show_status('Stopping work. Close the window after the current step finishes.')
             event.ignore()
         else:
             event.accept()
+
+
+
+class Window(QMainWindow):
+    """Standalone desktop window wrapping CrackMeasurementWidget."""
+
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Indentation Crack Measurement — Qt')
+        self.resize(1400, 900)
+        self.panel = CrackMeasurementWidget()
+        self.setCentralWidget(self.panel)
+
+    def __getattr__(self, name):
+        return getattr(self.panel, name)
+
+    def closeEvent(self, event):
+        self.panel.closeEvent(event)
 
 
 def main():

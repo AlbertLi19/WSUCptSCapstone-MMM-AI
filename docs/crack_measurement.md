@@ -6,9 +6,15 @@ Launch from the repository root:
 python crack_measurement.py
 ```
 
+Or open the **Crack Measurement** tab in the main desktop app:
+
+```sh
+python src/app/main.py
+```
+
 Use the project's Python environment with `PyQt5`, `torch`, `numpy`, and
 `opencv-python`, and `Pillow` installed. These dependencies are already in `requirements.txt`.
-This is a separate desktop application; it does not alter the existing app's tabs.
+The standalone launcher and the main-app tab share the same measurement panel.
 
 ## Workflow
 
