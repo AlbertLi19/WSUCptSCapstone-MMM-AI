@@ -82,6 +82,40 @@ class AboutView(QWidget):
         
         content_layout.addSpacing(20)
         
+        # Pop-in Locator Tab instructions
+        popin_title = QLabel("Pop-in Locator Tab")
+        popin_title.setFont(QFont('Arial', 14, QFont.Bold))
+        content_layout.addWidget(popin_title)
+
+        popin_instructions = QLabel(
+            "1. Click 'Select File' to load a nanoindentation .txt file and view its load-depth curve.\n"
+            "2. Click 'Run Detection' to locate candidate pop-in regions. Adjust 'Endpoint slope (% of median)' and rerun detection to change endpoint extension.\n"
+            "3. Use 'Run Model' for detection with the saved shape model. If no model is available, click 'Train Shape Model' to train from the labeled curves.\n"
+            "4. Review the highlighted regions. With pan/zoom off, drag their start and end markers along the curve to adjust the endpoints.\n"
+            "5. Use 'Save Detection Results' to export the results, or 'Save to CSV' to record endpoint load, depth, and time in popin_locations.csv."
+        )
+        popin_instructions.setWordWrap(True)
+        content_layout.addWidget(popin_instructions)
+        content_layout.addSpacing(20)
+
+        # Crack Measurement Tab instructions
+        crack_title = QLabel("Crack Measurement Tab")
+        crack_title.setFont(QFont('Arial', 14, QFont.Bold))
+        content_layout.addWidget(crack_title)
+
+        crack_instructions = QLabel(
+            "1. Click 'Open image...' to load an indentation image.\n"
+            "2. Click 'Set scale' to calibrate each image using a known distance or the image's field of view in micrometers.\n"
+            "3. Use 'Load trained model' to select a saved checkpoint, or 'Train U-Net on JSONs' to train from labeled images.\n"
+            "4. Click 'Generate estimated crack lengths' to display suggested measurement lines and lengths. Adjust the threshold and regenerate if needed.\n"
+            "5. Inspect the overlays, drag tips or lines to correct them, and use 'Add crack line' for missed cracks. Use the mouse wheel to zoom, the middle mouse button to pan, and 'Fit' to restore the full image view.\n"
+            "6. Review the measurements in micrometers, then click 'Export measurements JSON' to save the corrected results.\n"
+            "The estimate accuracy percentage reflects model confidence along the suggested lines; it is not validated measurement accuracy."
+        )
+        crack_instructions.setWordWrap(True)
+        content_layout.addWidget(crack_instructions)
+        content_layout.addSpacing(20)
+
         # Comparison Tab instructions
         comparision_title = QLabel("Comparison Tab")
         comparision_title.setFont(QFont('Arial', 14, QFont.Bold))
@@ -113,7 +147,7 @@ class AboutView(QWidget):
         
         # Add version information
         content_layout.addSpacing(20)
-        version_info = QLabel("Version: 1.0")
+        version_info = QLabel("Version: 1.3.0")
         version_info.setAlignment(Qt.AlignCenter)
         content_layout.addWidget(version_info)
         

@@ -649,12 +649,8 @@ class PopInLocatorView(QWidget):
         self._draw_empty_plot("No graph available")
 
     def _default_data_directory(self):
-        try:
-            project_root = Path(__file__).resolve().parents[3]
-        except IndexError:
-            return Path.home()
-
-        data_dir = project_root / "data" / "Pop-in data"
+        # popin_ml.ROOT resolves to sys._MEIPASS in a packaged Windows build.
+        data_dir = popin_ml.ROOT / "data" / "Pop-in data"
         if data_dir.is_dir():
             return data_dir
 

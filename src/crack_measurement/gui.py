@@ -23,43 +23,45 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 ROOT = resource_root()
 DEFAULT_SCALE_UM = 10 / 100
 
+# Match the main application's charcoal theme, including standalone use.
 STYLE = """
 QMainWindow, QWidget {
-    background-color: #1e2329;
-    color: #e8edf2;
+    background-color: #2b2b2b;
+    color: #ffffff;
     font-size: 12px;
 }
 QPushButton {
-    background-color: #2f3842;
-    border: 1px solid #46515c;
+    background-color: #3d3d3d;
+    border: 1px solid #5d5d5d;
     border-radius: 4px;
     padding: 6px 10px;
-    color: #e8edf2;
+    color: #ffffff;
 }
-QPushButton:hover { background-color: #3a4552; }
-QPushButton:disabled { color: #7a8691; background-color: #262c33; }
-QLabel { color: #d7dee6; }
+QPushButton:hover { background-color: #4d4d4d; }
+QPushButton:disabled { color: #9a9a9a; background-color: #2b2b2b; }
+QLabel { color: #ffffff; }
 QTableWidget {
-    background-color: #171b20;
-    alternate-background-color: #1f252c;
-    gridline-color: #343c45;
-    border: 1px solid #343c45;
-    selection-background-color: #35506b;
+    background-color: #2b2b2b;
+    alternate-background-color: #3d3d3d;
+    gridline-color: #5d5d5d;
+    border: 1px solid #5d5d5d;
+    selection-background-color: #3498db;
+    selection-color: #ffffff;
 }
 QHeaderView::section {
-    background-color: #2a3139;
-    color: #d7dee6;
+    background-color: #3d3d3d;
+    color: #ffffff;
     border: 0px;
     padding: 6px;
 }
 QDoubleSpinBox, QSpinBox, QLineEdit {
-    background-color: #171b20;
-    border: 1px solid #46515c;
+    background-color: #3d3d3d;
+    border: 1px solid #5d5d5d;
     border-radius: 3px;
     padding: 3px;
-    color: #e8edf2;
+    color: #ffffff;
 }
-QStatusBar { color: #aeb8c2; }
+QStatusBar { color: #ffffff; }
 """
 
 
@@ -136,7 +138,7 @@ class ImageView(QGraphicsView):
         self.setScene(QGraphicsScene(self))
         self.setRenderHint(QPainter.Antialiasing)
         self.setTransformationAnchor(self.AnchorUnderMouse)
-        self.setBackgroundBrush(QColor('#252a30'))
+        self.setBackgroundBrush(QColor('#2b2b2b'))
         self.image = None
         self.image_path = None
         self.measurements = []
@@ -652,7 +654,7 @@ class CrackMeasurementWidget(QWidget):
 
         self.status_label = QLabel('Open an indentation image to begin.')
         self.status_label.setWordWrap(True)
-        self.status_label.setStyleSheet('QLabel { color:#aeb8c2; padding:2px 4px; }')
+        self.status_label.setStyleSheet('QLabel { color:#ffffff; padding:2px 4px; }')
         layout.addWidget(self.status_label)
 
         self.view.calibration.connect(self.calibrate)
