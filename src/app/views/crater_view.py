@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 import os
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QPushButton, QComboBox, QLabel, 
                             QStackedWidget, QDoubleSpinBox, QSpinBox, QVBoxLayout, QHBoxLayout, 
@@ -508,7 +509,7 @@ class CraterView(QWidget):
         self._diameter_max_label.setText(f"Max Crater Diameter: {self.crater_diameter_max} mm³")
         self._diameter_avg_label.setText(f"Average Crater Diameter: {self.crater_diameter_avg} mm³")
 
-        CRATER_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Crater_Data')
+        CRATER_DATA = app_data_path('Crater_Data')
         heatmap = os.path.join(CRATER_DATA, "crater_heatmap.png")
         ellipse = os.path.join(CRATER_DATA, "crater_ellipse.png")
         

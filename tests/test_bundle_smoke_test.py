@@ -26,17 +26,18 @@ def test_missing_crack_assets_fail_smoke_test(tmp_path, monkeypatch):
         test_bundled_crack_models_and_dataset()
 
 
-def test_crack_output_smoke_uses_persistent_profile(tmp_path, monkeypatch):
+def test_crack_output_smoke_uses_portable_folder(tmp_path, monkeypatch):
     monkeypatch.setattr(sys, 'frozen', True, raising=False)
     monkeypatch.setattr(sys, '_MEIPASS', str(tmp_path / '_MEI'), raising=False)
     monkeypatch.setenv('LOCALAPPDATA', str(tmp_path / 'profile'))
+    monkeypatch.setattr(sys, 'executable', str(tmp_path / 'SegmentationApp.exe'))
 
     def check(name, operation):
-        if name == 'persistent crack output directories and reviewed JSON export':
+        if name == 'portable crack output directories and reviewed JSON export':
             operation()
     bundle_smoke_test.run_checks(check)
-    assert (tmp_path / 'profile/SegmentationApp/models').is_dir()
-    exports = tmp_path / 'profile/SegmentationApp/data/Indentation_Image_Labels/reviewed_measurements'
+    assert (tmp_path / 'app_data/models').is_dir()
+    exports = tmp_path / 'app_data/data/Indentation_Image_Labels/reviewed_measurements'
     assert exports.is_dir()
     assert not (exports / 'smoke-test.json').exists()
     assert not (tmp_path / '_MEI').exists()

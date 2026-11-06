@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 from PyQt5.QtWidgets import QFileDialog, QDialog, QVBoxLayout, QCheckBox, QPushButton, QLabel, QWidget
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
@@ -24,10 +25,10 @@ class DownloadHandler(QWidget):
         path to the selected data corresponding to the check bod will be added to data_paths. The user selects the location of the data to be downloaded
         to, then all items in data_paths are copied to the selected location.
         '''
-        SEGMENTED_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Segmented_Images')
-        IMPURITY_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Data')
-        COMBINED_IMPURITY_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App', 'Combined_Impurity_Data')   # combined impirity/coord spacing for all images
-        PDF_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','PDF Images')
+        SEGMENTED_FOLDER = app_data_path('Impurity_Segmented_Images')
+        IMPURITY_DATA = app_data_path('Impurity_Data')
+        COMBINED_IMPURITY_DATA = app_data_path('Combined_Impurity_Data')   # combined impirity/coord spacing for all images
+        PDF_FOLDER = app_data_path('PDF Images')
 
         self.data_type = self.data_type.lower()
         if self.data_type not in ['segmentation', 'analysis']:

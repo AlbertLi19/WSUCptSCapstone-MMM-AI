@@ -88,7 +88,7 @@ def run_checks(check):
         export = reviewed_measurements_dir() / 'smoke-test.json'
         for destination in (checkpoint, export):
             if getattr(sys, 'frozen', False) and destination.is_relative_to(resource_root()):
-                raise RuntimeError('Crack output would be saved inside the temporary bundle')
+                raise RuntimeError('Crack output would be saved inside the bundled resources')
             destination.parent.mkdir(parents=True, exist_ok=True)
         # Exercise reviewed JSON serialization in the isolated user profile.
         record = correction_record('smoke-test.png', [
@@ -101,7 +101,7 @@ def run_checks(check):
         finally:
             export.unlink(missing_ok=True)
 
-    check("persistent crack output directories and reviewed JSON export", crack_outputs)
+    check("portable crack output directories and reviewed JSON export", crack_outputs)
 
     def gui():
         from PyQt5.QtWidgets import QApplication
@@ -113,6 +113,12 @@ def run_checks(check):
         try:
             window.show()
             app.processEvents()
+            tabs = window.main_view._tab_widget
+            for index in range(tabs.count()):
+                tabs.setCurrentIndex(index)
+                app.processEvents()
+                if index not in window.main_view._loaded_tabs:
+                    raise RuntimeError(f"Tab {index} failed to initialize")
             if window.main_view._popin_locator_view._model is None:
                 raise RuntimeError("The Pop-in Locator could not load its bundled model")
             crack_view = window.main_view._crack_measurement_view

@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 import sqlite3
 import os
 import pandas as pd
@@ -5,7 +6,7 @@ import sys
 
 #script_dir = os.path.dirname(os.path.abspath(__file__))  # Directory containing this script
 #distribution_csv_path = os.path.join(script_dir, "distributions.csv")
-DATABASESFOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Databases')
+DATABASESFOLDER = app_data_path('Databases')
 DATABASE = 'settings.db'
 
 def resource_path(relative_path):

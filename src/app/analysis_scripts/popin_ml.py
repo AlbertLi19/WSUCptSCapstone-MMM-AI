@@ -23,9 +23,11 @@ ROOT = (Path(sys._MEIPASS) if getattr(sys, "frozen", False)
 DEFAULT_DATA = ROOT / "data" / "Pop-in Training Data"
 DEFAULT_LABELS = ROOT / "data" / "pop-in 4H.xlsx"
 BUNDLED_MODEL = ROOT / "models" / "popin_model.joblib"
-DEFAULT_MODEL = ((Path(os.getenv("LOCALAPPDATA", str(Path.home()))) /
-                  "SegmentationApp" / "models" / "popin_model.joblib")
-                 if getattr(sys, "frozen", False) else BUNDLED_MODEL)
+if getattr(sys, "frozen", False):
+    from utility.app_paths import app_data_root
+    DEFAULT_MODEL = app_data_root() / "models" / "popin_model.joblib"
+else:
+    DEFAULT_MODEL = BUNDLED_MODEL
 SHEET_FOLDERS = {
     "Off": "SiC-4H-OFF", "415 nm": "SiC-4H-415nm",
     "255 nm": "SiC-4H-UV255nm", "470 nm": "SiC-4H-UV470nm",

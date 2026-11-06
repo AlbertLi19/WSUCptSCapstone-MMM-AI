@@ -1,60 +1,68 @@
-import os
-from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout
+"""Main tab shell. Feature modules and widgets load on first selection."""
+from importlib import import_module
+import sys
+
 from PyQt5.QtCore import pyqtSignal
-from views.about_view import AboutView
-from views.analysis_view import AnalysisView
-from views.segmentation_view import SegmentationView
-from views.crater_view import CraterView  # Uncomment if CraterView is needed
-from views.comparison_view import ComparisonView
-from views.popin_locator_view import PopInLocatorView
-from views.crack_measurement_view import CrackMeasurementView
+from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout, QMessageBox
+
 from controllers import MainController
-from analysis_scripts.pdf_generator import pull_timeout
 
-READY_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Ready Images')
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-distribution_csv_path = os.path.join(base_dir, "analysis_scripts", "distributions.csv")
 
-# this is a test seeing if we initiate an update from the executable file
 class MainView(QWidget):
     request_segmentation = pyqtSignal(list)
-    def __init__(self, parent:QWidget = None):
-        super().__init__(parent=parent)
+    # Module names are also hidden imports in the Windows packaging spec.
+    TAB_SPECS = (
+        ("Segmentation", "segmentation_view", "SegmentationView", True),
+        ("Analysis", "analysis_view", "AnalysisView", True),
+        ("Pop-in Locator", "popin_locator_view", "PopInLocatorView", False),
+        ("Crack Measurement", "crack_measurement_view", "CrackMeasurementView", False),
+        ("Comparison", "comparison_view", "ComparisonView", True),
+        ("About", "about_view", "AboutView", False),
+    )
 
-        self.timeout_value = 30 # Timeout value for pdf_generator / ANALYSIS
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.timeout_value = 30
         self._controller = MainController(self)
-       
-        # Create main layout
-        self._main_layout = QVBoxLayout()
-        self.setLayout(self._main_layout)
-        
-        # Create tab widget
+        self._image_settings = None
+        self._loaded_tabs = {}
+        self._main_layout = QVBoxLayout(self)
         self._tab_widget = QTabWidget()
         self._main_layout.addWidget(self._tab_widget)
+        for label, _, _, _ in self.TAB_SPECS:
+            self._tab_widget.addTab(QWidget(), label)
+        self._tab_widget.currentChanged.connect(self._open_tab)
+        self._open_tab(0)
 
-        self._image_settings = None
-        
-        # Creating the about tab using the AboutView class
-        self._about_view = AboutView(self)
-        self._segmentation_view = SegmentationView(self, self._controller)
+    @property
+    def model_busy(self):
+        view = self._loaded_tabs.get(2)
+        return view is not None and view.model_busy
 
-        # passing in the image settings to the analysis view
-        # for download and analysis
-        self._analysis_view = AnalysisView(self, self._controller)
-        self._popin_locator_view = PopInLocatorView(self)
-        self._crack_measurement_view = CrackMeasurementView(self)
-        #self._crater_view = CraterView(self, self._controller)
-
-        self._comparison_view = ComparisonView(self, self._controller)
-        
-        # Add tabs to tab widget
-        self._tab_widget.addTab(self._segmentation_view, "Segmentation")
-        self._tab_widget.addTab(self._analysis_view, "Analysis")
-        self._tab_widget.addTab(self._popin_locator_view, "Pop-in Locator")
-        self._tab_widget.addTab(self._crack_measurement_view, "Crack Measurement")
-        self._tab_widget.addTab(self._comparison_view, "Comparison")
-        #self._tab_widget.addTab(self._crater_view, "Crater Analysis") # Remove
-        self._tab_widget.addTab(self._about_view, "About")
-        
-        
-        self._analysis_view.timeout_updated.connect(pull_timeout)
+    def _open_tab(self, index):
+        if index < 0 or index in self._loaded_tabs:
+            return
+        label, module, name, needs_controller = self.TAB_SPECS[index]
+        try:
+            view_class = getattr(import_module("views." + module), name)
+            view = (view_class(self, self._controller) if needs_controller
+                    else view_class(self))
+            if index == 1:
+                from analysis_scripts.pdf_generator import pull_timeout
+                view.timeout_updated.connect(pull_timeout)
+        except Exception as exc:
+            if "--smoke-test" in sys.argv:
+                raise
+            QMessageBox.warning(self, "Could not open tab", f"{label}: {exc}")
+            return  # Keep the placeholder so a later visit can retry.
+        self._loaded_tabs[index] = view
+        setattr(self, "_" + module, view)
+        placeholder = self._tab_widget.widget(index)
+        self._tab_widget.blockSignals(True)
+        try:
+            self._tab_widget.removeTab(index)
+            self._tab_widget.insertTab(index, view, label)
+            self._tab_widget.setCurrentIndex(index)
+        finally:
+            self._tab_widget.blockSignals(False)
+        placeholder.deleteLater()

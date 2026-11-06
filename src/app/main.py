@@ -1,27 +1,30 @@
+from utility.app_paths import app_data_path
 import sys
 import shutil
 import os
 
 # Windows: load torch before PyQt so crack-measurement / SAM torch use does not
 # fail with a c10.dll initialization error.
+from utility.app_paths import configure_portable_caches
+configure_portable_caches()
+
 import torch  # noqa: F401
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QMessageBox
 from PyQt5.QtGui import QFont
 from views import MainView
 from utility.qt_interrupt_handler import QtInterruptHandler
-import test_module
 
 # Define paths for various directories
-PARENT = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App')
-IMAGES = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_SEM_Images')
-DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Data')
-SEG = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Segmented_Images')
-READY = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Ready Images')
-PDF = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','PDF Images')
-COMBINED_IMPURITY_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App', 'Combined_Impurity_Data')   # combined impirity/coord spacing for all images
-CRATER_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Crater_Data')  # crater data for all images
-SAM_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','SAM_Data')  # SAM model data
+PARENT = app_data_path()
+IMAGES = app_data_path('Impurity_SEM_Images')
+DATA = app_data_path('Impurity_Data')
+SEG = app_data_path('Impurity_Segmented_Images')
+READY = app_data_path('Ready Images')
+PDF = app_data_path('PDF Images')
+COMBINED_IMPURITY_DATA = app_data_path('Combined_Impurity_Data')   # combined impirity/coord spacing for all images
+CRATER_DATA = app_data_path('Crater_Data')  # crater data for all images
+SAM_DATA = app_data_path('SAM_Data')  # SAM model data
 
 def clear_directory(directory):
     if os.path.exists(directory):
@@ -90,7 +93,7 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         """Called when user tries to close the application"""
-        if self.main_view._popin_locator_view.model_busy:
+        if self.main_view.model_busy:
             QMessageBox.information(self, "Model operation in progress",
                                     "Wait for model creation or prediction to finish before closing.")
             event.ignore()
@@ -158,7 +161,7 @@ def main():
     with QtInterruptHandler(
         app,
         main_window.close,
-        lambda: not main_window.main_view._popin_locator_view.model_busy,
+        lambda: not main_window.main_view.model_busy,
     ):
         app.exec()
 

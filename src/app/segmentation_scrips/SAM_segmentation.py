@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 '''
 This file contains a script to perform image segmentation using the Segment Anything Model (SAM) from Meta AI.
 '''
@@ -12,8 +13,8 @@ import pandas as pd
 import numpy as np
 import math
 
-SAM_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','SAM_Data')  # SAM model data
-SEGMENTED_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Segmented_Images')
+SAM_DATA = app_data_path('SAM_Data')  # SAM model data
+SEGMENTED_FOLDER = app_data_path('Impurity_Segmented_Images')
 
 
 def show_mask(mask, ax, random_color=False):

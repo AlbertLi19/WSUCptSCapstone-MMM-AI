@@ -133,6 +133,12 @@ a = Analysis(
         ('pyi_rth_torch.py', '.'),
     ] + torch_datas + dependency_metadata,
     hiddenimports=[
+        'views.segmentation_view',
+        'views.analysis_view',
+        'views.popin_locator_view',
+        'views.crack_measurement_view',
+        'views.comparison_view',
+        'views.about_view',
         'backports',
         'backports.tarfile',
         'PyQt5',
@@ -183,9 +189,8 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
     [],
+    exclude_binaries=True,
     name='SegmentationApp',
     debug=False,
     bootloader_ignore_signals=False,
@@ -199,4 +204,14 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+)
+
+# Keep dependencies on disk: extracting the release ZIP is a one-time step.
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=False,
+    name='SegmentationApp',
 )
