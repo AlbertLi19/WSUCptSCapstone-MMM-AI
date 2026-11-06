@@ -1,0 +1,269 @@
+{
+  "info": {},
+  "categories": {
+    "label": {
+      "labels": [
+        {
+          "name": "Crack",
+          "parent": "",
+          "attributes": []
+        },
+        {
+          "name": "Misc. Scratches",
+          "parent": "",
+          "attributes": []
+        },
+        {
+          "name": "Indentation",
+          "parent": "",
+          "attributes": []
+        }
+      ],
+      "label_groups": [],
+      "attributes": [
+        "occluded"
+      ]
+    },
+    "points": {
+      "items": []
+    }
+  },
+  "items": [
+    {
+      "id": "indentation_58",
+      "annotations": [
+        {
+          "id": 0,
+          "type": "bbox",
+          "attributes": {
+            "occluded": false,
+            "rotation": 0.0
+          },
+          "group": 0,
+          "label_id": 2,
+          "z_order": 0,
+          "bbox": [
+            516.49,
+            346.55,
+            231.14,
+            254.84999999999997
+          ]
+        },
+        {
+          "id": 0,
+          "type": "polyline",
+          "attributes": {
+            "occluded": false
+          },
+          "group": 0,
+          "label_id": 0,
+          "points": [
+            631.77,
+            475.51,
+            631.77,
+            349.13
+          ],
+          "z_order": 0
+        },
+        {
+          "id": 0,
+          "type": "polyline",
+          "attributes": {
+            "occluded": false
+          },
+          "group": 0,
+          "label_id": 0,
+          "points": [
+            631.77,
+            474.5,
+            748.98,
+            475.51
+          ],
+          "z_order": 0
+        },
+        {
+          "id": 0,
+          "type": "polyline",
+          "attributes": {
+            "occluded": false
+          },
+          "group": 0,
+          "label_id": 0,
+          "points": [
+            632.79,
+            474.5,
+            630.75,
+            598.84
+          ],
+          "z_order": 0
+        },
+        {
+          "id": 0,
+          "type": "polyline",
+          "attributes": {
+            "occluded": false
+          },
+          "group": 0,
+          "label_id": 0,
+          "points": [
+            630.67,
+            473.99,
+            516.83,
+            473.99
+          ],
+          "z_order": 0
+        },
+        {
+          "id": 0,
+          "type": "polyline",
+          "attributes": {
+            "occluded": false
+          },
+          "group": 0,
+          "label_id": 0,
+          "points": [
+            517.48,
+            472.67,
+            498.4,
+            468.07,
+            485.9,
+            470.04,
+            473.4,
+            481.23,
+            462.87,
+            491.1,
+            447.07,
+            491.1,
+            425.36,
+            483.2,
+            393.77,
+            483.2,
+            288.49,
+            493.73,
+            220.05,
+            502.28,
+            196.36,
+            496.36,
+            143.72,
+            500.97
+          ],
+          "z_order": 0
+        },
+        {
+          "id": 0,
+          "type": "polyline",
+          "attributes": {
+            "occluded": false
+          },
+          "group": 0,
+          "label_id": 0,
+          "points": [
+            630.67,
+            598.36,
+            626.72,
+            614.81,
+            633.3,
+            651.66,
+            623.43,
+            674.69,
+            615.53,
+            701.01,
+            616.85,
+            721.41,
+            622.77,
+            728.65,
+            619.48,
+            763.52,
+            620.79,
+            958.3
+          ],
+          "z_order": 0
+        },
+        {
+          "id": 0,
+          "type": "polyline",
+          "attributes": {
+            "occluded": false
+          },
+          "group": 0,
+          "label_id": 0,
+          "points": [
+            749.77,
+            475.96,
+            755.03,
+            471.36,
+            769.51,
+            481.88,
+            787.28,
+            472.01,
+            796.49,
+            478.59,
+            807.02,
+            467.41,
+            853.74,
+            482.54,
+            912.96,
+            477.94,
+            966.26,
+            481.88,
+            1062.34,
+            481.88,
+            1149.2,
+            479.91
+          ],
+          "z_order": 0
+        },
+        {
+          "id": 0,
+          "type": "polyline",
+          "attributes": {
+            "occluded": false
+          },
+          "group": 0,
+          "label_id": 0,
+          "points": [
+            631.32,
+            348.96,
+            625.4,
+            332.51,
+            628.03,
+            318.03,
+            633.96,
+            317.38,
+            634.61,
+            304.21,
+            629.35,
+            281.18,
+            632.64,
+            275.26,
+            625.4,
+            261.44,
+            623.43,
+            227.22,
+            632.64,
+            214.72,
+            637.25,
+            191.69,
+            644.48,
+            154.84,
+            645.8,
+            117.99,
+            660.28,
+            0.86
+          ],
+          "z_order": 0
+        }
+      ],
+      "attr": {
+        "frame": 53
+      },
+      "image": {
+        "path": "indentation_58.bmp",
+        "size": [
+          1026,
+          1280
+        ]
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-# Python 3.11 or 3.12 (64-bit).
+﻿# Python 3.11 or 3.12 (64-bit).
 # Application, standalone Python scripts, tests, and executable build tools.
 # Install with: python -m pip install -r requirements.txt
 # For CPU-only Windows/Linux builds, install the torch/torchvision pair first:
