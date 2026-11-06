@@ -20,7 +20,8 @@ def run(executable, report, timeout=300):
         local = profile / "AppData" / "Local"
         local.mkdir(parents=True)
         env = dict(os.environ, USERPROFILE=str(profile), HOME=str(profile),
-                   LOCALAPPDATA=str(local), QT_QPA_PLATFORM="offscreen",
+                   LOCALAPPDATA=str(local), SEGMENTATION_APP_DATA=str(root / "app_data"),
+                   QT_QPA_PLATFORM="offscreen",
                    HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1")
         # Do not allow the source checkout or installed Python packages to mask
         # missing files in the bundle. Native modules load from the bundle itself.

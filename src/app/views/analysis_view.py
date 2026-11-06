@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 import os
 from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QVBoxLayout, QScrollArea, QCheckBox, QLineEdit, QHBoxLayout, QSizePolicy
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -194,7 +195,7 @@ class AnalysisView(QWidget):
            or ensure that their data is clean."""
         self.pdf_name = ""
         if len(self.main_controller.segmentation_worker.impurity_data): # if data present, then get name
-            pdf_folder = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','PDF Images')
+            pdf_folder = app_data_path('PDF Images')
             while True:
                 name_dialog = NameDatasetDialog(self)
                 name_dialog.exec()

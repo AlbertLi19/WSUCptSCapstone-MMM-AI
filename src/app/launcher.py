@@ -1,5 +1,5 @@
 """
-Launcher script that checks for updates before starting the main application.
+Launcher script that prepares native libraries and starts the application.
 This should be the entry point for the executable.
 """
 import ctypes
@@ -16,7 +16,8 @@ sys.path.insert(0, str(app_dir))
 def _log_preload_event(message: str) -> None:
     """Persist diagnostic info for DLL preload issues."""
     try:
-        log_root = Path(os.getenv("LOCALAPPDATA", str(Path.home()))) / "SegmentationApp" / "logs"
+        from utility.app_paths import app_data_root
+        log_root = app_data_root() / "logs"
         log_root.mkdir(parents=True, exist_ok=True)
         log_path = log_root / "preload.log"
         timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -141,6 +142,8 @@ def preload_torch_native_libs() -> None:
 
 def main():
     """Main launcher function"""
+    from utility.app_paths import configure_portable_caches
+    configure_portable_caches()
     if "--smoke-test" in sys.argv:
         # Run inside the real frozen executable, after PyInstaller's runtime hooks.
         from bundle_smoke_test import main as smoke_main
@@ -152,123 +155,7 @@ def main():
 
     preload_torch_native_libs()
     
-    # Detect if we're in a git repository
-    is_git_repo = False
-    git_check_paths = [
-        Path.cwd() / ".git",
-        Path(__file__).parent.parent.parent / ".git"
-    ]
-    
-    for git_path in git_check_paths:
-        if git_path.exists():
-            is_git_repo = True
-            break
-    
-    # Use appropriate updater based on environment
-    if is_git_repo:
-        # Developer mode - use git-based updater
-        from auto_updater import AutoUpdater
-        updater = AutoUpdater()
-        updater_type = "git"
-    else:
-        # Client mode - use GitHub releases
-        try:
-            from github_updater import GitHubUpdater
-            updater = GitHubUpdater(
-                repo_owner="WSUCptSCapstone-S25-F25",
-                repo_name="-wsum-fullstackapp-",
-                current_version="1.0.0"
-            )
-            updater_type = "github"
-        except ImportError:
-            print("\n⚠ GitHub updater not available")
-            print("Continuing without update checking...\n")
-            updater = None
-            updater_type = None
-    
-    # Check for updates
-    try:
-        if updater and updater_type == "git":
-            print("\nChecking for updates (git)...")
-            if updater.has_updates():
-                update_info = updater.get_update_info()
-                if update_info:
-                    print(f"\n{'*' * 60}")
-                    print("UPDATE AVAILABLE!")
-                    print(f"{'*' * 60}")
-                    print(f"Current version: {update_info['current_commit']}")
-                    print(f"Latest version: {update_info['latest_commit']}")
-                    print(f"\nRecent changes:")
-                    for change in update_info['changes'][:3]:
-                        print(f"  • {change}")
-                    if len(update_info['changes']) > 3:
-                        print(f"  ... and {len(update_info['changes']) - 3} more changes")
-                    print(f"{'*' * 60}")
-                    
-                    # Auto-update if --auto-update flag is present
-                    if "--auto-update" in sys.argv:
-                        print("\nAuto-update enabled. Applying update...")
-                        if updater.apply_update():
-                            print("\nUpdate applied successfully!")
-                            print("Please restart the application to use the new version.")
-                            input("\nPress Enter to exit...")
-                            sys.exit(0)
-                    else:
-                        response = input("\nWould you like to update now? (yes/no): ").lower()
-                        if response in ['yes', 'y']:
-                            if updater.apply_update():
-                                print("\nUpdate applied successfully!")
-                                print("Please restart the application to use the new version.")
-                                input("\nPress Enter to exit...")
-                                sys.exit(0)
-                        else:
-                            print("Continuing with current version...")
-            else:
-                print("Application is up to date!")
-        
-        elif updater and updater_type == "github":
-            print("\nChecking for updates (GitHub Releases)...")
-            has_update, latest_version, download_url = updater.check_for_updates()
-            
-            if has_update:
-                current = updater.get_current_version()
-                print(f"\n{'*' * 60}")
-                print("UPDATE AVAILABLE!")
-                print(f"{'*' * 60}")
-                print(f"Current version: v{current}")
-                print(f"Latest version: v{latest_version}")
-                print(f"{'*' * 60}")
-                
-                # Auto-update if --auto-update flag is present
-                if "--auto-update" in sys.argv:
-                    print("\nAuto-update enabled. Downloading update...")
-                    if updater.download_and_apply_update(download_url, latest_version):
-                        print("\nUpdate downloaded successfully!")
-                        print("Application will restart to apply update...")
-                        import time
-                        time.sleep(3)
-                        sys.exit(0)
-                else:
-                    response = input("\nWould you like to update now? (yes/no): ").lower()
-                    if response in ['yes', 'y']:
-                        if updater.download_and_apply_update(download_url, latest_version):
-                            print("\nUpdate downloaded successfully!")
-                            print("Application will restart to apply update...")
-                            import time
-                            time.sleep(3)
-                            sys.exit(0)
-                    else:
-                        print("Continuing with current version...")
-            else:
-                print("Application is up to date!")
-    
-    except Exception as e:
-        print(f"WARNING: Update check failed: {e}")
-        print("Continuing with current version...")
-    
-    print("\nStarting application...\n")
-    
-    # Import and run the main application
+    # Start directly; the application does not check for updates.
     from main import main as app_main
     app_main()
 

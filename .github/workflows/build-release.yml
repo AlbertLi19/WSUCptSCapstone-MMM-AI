@@ -75,7 +75,7 @@ jobs:
       - name: Build executable using the Windows spec
         run: python -m PyInstaller --noconfirm --clean SegmentationApp-Windows.spec
       - name: Test the packaged executable before publishing
-        run: python scripts/smoke_test_executable.py dist/SegmentationApp.exe --report test-results/frozen-smoke.json
+        run: python scripts/smoke_test_executable.py dist/SegmentationApp/SegmentationApp.exe --report test-results/frozen-smoke.json
       - name: Upload packaging diagnostics
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -90,12 +90,13 @@ jobs:
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          if (!(Test-Path dist/SegmentationApp.exe -PathType Leaf)) {
-            throw "PyInstaller did not produce dist/SegmentationApp.exe"
+          if (!(Test-Path dist/SegmentationApp/SegmentationApp.exe -PathType Leaf)) {
+            throw "PyInstaller did not produce dist/SegmentationApp/SegmentationApp.exe"
           }
           New-Item -ItemType Directory -Force release-assets | Out-Null
           $archive = "release-assets/SegmentationApp-$env:RELEASE_TAG-windows-x64.zip"
-          python -m zipfile -c $archive dist/SegmentationApp.exe version.txt LICENSE.txt
+          Copy-Item version.txt, LICENSE.txt dist/SegmentationApp/
+          python -m zipfile -c $archive dist/SegmentationApp
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $hash = (Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant()
           "$hash  $(Split-Path $archive -Leaf)" | Set-Content release-assets/SHA256SUMS.txt -Encoding ascii

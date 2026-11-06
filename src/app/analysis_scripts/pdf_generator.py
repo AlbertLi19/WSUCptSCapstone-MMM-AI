@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 import os
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -13,7 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import scipy.stats as ss
 
-PDF_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','PDF Images')
+PDF_FOLDER = app_data_path('PDF Images')
 COL_NAMES = ['Size', 'Aspect_Ratio', 'Orientation', 'Distance']
 
 timeoutValue = 30

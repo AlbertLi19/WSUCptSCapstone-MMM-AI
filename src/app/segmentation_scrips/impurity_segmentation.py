@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 import os
 import cv2
 import matplotlib
@@ -11,11 +12,11 @@ from skimage import morphology, measure
 from PyQt5.QtCore import QRect
 from scipy.spatial import distance_matrix
 
-IMAGES = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_SEM_Images','61620A_IP_09_53x35')
-DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Data')
-SEG = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Segmented_Images')
-IMPURITY_DATA_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App', 'Impurity_Data')              #individual impurity data/coord spacing
-SAM_IMAGE = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','SAM_Data')
+IMAGES = app_data_path('Impurity_SEM_Images','61620A_IP_09_53x35')
+DATA = app_data_path('Impurity_Data')
+SEG = app_data_path('Impurity_Segmented_Images')
+IMPURITY_DATA_FOLDER = app_data_path('Impurity_Data')              #individual impurity data/coord spacing
+SAM_IMAGE = app_data_path('SAM_Data')
 
 def sam_outputs_to_label_image(outputs):
     """

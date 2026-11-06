@@ -66,9 +66,10 @@ Linux Qt/OpenCV system libraries are installed separately by CI.
 
 ## Building an Executable
 
-### For Distribution with Auto-Update Feature
+### App folder distribution
 
-The application includes an auto-update system that allows executables to automatically check for and install updates from the release branch.
+The application starts directly without checking for updates. Download new
+releases manually when needed.
 
 #### Building the Executable:
 
@@ -84,17 +85,12 @@ build.bat
 
 The executable will be created in `dist/SegmentationApp/` and can be distributed to users.
 
-#### Running with Auto-Update:
-```bash
-# macOS/Linux
-./SegmentationApp --auto-update
+On Windows, distribute the entire `dist/SegmentationApp/` folder, including
+`_internal`. Users extract the release ZIP once and run
+`SegmentationApp/SegmentationApp.exe` on subsequent launches. Keep the executable
+and its dependencies together. Tabs are created when first opened and retained
+for subsequent visits.
 
-# Windows
-SegmentationApp.exe --auto-update
-```
-
-For detailed information about the auto-update system, see:
-- `AUTO_UPDATE_README.md` - Complete documentation
 
 ## Functionality
 
@@ -165,8 +161,9 @@ stable version tag such as `v1.0.14` is pushed. The tag must match `version.txt`
 It runs both CI test jobs, builds the Windows x64 executable with Python 3.11
 and PyInstaller, then publishes a GitHub release with generated release notes,
 `SegmentationApp-vX.Y.Z-windows-x64.zip`, and `SHA256SUMS.txt`.
-The ZIP contains `SegmentationApp.exe`, `version.txt`, and the license; extract
-it before launching the executable. The build uses matching CPU-only PyTorch
+The ZIP contains a `SegmentationApp/` folder with `SegmentationApp.exe`,
+`_internal/`, `version.txt`, and the license. Extract the entire folder once;
+subsequent launches use the dependencies on disk without unpacking a one-file bundle. The build uses matching CPU-only PyTorch
 and torchvision packages and pinned packaging tools from `requirements.txt`.
 
 Before publishing, the workflow launches the actual executable from an isolated
@@ -211,3 +208,27 @@ https://opencv.org/
 https://scipy.org/
 https://pypi.org/project/fitter/
 https://pypi.org/project/PyQt5/
+
+## Portable application data
+
+The packaged app stores working images, databases, trained models, reviewed
+measurements, logs, and default ML caches in `app_data/` beside
+`SegmentationApp.exe`. Bundled resources remain in `_internal/`. Keep the app
+folder in a writable location such as Documents. Moving the complete folder
+also moves its saved data. When replacing it with a new release, retain your
+`app_data/` folder. Temporary segmentation outputs are still cleared on startup
+and exit, as before. Files explicitly exported to a chosen location stay there.
+
+Existing AppData files are not moved automatically. To keep old saved work,
+copy the contents of `%LOCALAPPDATA%\Segmentation App` and
+`%LOCALAPPDATA%\SegmentationApp` into `app_data/` before launching. Source runs
+use the repository's `app_data/` for working files; source crack and pop-in
+training retain their existing repository model paths.
+
+`SEGMENTATION_APP_DATA` can explicitly override the writable data directory
+(the frozen smoke runner uses an isolated temporary directory). Existing
+`HF_HOME`, `TORCH_HOME`, and `MPLCONFIGDIR` settings are honored.
+
+The Pop-in Locator's **Save to CSV** button writes to
+`app_data/popin_locations.csv` in the packaged app (the repository root for
+source runs). Hover over the button to see the full destination path.

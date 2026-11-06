@@ -13,3 +13,5 @@ models/pretrained/
 .idea/misc.xml
 .idea/workspace.xml
 /.ai
+
+/app_data/

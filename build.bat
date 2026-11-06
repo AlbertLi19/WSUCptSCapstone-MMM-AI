@@ -1,5 +1,5 @@
 @echo off
-REM Build script for creating the Segmentation App executable with auto-update support (Windows)
+REM Build script for creating the Segmentation App executable as an app folder (Windows)
 
 echo ==========================================
 echo Building Segmentation App Executable
@@ -49,19 +49,17 @@ if exist SegmentationApp-Windows.spec (
 )
 
 REM Do not distribute a bundle that cannot start or load its required modules.
-%PYTHON_CMD% scripts\smoke_test_executable.py dist\SegmentationApp.exe --report test-results\frozen-smoke.json
+%PYTHON_CMD% scripts\smoke_test_executable.py dist\SegmentationApp\SegmentationApp.exe --report test-results\frozen-smoke.json
 if errorlevel 1 exit /b 1
 
 echo.
 echo ==========================================
 echo Build Complete!
 echo ==========================================
-echo Executable location: dist\SegmentationApp.exe
+echo Distribute the entire dist\SegmentationApp folder, including _internal.
+echo Executable location: dist\SegmentationApp\SegmentationApp.exe
 echo.
-echo To run the app with auto-update:
-echo   dist\SegmentationApp.exe --auto-update
-echo.
-echo To run without auto-update:
-echo   dist\SegmentationApp.exe
+echo Extract the entire release folder once, then launch:
+echo   dist\SegmentationApp\SegmentationApp.exe
 echo.
 pause

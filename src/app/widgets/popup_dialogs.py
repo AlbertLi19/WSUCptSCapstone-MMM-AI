@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QCheckBox, QProgressBar, QWidget, QHBoxLayout
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, QTimer
@@ -268,7 +269,7 @@ class SelectAnalysisData(QDialog):
         self.setWindowTitle("Select Analysis Data to Download")
         self.setFixedSize(400, 200)
 
-        PDF_FOLDER = os.path.join(os.path.expanduser('~'), 'AppData', 'Local', 'Segmentation App', 'PDF Images')
+        PDF_FOLDER = app_data_path('PDF Images')
         self.pdf_folder = PDF_FOLDER
 
         layout = QVBoxLayout()

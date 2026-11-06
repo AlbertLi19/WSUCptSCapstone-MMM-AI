@@ -25,6 +25,7 @@ from PyQt5.QtWidgets import (
 
 from analysis_scripts.popin_locator import FLAT_SLOPE_FRACTION, InvalidDataError, analyze_file
 from analysis_scripts import popin_ml
+from utility.app_paths import popin_locations_csv_path
 
 
 POPIN_CSV_COLUMNS = (
@@ -71,7 +72,7 @@ class PopInLocatorView(QWidget):
         self._region_artists = []
         self._drag_endpoint = None
         self._results_file_path = None
-        self._locations_csv_path = Path(__file__).resolve().parents[3] / "popin_locations.csv"
+        self._locations_csv_path = popin_locations_csv_path()
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(20, 20, 20, 20)
         self._layout.setSpacing(12)
@@ -168,7 +169,7 @@ class PopInLocatorView(QWidget):
         self._save_csv_button.setEnabled(False)
         self._save_csv_button.setToolTip(
             "Save the current start/end load (uN), depth (nm), and time (s) "
-            "to popin_locations.csv in the project folder.")
+            f"to {self._locations_csv_path}.")
         self._save_csv_button.clicked.connect(self._save_popin_csv)
         save_row = QHBoxLayout()
         for button in (self._save_results_button, self._save_csv_button):

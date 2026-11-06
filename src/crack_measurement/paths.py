@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import sys
 
@@ -10,7 +9,8 @@ def resource_root():
 
 def output_root():
     if getattr(sys, 'frozen', False):
-        return Path(os.getenv('LOCALAPPDATA', str(Path.home()))) / 'SegmentationApp'
+        from src.app.utility.app_paths import app_data_root
+        return app_data_root()
     return resource_root()
 
 

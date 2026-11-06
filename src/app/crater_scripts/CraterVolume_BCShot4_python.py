@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +11,7 @@ from skimage.measure import EllipseModel, find_contours
 import matplotlib.pyplot as plt
 
 
-CRATER_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Crater_Data')  # crater data for all images
+CRATER_DATA = app_data_path('Crater_Data')  # crater data for all images
 
 @dataclass
 class CraterImg:

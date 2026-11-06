@@ -1,10 +1,8 @@
+from utility.app_paths import app_data_path
 import sys
 import os
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QThread, QSemaphore, QCoreApplication, Qt
 from PyQt5.QtWidgets import QFileDialog
-from segmentation_scrips import segment_impurity_image
-from analysis_scripts import fit_and_plot
-from crater_scripts import CraterVolume_BCShot4_python as CraterVolume
 import pandas as pd
 research_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Research')
 sys.path.append(research_path)
@@ -12,12 +10,12 @@ from PyQt5 import QtWidgets
 import numpy as np
 from math import sqrt
 
-SEGMENTED_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Segmented_Images')
-IMPURITY_DATA_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App', 'Impurity_Data')              #individual impurity data/coord spacing
-COMBINED_IMPURITY_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App', 'Combined_Impurity_Data')   # combined impirity/coord spacing for all images
-IMPURITY_CSV = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App', 'Impurity_SEM_Images')
-READY_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Ready Images')
-PDF_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App', 'PDF Images')
+SEGMENTED_FOLDER = app_data_path('Impurity_Segmented_Images')
+IMPURITY_DATA_FOLDER = app_data_path('Impurity_Data')              #individual impurity data/coord spacing
+COMBINED_IMPURITY_DATA = app_data_path('Combined_Impurity_Data')   # combined impirity/coord spacing for all images
+IMPURITY_CSV = app_data_path('Impurity_SEM_Images')
+READY_FOLDER = app_data_path('Ready Images')
+PDF_FOLDER = app_data_path('PDF Images')
 import time
 from typing import Optional, List
 class SegmentationWorker(QObject):
@@ -53,6 +51,8 @@ class SegmentationWorker(QObject):
         
     @pyqtSlot(list)
     def run_segmentation(self, settings):
+        from segmentation_scrips.impurity_segmentation import segment_impurity_image
+
         start = time.time()
         count = 0
         unsegmented_images = []
@@ -66,9 +66,9 @@ class SegmentationWorker(QObject):
             '''Run segmentation algorithim on each image in the list of settings
                 Segment_impurity_image runs the segmentation algorithm on the image and
                 saves:
-                - Segmented image as "segmented-<filename>.png" in SEG = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Segmented_Images')
-                - impurity measurements as "<filename>_impurity_measurements.csv" in os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Data')
-                - coordinate spacing as "<filename>_coord_spacing.csv" in os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Data')
+                - Segmented image as "segmented-<filename>.png" in SEG = app_data_path('Impurity_Segmented_Images')
+                - impurity measurements as "<filename>_impurity_measurements.csv" in app_data_path('Impurity_Data')
+                - coordinate spacing as "<filename>_coord_spacing.csv" in app_data_path('Impurity_Data')
                 Those files are used to generate the PDF
             '''
             filename = setting.filename
@@ -192,6 +192,8 @@ class SegmentationWorker(QObject):
         #     spacings = compute_spacings(segmented_regions, um_per_pix)
 
         #     save_results_to_csv(sizes, spacings, "impurity_analysis.csv")
+        from segmentation_scrips.impurity_segmentation import segment_impurity_image
+
         start = time.time()
         count = 0
         unsegmented_images = []
@@ -205,9 +207,9 @@ class SegmentationWorker(QObject):
             '''Run segmentation algorithim on each image in the list of settings
                 Segment_impurity_image runs the segmentation algorithm on the image and
                 saves:
-                - Segmented image as "segmented-<filename>.png" in SEG = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Segmented_Images')
-                - impurity measurements as "<filename>_impurity_measurements.csv" in os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Data')
-                - coordinate spacing as "<filename>_coord_spacing.csv" in os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Data')
+                - Segmented image as "segmented-<filename>.png" in SEG = app_data_path('Impurity_Segmented_Images')
+                - impurity measurements as "<filename>_impurity_measurements.csv" in app_data_path('Impurity_Data')
+                - coordinate spacing as "<filename>_coord_spacing.csv" in app_data_path('Impurity_Data')
                 Those files are used to generate the PDF
             '''
             filename = setting.filename
@@ -306,6 +308,7 @@ class SegmentationWorker(QObject):
         #this is crucial to ensure the progress dialog is created before the next signal is emitted
         QCoreApplication.processEvents()
         
+        from analysis_scripts.pdf_generator import fit_and_plot
         fit_and_plot(impurity_df, spacing_df, name, overlay, progress_signal=self.analysis_progress)
         print("Saving PDF...")
         extension = "_overlay" if overlay else "_no_overlay"
@@ -316,6 +319,8 @@ class SegmentationWorker(QObject):
 
     @pyqtSlot()
     def crater_analysis(self, crater_params: dict):
+        from crater_scripts import CraterVolume_BCShot4_python as CraterVolume
+
         self.crater_vol_started.emit(True)
         image_dir = crater_params['image_dir']
         start = crater_params['image_start']
@@ -347,7 +352,7 @@ class MainController(QObject):
     def get_image(self):
         file, _ = QFileDialog.getOpenFileName(self.parent(),
                                            'Load Image',
-                                           os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App'),
+                                           app_data_path(),
                                            'Image Files (*.png *.jpg *.tif)')
         return file
     

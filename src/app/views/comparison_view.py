@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QScrollArea, QPushButton, QGroupBox, QFrame)
 from PyQt5.QtGui import QFont
@@ -9,7 +10,7 @@ import numpy as np
 from comparison_scripts import kl_divergence
 from widgets import SelectAnalysisData, InvalidComparisonDialog
 
-PDF_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App', 'PDF Images')
+PDF_FOLDER = app_data_path('PDF Images')
 
 class ComparisonView(QWidget):
     def __init__(self, parent=None, controller=None):

@@ -1,3 +1,4 @@
+from utility.app_paths import app_data_path
 import os
 from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QComboBox, QLabel, QStackedWidget
 from PyQt5.QtCore import pyqtSlot, Qt, pyqtSignal, QPoint, QRect
@@ -12,7 +13,7 @@ import shutil
 from utility.download_handler import DownloadHandler
 
 
-READY_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Ready Images')
+READY_FOLDER = app_data_path('Ready Images')
 
 """The SegmentationView Containts the 
 UI components for the segmentation tab. Along
@@ -467,12 +468,7 @@ class SegmentationView(QWidget):
         if not source_filename:
             return None
         base_name = os.path.splitext(os.path.basename(source_filename))[0]
-        spacing_file = os.path.join(
-            os.path.expanduser('~'),
-            'AppData',
-            'Local',
-            'Segmentation App',
-            'Impurity_Data',
+        spacing_file = app_data_path('Impurity_Data',
             f'{base_name}_coord_spacing.csv',
         )
         if not os.path.exists(spacing_file):
@@ -595,7 +591,7 @@ class SegmentationView(QWidget):
         '''
         Given an image that has been segmented already, it looks for its name in the segmented folder and returns the full path to the segmented image
         '''
-        SEGMENTED_FOLDER = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Segmented_Images')
+        SEGMENTED_FOLDER = app_data_path('Impurity_Segmented_Images')
         if self._is_sam is True:
             target = "segmented-" + os.path.splitext(os.path.basename(file_path))[0] + '.png'
         else:
@@ -950,11 +946,11 @@ class SegmentationView(QWidget):
                     except Exception as e:
                         print(f'Failed to delete {file_path}. Reason: {e}')
 
-        DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Data')
-        SEG = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Impurity_Segmented_Images')
-        READY = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','Ready Images')
-        PDF = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App','PDF Images')
-        COMBINED_IMPURITY_DATA = os.path.join(os.path.expanduser('~'),'AppData','Local','Segmentation App', 'Combined_Impurity_Data')  
+        DATA = app_data_path('Impurity_Data')
+        SEG = app_data_path('Impurity_Segmented_Images')
+        READY = app_data_path('Ready Images')
+        PDF = app_data_path('PDF Images')
+        COMBINED_IMPURITY_DATA = app_data_path('Combined_Impurity_Data')
         clear_directory(SEG)
         clear_directory(READY)
         #clear_directory(PDF) # Want to leave the created JSON in folder on Reset
