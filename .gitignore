@@ -2,6 +2,9 @@ capstonevenv/
 __pycache__/ 
 *.pyc 
 .vscode/ 
+runs/
+models/pretrained/
+*.partial 
 # Version junk files
 0.*
 *.0.0
