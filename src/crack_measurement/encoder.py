@@ -9,8 +9,9 @@ from urllib.request import urlretrieve
 
 import torch
 from torch import nn
+from .paths import output_root
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = output_root()
 MICRONET_DIR = ROOT / 'models' / 'pretrained'
 MICRONET_WEIGHTS = MICRONET_DIR / 'resnet50_imagenet-micronet_weights.pth'
 MICRONET_URL = (

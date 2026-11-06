@@ -44,6 +44,65 @@ def run_checks(check):
 
     check("bundled pop-in model and scikit-learn imports", model)
 
+    def cracks():
+        import numpy as np
+        import torch
+        from src.crack_measurement.model import load_grayscale, predict, read_records
+        from src.crack_measurement.dataset import load_calibration
+        from src.crack_measurement.paths import resource_root
+
+        root = resource_root()
+        records = read_records(root / 'data/Indentation_Image_Labels/per_image',
+                               root / 'data/Indentation Images')
+        if len(records) != 88 or len(load_calibration(root / 'Length.csv')) != 88:
+            raise RuntimeError('The bundled crack training dataset or calibration is incomplete')
+        # Verify the aggregate annotation file too; the training dialog accepts both forms.
+        aggregate = read_records(root / 'data/Indentation_Image_Labels/Labels.json',
+                                 root / 'data/Indentation Images')
+        if {record[0].name for record in aggregate} != {record[0].name for record in records}:
+            raise RuntimeError('Bundled crack annotation files disagree')
+        # Include both BMP and microscope TIFF decoding without a source checkout.
+        for suffix in ('.bmp', '.tif'):
+            path = next(record[0] for record in records if record[0].suffix.lower() == suffix)
+            if load_grayscale(path).ndim != 2:
+                raise RuntimeError(f'Cannot decode bundled training image: {path}')
+        previous_threads = torch.get_num_threads()
+        torch.set_num_threads(1)
+        try:
+            for name in ('crack_unet.pt', 'crack_encoder_resnet18.pt', 'crack_micronet_resnet50.pt'):
+                maps = predict(np.zeros((64, 80), dtype=np.uint8), root / 'models' / name)
+                if maps.shape != (2, 64, 80) or not np.isfinite(maps).all():
+                    raise RuntimeError(f'Bundled crack checkpoint failed inference: {name}')
+        finally:
+            torch.set_num_threads(previous_threads)
+
+    check("bundled crack checkpoints, CPU inference and training dataset", cracks)
+
+    def crack_outputs():
+        from src.crack_measurement.corrections import correction_record, save_correction
+        from src.crack_measurement.paths import (
+            resource_root, training_checkpoint, reviewed_measurements_dir,
+        )
+
+        checkpoint = training_checkpoint()
+        export = reviewed_measurements_dir() / 'smoke-test.json'
+        for destination in (checkpoint, export):
+            if getattr(sys, 'frozen', False) and destination.is_relative_to(resource_root()):
+                raise RuntimeError('Crack output would be saved inside the temporary bundle')
+            destination.parent.mkdir(parents=True, exist_ok=True)
+        # Exercise reviewed JSON serialization in the isolated user profile.
+        record = correction_record('smoke-test.png', [
+            {'start_xy': [1, 2], 'end_xy': [8, 2], 'role': 'crack_chord'},
+        ], 10, str(checkpoint), image_size=(80, 64), scale_method='drawn_line')
+        try:
+            save_correction(export, record)
+            if not json.loads(export.read_text(encoding='utf-8'))['reviewed']:
+                raise RuntimeError('Crack measurement export did not retain review status')
+        finally:
+            export.unlink(missing_ok=True)
+
+    check("persistent crack output directories and reviewed JSON export", crack_outputs)
+
     def gui():
         from PyQt5.QtWidgets import QApplication
         from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -56,6 +115,11 @@ def run_checks(check):
             app.processEvents()
             if window.main_view._popin_locator_view._model is None:
                 raise RuntimeError("The Pop-in Locator could not load its bundled model")
+            crack_view = window.main_view._crack_measurement_view
+            window.main_view._tab_widget.setCurrentWidget(crack_view)
+            app.processEvents()
+            if not crack_view.panel.checkpoint.is_file():
+                raise RuntimeError('The Crack Measurement tab could not find its default checkpoint')
         finally:
             window.close()
             controller = window.main_view._controller

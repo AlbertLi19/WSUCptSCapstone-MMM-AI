@@ -27,11 +27,12 @@ from .dataset import (SCALE_UNIT_ASSUMPTION, audit_records, binary_dice, length_
                       load_calibration, load_dataset, match_chords, micrometers_per_pixel,
                       proxy_radial_chords, split_records, write_json)
 from .encoder import build_encoder_model
+from .paths import resource_root, output_root
 from .model import (CrackDataset, device_for, estimate_radial, load_grayscale, loss_for,
                     masks_for, predict)
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = resource_root()
 DEFAULT_LABELS = ROOT / 'data/Indentation_Image_Labels/per_image'
 DEFAULT_IMAGES = ROOT / 'data/Indentation Images'
 DEFAULT_SCALE = ROOT / 'Length.csv'
@@ -293,7 +294,7 @@ def build_parser():
     audit.set_defaults(func=_command_audit)
 
     train = sub.add_parser('train')
-    train.add_argument('--runs', type=Path, default=ROOT / 'runs/crack_measurement')
+    train.add_argument('--runs', type=Path, default=output_root() / 'runs/crack_measurement')
     train.add_argument('--epochs', type=int, default=5)
     train.add_argument('--freeze-epochs', type=int, default=1)
     train.add_argument('--size', type=int, default=256)

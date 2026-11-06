@@ -112,13 +112,21 @@ excluded_modules = [
 
 a = Analysis(
     ['src\\app\\launcher.py'],
-    pathex=[],
+    # The crack tab imports src.crack_measurement from the repository root.
+    pathex=[SPECPATH],
     binaries=torch_binaries + additional_binaries,
     datas=[
         ('src\\app\\analysis_scripts', 'analysis_scripts'),
         ('data\\Pop-in Training Data', 'data/Pop-in Training Data'),
         ('data\\pop-in 4H.xlsx', 'data'),
         ('models\\popin_model.joblib', 'models'),
+        ('models\\crack_unet.pt', 'models'),
+        ('models\\crack_encoder_resnet18.pt', 'models'),
+        ('models\\crack_micronet_resnet50.pt', 'models'),
+        ('data\\Indentation Images', 'data/Indentation Images'),
+        ('data\\Indentation_Image_Labels\\Labels.json', 'data/Indentation_Image_Labels'),
+        ('data\\Indentation_Image_Labels\\per_image', 'data/Indentation_Image_Labels/per_image'),
+        ('Length.csv', '.'),
         ('src\\app\\Databases', 'Databases'),
         ('version.txt', '.'),
         ('pyi_rth_torch.py', '.'),

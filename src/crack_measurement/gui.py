@@ -5,6 +5,8 @@ from pathlib import Path
 # Load PyTorch before NumPy and Qt. On Windows, importing those first can make
 # c10.dll fail to initialize.
 from .corrections import correction_record, save_correction
+from .paths import (resource_root, default_checkpoint, training_checkpoint,
+                    reviewed_measurements_dir)
 from .model import (train, predict, estimate_indentation_measurements, clip_guide,
                     load_grayscale)
 
@@ -18,7 +20,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
     QLineEdit, QDialogButtonBox, QRadioButton, QFrame, QTableWidget, QTableWidgetItem,
     QHeaderView, QSplitter, QAbstractItemView, QSizePolicy)
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = resource_root()
 DEFAULT_SCALE_UM = 10 / 100
 
 STYLE = """
@@ -540,7 +542,7 @@ class CrackMeasurementWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setStyleSheet(STYLE)
-        self.checkpoint = ROOT/'models/crack_unet.pt'
+        self.checkpoint = default_checkpoint()
         self.measurement_checkpoint = None
         self.measurement_threshold = None
         self.scale_method = None
@@ -861,7 +863,7 @@ class CrackMeasurementWidget(QWidget):
         self.cancel.setEnabled(False)
 
     def training(self):
-        dialog = TrainingDialog(self.checkpoint, self)
+        dialog = TrainingDialog(training_checkpoint(), self)
         if dialog.exec_() != QDialog.Accepted:
             return
         output = Path(dialog.output.text())
@@ -928,7 +930,7 @@ class CrackMeasurementWidget(QWidget):
 
         image_path = self.view.image_path
         default_name = f'{image_path.stem}_measurements.json' if image_path else 'measurements.json'
-        default_dir = ROOT/'data/Indentation_Image_Labels/reviewed_measurements'
+        default_dir = reviewed_measurements_dir()
         default_dir.mkdir(parents=True, exist_ok=True)
         path, _ = QFileDialog.getSaveFileName(
             self, 'Export measurements JSON', str(default_dir/default_name), 'JSON files (*.json)')

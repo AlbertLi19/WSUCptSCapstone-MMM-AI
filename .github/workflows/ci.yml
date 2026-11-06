@@ -54,7 +54,7 @@ jobs:
           python -m pip check
 
       - name: Check Python syntax
-        run: python -m compileall -q src/app tests
+        run: python -m compileall -q src/app src/crack_measurement tests crack_measurement.py
 
       - name: Run tests including headless Qt integration
         run: python -m pytest tests -q --junitxml=test-results/pytest.xml

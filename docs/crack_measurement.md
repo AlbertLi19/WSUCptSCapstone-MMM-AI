@@ -51,7 +51,9 @@ The standalone launcher and the main-app tab share the same measurement panel.
    lengths, the scale and how it was set, the source checkpoint, and each,
    longest, and total crack-length summaries. Export asks for confirmation so
    unreviewed model output is not accidentally treated as training ground truth.
-   Files default to `data/Indentation_Image_Labels/reviewed_measurements`.
+   Source runs default to `data/Indentation_Image_Labels/reviewed_measurements`.
+   Windows releases save reviewed files under
+   `%LOCALAPPDATA%/SegmentationApp/data/Indentation_Image_Labels/reviewed_measurements`.
 
 The mouse wheel zooms. Middle-button dragging pans. **Fit image** restores the
 full view. Coordinates and calibration always use the original image pixels;
@@ -97,12 +99,22 @@ incorrect segmentation, or an unusual diamond orientation can affect the estimat
 Insufficient evidence raises a message instead of creating four unsupported lines.
 The threshold control allows adjustment of the foreground probability cutoff.
 
-The dataset has 88 images. No production-quality model or validated accuracy is
-bundled. Train before generating estimates, inspect the overlays, and evaluate
+The dataset has 88 images. Windows releases include all images, the combined and
+per-image Datumaro annotations, `Length.csv`, and all three experimental crack
+checkpoints. Training and image dialogs open the bundled dataset by default;
+no separate dataset download is needed. No production-quality model or validated
+accuracy is bundled. Inspect the overlays and evaluate
 endpoint-distance errors on held-out specimens. Because indentation labels are
 boxes, the model cannot learn an exact diamond boundary from those labels alone.
 Adding diamond boundary masks and explicitly labeled four endpoint pairs would
 improve crack-to-edge association and measurement evaluation.
+
+In Windows releases, training defaults to
+`%LOCALAPPDATA%/SegmentationApp/models/crack_unet.pt`, and later launches prefer
+that saved model over the bundled U-Net. Encoder downloads and pipeline run
+outputs also use `%LOCALAPPDATA%/SegmentationApp`. These outputs persist across
+application restarts and releases; bundled inputs reside in the executable's
+temporary extraction directory and should not be used as save destinations.
 
 The calibration assumes uniform physical scale in the image plane. The displayed
 micrometer distance is Euclidean pixel distance multiplied by micrometers per
