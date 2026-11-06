@@ -118,6 +118,7 @@ a = Analysis(
     datas=[
         ('src\\app\\analysis_scripts', 'analysis_scripts'),
         ('data\\Pop-in Training Data', 'data/Pop-in Training Data'),
+        ('data\\Pop-in data', 'data/Pop-in data'),
         ('data\\pop-in 4H.xlsx', 'data'),
         ('models\\popin_model.joblib', 'models'),
         ('models\\crack_unet.pt', 'models'),
