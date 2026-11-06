@@ -122,7 +122,7 @@ def run_checks(check):
             if window.main_view._popin_locator_view._model is None:
                 raise RuntimeError("The Pop-in Locator could not load its bundled model")
             crack_view = window.main_view._crack_measurement_view
-            window.main_view._tab_widget.setCurrentWidget(crack_view)
+            window.main_view._tab_widget.setCurrentIndex(3)
             app.processEvents()
             if not crack_view.panel.checkpoint.is_file():
                 raise RuntimeError('The Crack Measurement tab could not find its default checkpoint')

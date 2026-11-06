@@ -88,8 +88,9 @@ The executable will be created in `dist/SegmentationApp/` and can be distributed
 On Windows, distribute the entire `dist/SegmentationApp/` folder, including
 `_internal`. Users extract the release ZIP once and run
 `SegmentationApp/SegmentationApp.exe` on subsequent launches. Keep the executable
-and its dependencies together. Tabs are created when first opened and retained
-for subsequent visits.
+and its dependencies together. Segmentation, Pop-in Locator, Crack Measurement, Comparison, and About are
+loaded at startup. After the window appears, Analysis loads automatically while
+a loading message above the tabs remains visible regardless of the selected tab. All tabs retain their contents for subsequent visits.
 
 
 ## Functionality

@@ -15,7 +15,7 @@ def app():
     return QApplication.instance() or QApplication([])
 
 
-def test_tabs_load_once_and_busy_check_does_not_load_popin(app, monkeypatch):
+def test_core_tabs_load_at_startup_and_are_reused(app, monkeypatch):
     created = []
 
     class View(QWidget):
@@ -32,17 +32,18 @@ def test_tabs_load_once_and_busy_check_does_not_load_popin(app, monkeypatch):
     monkeypatch.setattr(main_view, 'import_module', module)
     monkeypatch.setattr(main_view, 'MainController', lambda parent: object())
     window = main_view.MainView()
-    assert set(window._loaded_tabs) == {0}
+    assert set(window._loaded_tabs) == {0, 2, 3, 4, 5}
     assert not window.model_busy
-    assert len(created) == 1
+    assert len(created) == 5
     window._tab_widget.setCurrentIndex(2)
+    app.processEvents()
     popin = window._popin_locator_view
     popin.model_busy = True
     assert window.model_busy
     window._tab_widget.setCurrentIndex(0)
     window._tab_widget.setCurrentIndex(2)
-    assert window._tab_widget.currentWidget() is popin
-    assert len(created) == 2
+    assert window._tab_widget.currentWidget() is popin.parentWidget()
+    assert len(created) == 5
     window.close()
 
 
@@ -62,3 +63,55 @@ def test_launcher_starts_app_without_constructing_an_updater(monkeypatch):
     monkeypatch.setitem(sys.modules, 'main', SimpleNamespace(main=lambda: calls.append('started')))
     launcher.main()
     assert calls == ['started']
+
+
+def test_analysis_loads_automatically_after_show_without_selecting_it(app, monkeypatch):
+    created = []
+
+    class View(QWidget):
+        model_busy = False
+        timeout_updated = pyqtSignal(int)
+
+        def __init__(self, parent, *args):
+            super().__init__(parent)
+
+    def module(name):
+        created.append(name)
+        return SimpleNamespace(**{spec[2]: View for spec in main_view.MainView.TAB_SPECS})
+
+    monkeypatch.setattr(main_view, 'import_module', module)
+    monkeypatch.setattr(main_view, 'MainController', lambda parent: object())
+    # Isolate timeout signal wiring from unrelated PDF dependencies.
+    import sys
+    monkeypatch.setitem(sys.modules, 'analysis_scripts.pdf_generator',
+                        SimpleNamespace(pull_timeout=lambda value: None))
+    window = main_view.MainView()
+    tabs = window._tab_widget
+    page = tabs.widget(1)
+    assert 'views.analysis_view' not in created
+    app.processEvents()
+    assert 1 not in window._loaded_tabs  # A hidden window does not start Analysis.
+    window.show()
+    assert 1 not in window._loaded_tabs
+    assert tabs.tabText(1) == 'Analysis (loading…)'
+    assert tabs.currentIndex() == 0
+    assert window._analysis_loading_label.isVisible()
+    # Switching to an already-loaded tab keeps the global message visible.
+    tabs.setCurrentIndex(5)
+    assert window._analysis_loading_label.isVisible()
+    tabs.setCurrentIndex(0)
+    assert 'Loading Analysis' in page.findChild(main_view.QLabel).text()
+    app.processEvents()
+    assert set(window._loaded_tabs) == set(range(6))
+    assert tabs.currentIndex() == 0  # Automatic loading does not switch tabs.
+    assert tabs.widget(1) is page
+    assert tabs.tabText(1) == 'Analysis'
+    assert not window._analysis_loading_label.isVisible()
+    tabs.setCurrentIndex(1)
+    app.processEvents()
+    assert created.count('views.analysis_view') == 1
+    window.hide()
+    window.show()
+    app.processEvents()
+    assert created.count('views.analysis_view') == 1
+    window.close()
