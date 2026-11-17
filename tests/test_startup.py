@@ -5,7 +5,8 @@ os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 import pytest
 from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import QEvent, QObject, pyqtSignal
+from PyQt5.QtTest import QTest
 
 from views import main_view
 
@@ -65,8 +66,15 @@ def test_launcher_starts_app_without_constructing_an_updater(monkeypatch):
     assert calls == ['started']
 
 
-def test_analysis_loads_automatically_after_show_without_selecting_it(app, monkeypatch):
+def test_analysis_loads_on_first_selection_and_is_reused(app, monkeypatch):
     created = []
+    painted_titles = []
+
+    class PaintWatcher(QObject):
+        def eventFilter(self, obj, event):
+            if event.type() == QEvent.Paint:
+                painted_titles.append(obj.tabText(1))
+            return False
 
     class View(QWidget):
         model_busy = False
@@ -76,6 +84,8 @@ def test_analysis_loads_automatically_after_show_without_selecting_it(app, monke
             super().__init__(parent)
 
     def module(name):
+        if name == 'views.analysis_view':
+            assert 'Analysis (loading…)' in painted_titles
         created.append(name)
         return SimpleNamespace(**{spec[2]: View for spec in main_view.MainView.TAB_SPECS})
 
@@ -92,22 +102,44 @@ def test_analysis_loads_automatically_after_show_without_selecting_it(app, monke
     app.processEvents()
     assert 1 not in window._loaded_tabs  # A hidden window does not start Analysis.
     window.show()
+    app.processEvents()
+    watcher = PaintWatcher()
+    tabs.tabBar().installEventFilter(watcher)
     assert 1 not in window._loaded_tabs
-    assert tabs.tabText(1) == 'Analysis (loading…)'
+    assert 'views.analysis_view' not in created
+    assert tabs.tabText(1) == 'Analysis'
     assert tabs.currentIndex() == 0
     assert window._main_layout.count() == 1
-    # The loading indicator stays in the tab title while another tab is selected.
     tabs.setCurrentIndex(5)
+    app.processEvents()
+    assert 'views.analysis_view' not in created
+    # A selection cancelled before the callback runs does not load Analysis.
+    tabs.setCurrentIndex(1)
     assert tabs.tabText(1) == 'Analysis (loading…)'
     tabs.setCurrentIndex(0)
+    QTest.qWait(150)
+    assert tabs.tabText(1) == 'Analysis'
+    assert 'views.analysis_view' not in created
+
+    QTest.mouseClick(tabs.tabBar(), main_view.Qt.LeftButton,
+                     pos=tabs.tabBar().tabRect(1).center())
+    assert tabs.tabText(1) == 'Analysis (loading…)'
     assert 'Loading Analysis' in page.findChild(main_view.QLabel).text()
     app.processEvents()
+    QTest.qWait(30)
+    assert 1 not in window._loaded_tabs
+    assert tabs.tabText(1) == 'Analysis (loading…)'
+    assert 'Analysis (loading…)' in painted_titles
+    QTest.qWait(120)
     assert set(window._loaded_tabs) == set(range(6))
-    assert tabs.currentIndex() == 0  # Automatic loading does not switch tabs.
+    assert tabs.currentIndex() == 1
     assert tabs.widget(1) is page
     assert tabs.tabText(1) == 'Analysis'
+    analysis = window._loaded_tabs[1]
+    tabs.setCurrentIndex(0)
     tabs.setCurrentIndex(1)
     app.processEvents()
+    assert window._loaded_tabs[1] is analysis
     assert created.count('views.analysis_view') == 1
     window.hide()
     window.show()
