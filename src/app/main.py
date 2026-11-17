@@ -144,6 +144,9 @@ def main():
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create('Fusion'))
+    app_font = app.font()
+    app_font.setPointSizeF(max(12.0, app_font.pointSizeF()))
+    app.setFont(app_font)
     
     main_window = MainWindow()  # Use our new MainWindow class
     main_window.showMaximized()
