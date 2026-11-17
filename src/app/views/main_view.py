@@ -28,10 +28,6 @@ class MainView(QWidget):
         self._loaded_tabs = {}
         self._pending_tabs = set()
         self._main_layout = QVBoxLayout(self)
-        self._analysis_loading_label = QLabel("Analysis is loading…")
-        self._analysis_loading_label.setAlignment(Qt.AlignCenter)
-        self._analysis_loading_label.hide()
-        self._main_layout.addWidget(self._analysis_loading_label)
         self._tab_widget = QTabWidget()
         self._main_layout.addWidget(self._tab_widget)
         for label, _, _, _ in self.TAB_SPECS:
@@ -67,7 +63,6 @@ class MainView(QWidget):
         self._load_tab(1)
 
     def _set_analysis_loading(self, loading):
-        self._analysis_loading_label.setVisible(loading)
         self._tab_widget.setTabText(1, "Analysis (loading…)" if loading else "Analysis")
 
     @property

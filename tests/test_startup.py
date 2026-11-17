@@ -95,10 +95,10 @@ def test_analysis_loads_automatically_after_show_without_selecting_it(app, monke
     assert 1 not in window._loaded_tabs
     assert tabs.tabText(1) == 'Analysis (loading…)'
     assert tabs.currentIndex() == 0
-    assert window._analysis_loading_label.isVisible()
-    # Switching to an already-loaded tab keeps the global message visible.
+    assert window._main_layout.count() == 1
+    # The loading indicator stays in the tab title while another tab is selected.
     tabs.setCurrentIndex(5)
-    assert window._analysis_loading_label.isVisible()
+    assert tabs.tabText(1) == 'Analysis (loading…)'
     tabs.setCurrentIndex(0)
     assert 'Loading Analysis' in page.findChild(main_view.QLabel).text()
     app.processEvents()
@@ -106,7 +106,6 @@ def test_analysis_loads_automatically_after_show_without_selecting_it(app, monke
     assert tabs.currentIndex() == 0  # Automatic loading does not switch tabs.
     assert tabs.widget(1) is page
     assert tabs.tabText(1) == 'Analysis'
-    assert not window._analysis_loading_label.isVisible()
     tabs.setCurrentIndex(1)
     app.processEvents()
     assert created.count('views.analysis_view') == 1
