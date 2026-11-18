@@ -10,8 +10,8 @@ configure_portable_caches()
 
 import torch  # noqa: F401
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QMessageBox
-from PyQt5.QtGui import QFont
 from views import MainView
 from utility.qt_interrupt_handler import QtInterruptHandler
 
@@ -47,7 +47,6 @@ dark_palette = """
     QWidget {
         color: #ffffff;
         background-color: #2b2b2b;
-        font-size: 14px;
     }
     QPushButton {
         background-color: #3d3d3d;
@@ -55,7 +54,6 @@ dark_palette = """
         border-radius: 4px;
         padding: 5px 15px;
         min-height: 30px;
-        font-size: 14px;
     }
     QPushButton:hover {
         background-color: #4d4d4d;
@@ -65,17 +63,9 @@ dark_palette = """
         border: 1px solid #5d5d5d;
         border-radius: 4px;
         padding: 5px;
-        font-size: 14px;
-    }
-    QLabel {
-        font-size: 14px;
     }
     QSpinBox, QDoubleSpinBox {
-        font-size: 14px;
         padding: 5px;
-    }
-    QCheckBox {
-        font-size: 14px;
     }
 """
 
@@ -84,9 +74,6 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setStyleSheet(dark_palette)
-        app_font = QFont()
-        app_font.setPointSize(14)
-        self.setFont(app_font)
         self.setWindowTitle('Impurity Segmentation App')
         self.main_view = MainView(self)
         self.setCentralWidget(self.main_view)
@@ -152,9 +139,14 @@ def main():
     if not os.path.exists(SAM_DATA):
         os.mkdir(SAM_DATA)
 
-    # Initialize the PyQt5 application
+    # Apply the display scale before creating widgets, including fractional Windows scales.
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create('Fusion'))
+    app_font = app.font()
+    app_font.setPointSizeF(max(12.0, app_font.pointSizeF()))
+    app.setFont(app_font)
     
     main_window = MainWindow()  # Use our new MainWindow class
     main_window.showMaximized()

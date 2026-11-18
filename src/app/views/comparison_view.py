@@ -68,7 +68,10 @@ class ComparisonView(QWidget):
         
         # Comparison title
         comp_title = QLabel("Segmentation Comparison Analysis")
-        comp_title.setFont(QFont('Arial', 18, QFont.Bold))
+        title_font = QFont(self.font())
+        title_font.setPointSizeF(max(18.0, title_font.pointSizeF()))
+        title_font.setBold(True)
+        comp_title.setFont(title_font)
         comp_title.setAlignment(Qt.AlignCenter)
         comp_title.setStyleSheet("color: #ffffff; padding: 10px;")
         content_layout.addWidget(comp_title)
@@ -81,7 +84,6 @@ class ComparisonView(QWidget):
         
         # Instructions Group
         instructions_group = QGroupBox("Instructions")
-        instructions_group.setFont(QFont('Arial', 11, QFont.Bold))
         instructions_group.setStyleSheet("""
             QGroupBox {
                 color: #ffffff;
@@ -107,7 +109,6 @@ class ComparisonView(QWidget):
             "5. Review the calculated metrics below\n"
             "6. Optionally save comparison snapshots for future reference"
         )
-        comp_instructions.setFont(QFont('Arial', 10))
         comp_instructions.setWordWrap(True)
         comp_instructions.setStyleSheet("padding: 10px; background-color: #3d3d3d; border-radius: 5px; color: #ffffff;")
         instructions_layout.addWidget(comp_instructions)
@@ -116,7 +117,6 @@ class ComparisonView(QWidget):
 
         # Action Buttons Group
         actions_group = QGroupBox("Actions")
-        actions_group.setFont(QFont('Arial', 11, QFont.Bold))
         actions_group.setStyleSheet("""
             QGroupBox {
                 color: #ffffff;
@@ -136,7 +136,6 @@ class ComparisonView(QWidget):
         
         # Load Data button
         self.load_data_button = QPushButton("📁 Load Data")
-        self.load_data_button.setFont(QFont('Arial', 10))
         self.load_data_button.setMinimumHeight(40)
         self.load_data_button.setStyleSheet("""
             QPushButton {
@@ -159,12 +158,10 @@ class ComparisonView(QWidget):
 
         # add text showing user what they are comparing
         self.compare_text = QLabel(f"Comparing: {self.p_name}  ➔  {self.q_name}")
-        self.compare_text.setFont(QFont('Arial', 10))
         self.compare_text.setWordWrap(True)
         self.compare_text.setStyleSheet("padding: 10px; background-color: #3d3d3d; border-radius: 5px; color: #ffffff;")
         instructions_layout.addWidget(self.compare_text)
         self.switch_button = QPushButton("Switch Datasets 🔁")
-        self.switch_button.setFont(QFont('Arial', 10))
         self.switch_button.setMinimumHeight(40)
         self.switch_button.setStyleSheet("""
             QPushButton {
@@ -190,7 +187,6 @@ class ComparisonView(QWidget):
 
         # Compare button
         self.compare_button = QPushButton("🔍 Run Comparison")
-        self.compare_button.setFont(QFont('Arial', 10))
         self.compare_button.setMinimumHeight(40)
         self.compare_button.setStyleSheet("""
             QPushButton {
@@ -215,7 +211,6 @@ class ComparisonView(QWidget):
 
         # Results Group
         results_group = QGroupBox("Comparison Metrics")
-        results_group.setFont(QFont('Arial', 11, QFont.Bold))
         results_group.setStyleSheet("""
             QGroupBox {
                 color: #ffffff;
@@ -240,7 +235,6 @@ class ComparisonView(QWidget):
                 border: 1px solid #5d5d5d;
                 border-radius: 5px;
                 padding: 12px;
-                font-size: 11pt;
                 color: #ffffff;
             }
         """

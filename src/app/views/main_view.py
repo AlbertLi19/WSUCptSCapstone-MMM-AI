@@ -1,4 +1,4 @@
-"""Main tab shell. Feature modules and widgets load on first selection."""
+"""Main tab shell with Analysis deferred until first selection."""
 from importlib import import_module
 import sys
 
@@ -28,10 +28,6 @@ class MainView(QWidget):
         self._loaded_tabs = {}
         self._pending_tabs = set()
         self._main_layout = QVBoxLayout(self)
-        self._analysis_loading_label = QLabel("Analysis is loading…")
-        self._analysis_loading_label.setAlignment(Qt.AlignCenter)
-        self._analysis_loading_label.hide()
-        self._main_layout.addWidget(self._analysis_loading_label)
         self._tab_widget = QTabWidget()
         self._main_layout.addWidget(self._tab_widget)
         for label, _, _, _ in self.TAB_SPECS:
@@ -42,32 +38,11 @@ class MainView(QWidget):
             layout.addWidget(message)
             self._tab_widget.addTab(page, label)
         self._tab_widget.currentChanged.connect(self._open_tab)
-        self._analysis_timer = QTimer(self)
-        self._analysis_timer.setSingleShot(True)
-        self._analysis_timer.timeout.connect(self._load_analysis)
         for index in range(len(self.TAB_SPECS)):
             if index != 1:
                 self._load_tab(index)
 
-    def showEvent(self, event):
-        super().showEvent(event)
-        if 1 not in self._loaded_tabs and 1 not in self._pending_tabs:
-            self._pending_tabs.add(1)
-            self._set_analysis_loading(True)
-            self._analysis_timer.start(0)
-
-    def _load_analysis(self):
-        self._pending_tabs.discard(1)
-        if not self.isVisible():
-            self._set_analysis_loading(False)
-            return
-        # Paint the main window and loading state before building Analysis.
-        # Qt widgets must still be constructed on the GUI thread.
-        self.window().repaint()
-        self._load_tab(1)
-
     def _set_analysis_loading(self, loading):
-        self._analysis_loading_label.setVisible(loading)
         self._tab_widget.setTabText(1, "Analysis (loading…)" if loading else "Analysis")
 
     @property
@@ -79,14 +54,22 @@ class MainView(QWidget):
         if index < 0 or index in self._loaded_tabs or index in self._pending_tabs:
             return
         self._pending_tabs.add(index)
-        # Let Qt finish selecting the existing page before constructing its UI.
-        QTimer.singleShot(0, lambda: self._load_selected_tab(index))
+        if index == 1:
+            self._set_analysis_loading(True)
+        # A zero-delay timer can run before Windows presents the updated tab bar.
+        # Leave a brief event-loop interval for the loading state to appear first.
+        delay_ms = 100 if index == 1 else 0
+        QTimer.singleShot(delay_ms, lambda: self._load_selected_tab(index))
 
     def _load_selected_tab(self, index):
         self._pending_tabs.discard(index)
         if self._tab_widget.currentIndex() == index:
             self._tab_widget.currentWidget().repaint()
+            # Paint the title before synchronous tab construction blocks the event loop.
+            self._tab_widget.tabBar().repaint()
             self._load_tab(index)
+        elif index == 1:
+            self._set_analysis_loading(False)
 
     def _load_tab(self, index):
         if index in self._loaded_tabs:
