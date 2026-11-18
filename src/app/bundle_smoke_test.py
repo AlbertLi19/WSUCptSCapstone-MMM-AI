@@ -104,6 +104,7 @@ def run_checks(check):
     check("portable crack output directories and reviewed JSON export", crack_outputs)
 
     def gui():
+        from PyQt5.QtCore import QElapsedTimer, QThread
         from PyQt5.QtWidgets import QApplication
         from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
         from main import MainWindow
@@ -116,9 +117,13 @@ def run_checks(check):
             tabs = window.main_view._tab_widget
             for index in range(tabs.count()):
                 tabs.setCurrentIndex(index)
-                app.processEvents()
+                deadline = QElapsedTimer()
+                deadline.start()
+                while index not in window.main_view._loaded_tabs and deadline.elapsed() < 30000:
+                    app.processEvents()
+                    QThread.msleep(10)
                 if index not in window.main_view._loaded_tabs:
-                    raise RuntimeError(f"Tab {index} failed to initialize")
+                    raise RuntimeError(f"Tab {index} failed to initialize within 30 seconds")
             if window.main_view._popin_locator_view._model is None:
                 raise RuntimeError("The Pop-in Locator could not load its bundled model")
             crack_view = window.main_view._crack_measurement_view

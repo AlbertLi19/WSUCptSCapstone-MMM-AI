@@ -147,7 +147,7 @@ class AboutView(QWidget):
         
         # Add version information
         content_layout.addSpacing(20)
-        version_info = QLabel("Version: 1.5.1")
+        version_info = QLabel("Version: 1.5.2")
         version_info.setAlignment(Qt.AlignCenter)
         content_layout.addWidget(version_info)
         
